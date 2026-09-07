@@ -5437,6 +5437,36 @@ function beoDataISO(txt){
     var mkz=mz[2].slice(0,3), moz=meses[mkz];
     if(moz){var yz=mz[3];if(yz.length===2)yz='20'+yz;return yz+'-'+moz+'-'+('0'+mz[1]).slice(-2);}
   }
+  /* ===== SEM ANO ESCRITO — regra do Mike (2026-09-07) ======================
+     Muitas BEOs escrevem "13 de Junho" e mais nada. Ate aqui isso devolvia
+     null, o recado ficava "incompleto", e ele tinha de acrescentar "2026" a mao
+     em cada um. Regra dele, sem excepcoes: quando o ano falta, e SEMPRE o ano
+     corrente — «não faz sentido que não seja o ano em que nos encontramos»; as
+     BEOs sao documentos de prazo curto, para eventos que se dao em dias.
+     Isto vem no FIM de proposito: so corre depois de falharem todas as leituras
+     com ano, por isso nunca rouba um ano que esteja escrito no documento.
+     A data e validada antes de sair: mes entre 1 e 12 e dia que exista mesmo
+     nesse mes (31 de Fevereiro nao passa). */
+  var anoAgora=String(new Date().getFullYear());
+  function _semAno(dia,mes){
+    var d3=+dia, m3=+mes;
+    if(!(m3>=1&&m3<=12)) return null;
+    var ultimo=new Date(+anoAgora,m3,0).getDate();   // dia 0 do mes seguinte = ultimo deste
+    if(!(d3>=1&&d3<=ultimo)) return null;
+    return anoAgora+'-'+('0'+m3).slice(-2)+'-'+('0'+d3).slice(-2);
+  }
+  // "1 3 de junho" — digitos do dia partidos pela captura do PDF
+  var sS=t.match(/(\d)\s(\d)\s*(?:de\s+)?([a-z]{3,})\.?\s*$/);
+  if(sS){var moSS=meses[sS[3].slice(0,3)];if(moSS){var rSS=_semAno(sS[1]+sS[2],moSS);if(rSS)return rSS;}}
+  // "13 de Junho", "13 junho", "13 jun", "Sexta, 13 de Junho"
+  var sN=t.match(/(\d{1,2})\s*(?:de\s+)?([a-z]{3,})\.?/);
+  if(sN){var moSN=meses[sN[2].slice(0,3)];if(moSN){var rSN=_semAno(sN[1],moSN);if(rSN)return rSN;}}
+  // "31 de Ju lho" — palavra partida com espacos pela captura do PDF
+  var sZ=tz.match(/(\d{1,2})(?:de)?([a-z]{3,})/);
+  if(sZ){var moSZ=meses[sZ[2].slice(0,3)];if(moSZ){var rSZ=_semAno(sZ[1],moSZ);if(rSZ)return rSZ;}}
+  // "13/06", "13-06", "13.06"
+  var sD=t.match(/(\d{1,2})[\/\-.](\d{1,2})/);
+  if(sD){var rSD=_semAno(sD[1],sD[2]);if(rSD)return rSD;}
   return null;
 }
 function pisoNorm(p){return (''+(p||'')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');}
