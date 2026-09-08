@@ -1364,6 +1364,27 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 /* piscadela de confirmacao depois de largar */
 .psb.psb-pousou{border-color:var(--cl);background:var(--navy3);
   box-shadow:0 0 0 1px rgba(212,149,110,.35);}
+
+/* === RESPIRACAO NO TOPO (2026-09-07) =====================================
+   Pedido do Mike, com tres tracos marcados numa fotografia do ecra: meio
+   centimetro a mais em CADA um dos tres intervalos do topo da app.
+   Meio centimetro = 19px (1cm = 37.8px a 96dpi).
+
+     1. por cima do nome dele   -> padding-top da barra de topo
+     2. por baixo do nome dele  -> padding-bottom da mesma barra
+     3. antes do conteudo       -> padding-top do miolo da pagina
+
+   REGRAS NOVAS, nao se editou nenhuma das que ja la estavam — e a regra do
+   Mike para o CSS. A `.topbar` esta declarada QUATRO vezes dentro desta mesma
+   folha (linhas 44, 592, 733 e 881); estas vao no fim e ganham por ordem e por
+   especificidade (`.app>.topbar` = 0,2,0 contra `.topbar` = 0,1,0).
+
+   A barra CRESCE, nao espreme: 54px de conteudo + 19 em cima + 19 em baixo =
+   92px. Com box-sizing:border-box, o `align-items:center` que ja la esta
+   continua a centrar o logotipo, a pesquisa e a pastilha nos 54px do meio.
+   Desfaz-se apagando estas duas regras. */
+.app>.topbar{height:92px;padding:19px 24px;}
+.content>.inner{padding-top:41px;}   /* 22px que la estavam + 19 */
 </style>
 </head>
 <body>
@@ -1781,71 +1802,16 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
           <span><span style="color:var(--amf);">■</span> markup</span>
           <span><span style="color:var(--gnf);">■</span> técnicos</span>
         </div>
-        <div style="margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-left:3px solid var(--amf);border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--ts);line-height:1.55;">⚠ O <strong style="color:var(--tp);">Custo SUD</strong> (e os técnicos) <strong style="color:var(--tp);">nunca entram no preço ao cliente</strong> — vivem só na análise interna. O cliente paga apenas <em>Receita = base + markup</em>, mais IVA.</div>
+        <div style="margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-left:3px solid var(--amf);border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--ts);line-height:1.55;">⚠ O <strong style="color:var(--tp);">Custo SUD</strong> (e os técnicos) <strong style="color:var(--tp);">nunca entram no preço ao cliente</strong> — vivem só na análise interna. O cliente paga apenas <em>Receita = base + markup</em>, mais IVA.<br><span style="color:var(--td);">E reparte-se por <strong style="color:var(--tp);">diária</strong>, não por evento: um congresso de três dias é <em>um</em> evento e <em>três</em> diárias, e é ao dia que o custo se conta.</span></div>
       </div>
 
       <div style="background:var(--navy2);border:1px solid var(--border);border-radius:14px;padding:20px 18px 14px;max-width:880px;margin-top:16px;">
         <div style="font-size:14px;font-weight:700;color:var(--tp);margin-bottom:4px;">Circulação dos dados — quem alimenta o quê</div>
         <div style="font-size:11.5px;color:var(--td);margin-bottom:14px;line-height:1.55;">Os módulos (à esquerda) alimentam a base de dados partilhada; o motor de cálculo transforma; os resultados saem nas análises (à direita).</div>
 
-        <svg viewBox="0 0 840 360" style="width:100%;height:auto;font-family:var(--mono),monospace;">
-          <defs>
-            <marker id="mh-ah2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--td)"/></marker>
-          </defs>
+        <svg viewBox="0 0 860 500" style="width:100%;height:auto;font-family:var(--mono),monospace;"><defs><marker id="mh-ah2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--td)"/></marker><marker id="mh-ah2b" markerWidth="9" markerHeight="9" refX="0" refY="3" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--td)"/></marker></defs><path d="M206,102 L316,160" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M206,174 L316,180" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M206,246 L316,200" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M206,318 L316,220" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M111,58 L111,72" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M111,362 L111,348" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M346,214 L346,288" fill="none" stroke="var(--td)" stroke-width="1.6" marker-end="url(#mh-ah2)"/><path d="M516,168 L640,58" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,172 L640,114" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M640,134 L516,190" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,312 L640,196" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,318 L640,268" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,326 L640,340" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><rect x="16" y="16" width="190" height="42" rx="9" fill="var(--navy3)" stroke="var(--blf)" stroke-width="1.5"/><text x="111" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">PDF-SUD · BEOs</text><text x="111" y="56" text-anchor="middle" font-size="9" fill="var(--td)">app à parte · chega pela nuvem</text><rect x="16" y="74" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Calendário · Eventos</text><text x="111" y="114" text-anchor="middle" font-size="9" fill="var(--td)">datas · diárias · cancelados</text><rect x="16" y="146" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Recursos humanos</text><text x="111" y="186" text-anchor="middle" font-size="9" fill="var(--td)">cachets · serviços · horas extra</text><rect x="16" y="218" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="242" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Equipamento</text><text x="111" y="258" text-anchor="middle" font-size="9" fill="var(--td)">inventário · avarias · manutenção</text><rect x="16" y="290" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Orçamentos</text><text x="111" y="330" text-anchor="middle" font-size="9" fill="var(--td)">cada linha de custo → 1 fornecedor</text><rect x="16" y="362" width="190" height="42" rx="9" fill="var(--navy3)" stroke="var(--blf)" stroke-width="1.5"/><text x="111" y="386" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Fichas · Preçário SUD</text><text x="111" y="402" text-anchor="middle" font-size="9" fill="var(--td)">a fonte de verdade dos artigos</text><rect x="316" y="150" width="200" height="64" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="416" y="174" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Base de dados partilhada</text><text x="416" y="190" text-anchor="middle" font-size="9" fill="var(--td)">em memória, no browser</text><rect x="316" y="288" width="200" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="416" y="312" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Motor de cálculo</text><text x="416" y="328" text-anchor="middle" font-size="9" fill="var(--td)">orcCalc · resSUD · avsCompute</text><text x="444" y="238" text-anchor="middle" font-size="8.5" fill="var(--td)" letter-spacing="1">GUARDADA EM</text><rect x="372" y="246" width="46" height="22" rx="11" fill="var(--navy)" stroke="var(--bl)" stroke-width="1"/><text x="395" y="261" text-anchor="middle" font-size="8" fill="var(--ts)">browser</text><rect x="422" y="246" width="46" height="22" rx="11" fill="var(--navy)" stroke="var(--bl)" stroke-width="1"/><text x="445" y="261" text-anchor="middle" font-size="8" fill="var(--ts)">nuvem</text><rect x="472" y="246" width="46" height="22" rx="11" fill="var(--navy)" stroke="var(--bl)" stroke-width="1"/><text x="495" y="261" text-anchor="middle" font-size="8" fill="var(--ts)">ficheiro</text><rect x="640" y="30" width="204" height="50" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Dashboard</text><text x="742" y="70" text-anchor="middle" font-size="9" fill="var(--td)">resumo do dia / mês</text><rect x="640" y="96" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="120" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Plano de semana</text><text x="742" y="136" text-anchor="middle" font-size="9" fill="var(--td)">PDF por diária · para a equipa</text><rect x="640" y="168" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="192" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Mapas · O ano</text><text x="742" y="208" text-anchor="middle" font-size="9" fill="var(--td)">KPIs · gráficos · RH/Técnicos</text><rect x="640" y="240" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="264" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Relatório anual</text><text x="742" y="280" text-anchor="middle" font-size="9" fill="var(--td)">agrega adjudicados do ano</text><rect x="640" y="312" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="336" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Documento ao cliente</text><text x="742" y="352" text-anchor="middle" font-size="9" fill="var(--td)">só faturável + markup</text><rect x="567" y="94" width="22" height="13" rx="3" fill="var(--navy2)"/><text x="578" y="104" text-anchor="middle" font-size="8" fill="var(--td)">lê</text><rect x="552" y="160" width="52" height="13" rx="3" fill="var(--navy2)"/><text x="578" y="170" text-anchor="middle" font-size="8" fill="var(--td)">escreve</text><rect x="16" y="424" width="828" height="70" rx="11" fill="none" stroke="var(--bl)" stroke-width="1.3" stroke-dasharray="6 5"/><rect x="30" y="438" width="190" height="42" rx="9" fill="var(--navy2)" stroke="var(--td)" stroke-width="1.5"/><text x="125" y="462" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Outros serviços</text><text x="125" y="478" text-anchor="middle" font-size="9" fill="var(--td)">formação · estúdio · avulso</text><path d="M220,459 L300,459" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)" stroke-dasharray="4 4"/><rect x="300" y="438" width="150" height="42" rx="9" fill="var(--navy2)" stroke="var(--td)" stroke-width="1.5"/><text x="375" y="463" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--tp)">PDF próprio</text><text x="474" y="452" font-size="10" font-weight="700" fill="var(--cl)">São à parte, de propósito.</text><text x="474" y="468" font-size="9.5" fill="var(--td)">Não entram nos mapas finais nem são contabilizados nas diárias</text><text x="474" y="482" font-size="9.5" fill="var(--td)">dos eventos — regra do Mike, 2026-09-04.</text></svg>
 
-          <!-- setas entrada -> DB -->
-          <path d="M214,47 L324,80" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-          <path d="M214,121 L324,98" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-          <path d="M214,195 L324,116" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-          <path d="M214,269 L324,134" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-          <!-- DB -> Motor -->
-          <line x1="420" y1="150" x2="420" y2="176" stroke="var(--td)" stroke-width="1.4" marker-end="url(#mh-ah2)"/>
-          <!-- DB -> Dashboard -->
-          <path d="M516,72 L626,47" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-          <!-- Motor -> saídas -->
-          <path d="M516,200 L626,121" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-          <path d="M516,208 L626,195" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-          <path d="M516,216 L626,269" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/>
-
-          <!-- módulos entrada -->
-          <rect x="18" y="18" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/>
-          <text x="116" y="42" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Calendário · Eventos</text>
-          <text x="116" y="58" text-anchor="middle" font-size="9.5" fill="var(--td)">datas, realizados, cancelados</text>
-          <rect x="18" y="92" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/>
-          <text x="116" y="116" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Recursos Humanos</text>
-          <text x="116" y="132" text-anchor="middle" font-size="9.5" fill="var(--td)">cachets · serviços · horas extra</text>
-          <rect x="18" y="166" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/>
-          <text x="116" y="190" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Equipamento</text>
-          <text x="116" y="206" text-anchor="middle" font-size="9.5" fill="var(--td)">inventário · manutenção</text>
-          <rect x="18" y="240" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/>
-          <text x="116" y="264" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Orçamentos</text>
-          <text x="116" y="280" text-anchor="middle" font-size="9.5" fill="var(--td)">cada linha de custo → 1 fornecedor</text>
-
-          <!-- centro: base de dados + motor -->
-          <rect x="324" y="40" width="192" height="110" rx="11" fill="var(--navy3)" stroke="var(--amf)" stroke-width="1.8"/>
-          <text x="420" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="var(--tp)">Base de dados</text>
-          <text x="420" y="106" text-anchor="middle" font-size="13" font-weight="700" fill="var(--tp)">partilhada</text>
-          <text x="420" y="124" text-anchor="middle" font-size="9.5" fill="var(--td)">em memória, no browser</text>
-          <rect x="324" y="176" width="192" height="64" rx="11" fill="var(--navy3)" stroke="var(--gnf)" stroke-width="1.8"/>
-          <text x="420" y="202" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Motor de cálculo</text>
-          <text x="420" y="220" text-anchor="middle" font-size="9.5" fill="var(--td)">orcCalc · resSUD · avsCompute</text>
-
-          <!-- saídas -->
-          <rect x="626" y="18" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--puf)" stroke-width="1.5"/>
-          <text x="724" y="42" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Dashboard</text>
-          <text x="724" y="58" text-anchor="middle" font-size="9.5" fill="var(--td)">resumo do dia / mês</text>
-          <rect x="626" y="92" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--puf)" stroke-width="1.5"/>
-          <text x="724" y="116" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Mapas · O ano</text>
-          <text x="724" y="132" text-anchor="middle" font-size="9.5" fill="var(--td)">KPIs · gráficos · RH/Técnicos</text>
-          <rect x="626" y="166" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--puf)" stroke-width="1.5"/>
-          <text x="724" y="190" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Relatório anual</text>
-          <text x="724" y="206" text-anchor="middle" font-size="9.5" fill="var(--td)">agrega adjudicados do ano</text>
-          <rect x="626" y="240" width="196" height="58" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/>
-          <text x="724" y="264" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--tp)">Documento ao cliente</text>
-          <text x="724" y="280" text-anchor="middle" font-size="9.5" fill="var(--td)">só faturável + markup</text>
-        </svg>
-
-        <div style="margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-left:3px solid var(--cl);border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--ts);line-height:1.55;">A base de dados é guardada automaticamente no browser (<em>autosave</em>) e pode ser exportada num <strong style="color:var(--tp);">backup</strong> — que inclui também o IVA e as regras de markup.</div>
+        <div style="margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-left:3px solid var(--cl);border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--ts);line-height:1.55;">A base de dados vive em memória enquanto a app está aberta, e é guardada em <b>três</b> sítios: no <b>browser</b> (gravação automática, de 5 em 5 segundos), na <b>nuvem</b> (Supabase — é o que te devolve os dados noutro computador) e num <b>ficheiro</b>, quando exportas uma cópia de segurança. A cópia leva também o IVA e as regras de markup.</div>
       </div>
     </div>
 
@@ -5157,6 +5123,72 @@ function ndInit(){
   }
   ndPreview();
 }
+/* ===== MARCAS NO TEXTO LIVRE (2026-09-07) ===================================
+   Pedido antigo do Mike: dar destaque aos riscos nas observações do plano.
+   Decisão: MARCAS NO INÍCIO DA LINHA, e não botões de formatação.
+   A razão é o que fica GUARDADO. Com marcas, o campo continua a ser texto
+   simples e nada do resto da ferramenta — a comparação das BEOs, a pesquisa,
+   as cópias de segurança — precisa de saber que isto existe. Com botões, o
+   campo passaria a guardar HTML e essa camada espalhava-se por tudo.
+
+   As marcas, na primeira posição da linha:
+     !            risco     (negrito; a vermelho onde a cor for pedida)
+     *            destaque  (negrito)
+     - • · – — ▪ ◦   item de lista
+     (sem marca)  texto normal
+
+   O `•` está na lista a pedido do Mike: «na beo, geralmente, os bullet points
+   vão com o ponto antes do tópico» — o que se cola de uma BEO já vem marcado e
+   deve funcionar sem ele mexer em nada.
+
+   Devolve HTML com estilos EM LINHA, de propósito: assim serve o PDF do plano
+   técnico e o do Novo doc sem obrigar nenhum dos dois a carregar folha de
+   estilo nova. `opcoes.riscoCor:null` tira o vermelho e deixa só o negrito —
+   é o que o Novo doc usa, porque uma declaração não é sítio para linhas
+   vermelhas. */
+var TXT_MARCAS_LISTA='-•·–—▪◦';
+function txtMarcado(txt, opcoes){
+  var o=opcoes||{};
+  var corRisco=(o.riscoCor===undefined)?'#c0392b':o.riscoCor;
+  function esc(s){return (s==null?'':''+s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  var cru=String(txt==null?'':txt);
+  if(!cru.trim()) return '';                    // nada escrito, nada devolvido
+  var linhas=cru.replace(/\s+$/,'').split(/\r?\n/);   // sem espaçadores pendurados no fim
+  var saida=[], lista=null;
+  function fecharLista(){
+    if(lista){ saida.push('<ul style="margin:2px 0 3px 18px;padding:0;">'+lista.join('')+'</ul>'); lista=null; }
+  }
+  linhas.forEach(function(bruta){
+    var t=String(bruta).replace(/^\s+/,'');
+    var marca=t.charAt(0);
+    if(t && TXT_MARCAS_LISTA.indexOf(marca)>=0){
+      if(!lista)lista=[];
+      lista.push('<li>'+esc(t.slice(1).replace(/^\s+/,''))+'</li>');
+      return;
+    }
+    fecharLista();
+    /* Linha em branco = linha em branco INTEIRA, da altura de uma linha de
+       texto. É o que o `white-space:pre-wrap` fazia antes disto existir, e é o
+       que separa parágrafos num documento. À primeira pus aqui um espaçador de
+       .6em — mais bonito a meu ver, e errado: encolhia o Novo doc de três
+       folhas para duas e mudava o espaçamento de documentos que já estavam
+       escritos. Não é meu, é dele. */
+    if(!t){ saida.push('<div>&nbsp;</div>'); return; }
+    if(marca==='!'){
+      saida.push('<div style="font-weight:700;'+(corRisco?('color:'+corRisco+';'):'')+'">'
+        + esc(t.slice(1).replace(/^\s+/,'')) + '</div>');
+      return;
+    }
+    if(marca==='*'){
+      saida.push('<div style="font-weight:700;">'+esc(t.slice(1).replace(/^\s+/,''))+'</div>');
+      return;
+    }
+    saida.push('<div>'+esc(t)+'</div>');
+  });
+  fecharLista();
+  return saida.join('');
+}
 function _esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 function _escBr(s){return _esc(s).replace(/\n/g,'<br>');}
 /* Para texto que vai dentro de um atributo HTML (value="..."): alem do & e do <,
@@ -5190,7 +5222,13 @@ function ndMiolo(c){
     h+='</div>';
   }
   if(c.assunto)h+='<div style="font-size:13px;margin-bottom:20px;break-inside:avoid;page-break-inside:avoid;"><b>Assunto:</b> '+_esc(c.assunto)+'</div>';
-  h+='<div style="font-size:13px;line-height:1.8;color:#222;white-space:pre-wrap;">'+(c.corpo?_esc(c.corpo):'<span style="color:#bbb;">(corpo do documento)</span>')+'</div>';
+  /* O corpo passa pelas MESMAS marcas do plano tecnico — uma so funcao para os
+     dois sitios, decidido com o Mike a 2026-09-07. Diferenca unica: aqui o `!`
+     sai a NEGRITO e nao a vermelho; isto imprime declaracoes e comprovativos,
+     onde uma linha vermelha nao tem lugar.
+     O `white-space:pre-wrap` saiu: as mudancas de linha passaram a ser marcacao
+     e, com ele ligado, cada uma contava duas vezes. */
+  h+='<div style="font-size:13px;line-height:1.8;color:#222;">'+(c.corpo?txtMarcado(c.corpo,{riscoCor:null}):'<span style="color:#bbb;">(corpo do documento)</span>')+'</div>';
   return h;
 }
 /* Local, data e assinatura. Nunca se parte entre folhas — a mesma regra dos
@@ -7313,7 +7351,12 @@ function psGerarPDF(){
     ph+='<div class="ev-row"><span class="ev-lbl">Hor\u00e1rio</span><span class="ev-val"><span class="ev-time">'+(row.entrada?psEsc(row.entrada):vz)+'</span><span class="ev-sep">\u2192</span><span class="ev-time">'+(row.saida?psEsc(row.saida):vz)+'</span></span></div>';
     ph+='<div class="ev-row"><span class="ev-lbl">T\u00e9cnicos</span><span class="ev-val">'+(row.tecStr?psEsc(row.tecStr):vz)+'</span></div>';
     var _o=(row.obs&&String(row.obs).trim())?String(row.obs):'';
-    if(_o) ph+='<div class="ev-row ev-setup"><span class="ev-lbl" style="padding-top:2px;">Set up</span><span class="ev-obs">'+psEsc(_o).replace(/\n/g,'<br>')+'</span></div>';
+    /* As observacoes passam pelas marcas (ver txtMarcado). O <span> passou a
+       <div> porque o resultado pode trazer listas, e uma lista dentro de um
+       elemento em linha e das coisas que cada motor de impressao resolve a sua
+       maneira. Aqui o risco sai a vermelho: e um plano de trabalho, e o que se
+       quer e que salte a vista de quem o le em pe, no palco. */
+    if(_o) ph+='<div class="ev-row ev-setup"><span class="ev-lbl" style="padding-top:2px;">Set up</span><div class="ev-obs">'+txtMarcado(_o)+'</div></div>';
     ph+='</div>';
   });
   ph+='</td></tr></tbody><tfoot><tr><td><div class="pw-f"></div></td></tr></tfoot></table>';
@@ -7568,6 +7611,12 @@ function invFundir(){
   ivEQ.forEach(function(x){jaLa[invChave(x)]=true;});
   var trazidos=0;
   Object.keys(DB_INV).forEach(function(dep){
+    /* O DB_INV chega de cópias antigas, e uma cópia antiga pode trazer nesta
+       gaveta qualquer coisa que não seja uma lista. Sem esta guarda, um único
+       valor estranho rebentava a fusão inteira — e como ela corre dentro de um
+       try/catch, o que se via era nada acontecer, sem explicação nenhuma.
+       (Apanhado pelo guarda da persistência a 2026-09-07.) */
+    if(!Array.isArray(DB_INV[dep])) return;
     (DB_INV[dep]||[]).forEach(function(it){
       var area=DEP_PARA_AREA[dep]||'Diversos';
       var ch=invChave(it,area);
