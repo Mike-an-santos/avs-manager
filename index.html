@@ -1784,8 +1784,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
         </div>
         <div class="stx"><div class="stt">Ligação à nuvem</div><span id="supa-estado" class="sest">Pronto.</span></div>
         <div class="sact-row">
-          <button id="supa-pull-btn" class="sbtn ghost" onclick="supaTrazerEventos()">Trazer</button>
-          <button id="supa-push-btn" class="sbtn" onclick="supaEnviarEventos()">Enviar</button>
+          <button id="supa-ver-btn" class="sbtn" onclick="supaVerificarLigacao()" title="Pergunta à nuvem se está lá">Verificar</button>
         </div>
       </div>
 
@@ -6274,69 +6273,50 @@ function beoPollIniciar(){
   _beoPollTimer=setInterval(function(){beoVerificarJa();},60*1000);
   beoVerificarJa();
 }
-/* Arrumado a 2026-09-14: botao de diagnostico do Supabase que saiu das Definicoes. */
-/* Arrumado a 2026-09-14: idem — envio de teste. */
-/* Arrumado a 2026-09-14: idem — leitura de teste. */
-async function supaEnviarEventos(){
-  var btn=document.getElementById('supa-push-btn');var orig=btn?btn.textContent:'';
-  if(btn){btn.disabled=true;btn.textContent='A enviar\u2026';}
-  supaEstadoUI(true,'A enviar os eventos para a nuvem\u2026');
+/* ===== A BARRA PASSOU A FAZER O QUE O TITULO DELA DIZ (2026-09-16) =====
+   Tinha dois botoes, «Trazer» e «Enviar», e ambos mexiam SO na tabela dos
+   eventos. O Mike reparou na duplicacao mal viu a porta nova: «tem trazer e
+   enviar». Tinha razao, e o problema nao era de nomes.
+
+   O «Enviar» ja nao servia para nada: o `supaSyncEventos` escreve os eventos na
+   nuvem de cinco em cinco segundos, dentro da gravacao automatica. Carregar no
+   botao fazia o que tinha acontecido tres segundos antes.
+
+   O «Trazer» era uma versao estreita do `backupDaNuvem` — trazia os eventos e
+   mais nada, sem mostrar os dois lados antes de substituir.
+
+   Medido antes de tirar: nenhuma das duas era chamada de mais lado nenhum alem
+   do proprio clique. O circuito das BEOs escreve nos eventos pelo
+   `beoGravarNuvem`, o login do director le pelo `supaAutoLerEventos`, e a
+   gravacao automatica escreve pelo `supaSyncEventos`. Nada disso passava por
+   aqui.
+
+   O que valia a pena na barra era a LINHA DE ESTADO — o «Pronto.» que passa a
+   vermelho quando a ligacao falha, e que nao existe em mais lado nenhum. Fica,
+   e ganha o unico botao que faz sentido ao lado dela: um que pergunta a nuvem
+   se esta la, e diz o que ela respondeu.
+
+   Le so a CHAVE da linha, nao o valor: a resposta sao dezenas de bytes e nao o
+   estado inteiro. Verificar a ligacao nao pode custar o que custa restaurar. */
+async function supaVerificarLigacao(){
+  var btn=document.getElementById('supa-ver-btn'), orig=btn?btn.textContent:'';
+  var repor=function(){if(btn){btn.disabled=false;btn.textContent=orig;}};
+  if(typeof SUPA_TOKEN==='undefined'||!SUPA_TOKEN){
+    supaEstadoUI(false,'Sem sessão iniciada — entra primeiro.');return;}
+  if(btn){btn.disabled=true;btn.textContent='A verificar…';}
+  supaEstadoUI(true,'A verificar…');
   try{
-    var _corr=supaNormalizarIds();
-    var lista=(typeof evs!=='undefined'?evs:[]).map(function(e){
-      var pax=parseInt(e.pax,10); if(isNaN(pax))pax=null;
-      var diso=(typeof e.dataISO==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(e.dataISO))?e.dataISO:null;
-      return {id:e.id,cliente:e.cliente||null,data_iso:diso,data_display:e.dataDisplay||null,piso:e.piso||null,tipo:e.tipo||null,pax:pax,contacto:e.contacto||null,empresa:e.empresa||null,obs:e.obs||null,cancelado:!!e.cancelado,dados:e};
-    });
-    if(!lista.length){supaEstadoUI(false,'N\u00e3o h\u00e1 eventos para enviar.');if(btn){btn.disabled=false;btn.textContent=orig;}return;}
-    var r=await fetch(SUPA_URL+'/rest/v1/eventos',{method:'POST',headers:Object.assign({},supaHeaders(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify(lista)});
-    if(r.ok){
-      if(typeof showToast==='function')showToast(lista.length+' eventos enviados','ok');
-      supaEstadoUI(true,'\u2713 '+lista.length+' evento(s) enviados/atualizados na nuvem'+(_corr?(' ('+_corr+' id(s) repetidos corrigidos)'):'')+'. Confirma com \u201cLer eventos da nuvem\u201d.');
-    }else{
-      var t='';try{t=await r.text();}catch(e){}
-      if(typeof showToast==='function')showToast('Erro ao enviar ('+r.status+')','err');
-      supaEstadoUI(false,'Erro '+r.status+(t?(': '+t.slice(0,160)):''));
-    }
+    var r=await fetch(SUPA_URL+'/rest/v1/config?chave=eq.estado_app&select=chave',{headers:supaHeaders()});
+    repor();
+    if(!r||!r.ok){supaEstadoUI(false,'A nuvem respondeu '+((r&&r.status)||'sem resposta')+'.');return;}
+    var linhas=await r.json();
+    if(Array.isArray(linhas)&&linhas.length)
+      supaEstadoUI(true,'✓ Ligação boa. A nuvem tem uma cópia dos teus dados.');
+    else
+      supaEstadoUI(true,'Ligação boa, mas a nuvem ainda não tem cópia dos dados.');
   }catch(e){
-    if(typeof showToast==='function')showToast('Falha de rede ao enviar','err');
-    supaEstadoUI(false,'Falha de rede \u2014 '+((e&&e.message)?e.message:e));
-  }finally{ if(btn){btn.disabled=false;btn.textContent=orig||'Enviar os meus eventos';} }
-}
-async function supaTrazerEventos(){
-  var btn=document.getElementById('supa-pull-btn');var orig=btn?btn.textContent:'';
-  if(btn){btn.disabled=true;btn.textContent='A ler\u2026';}
-  supaEstadoUI(true,'A ler eventos da nuvem\u2026');
-  try{
-    var r=await fetch(SUPA_URL+'/rest/v1/eventos?select=*&order=id.asc',{headers:supaHeaders()});
-    if(!r.ok){var t='';try{t=await r.text();}catch(e){}if(typeof showToast==='function')showToast('Erro ao ler ('+r.status+')','err');supaEstadoUI(false,'Erro '+r.status+(t?(': '+t.slice(0,140)):''));if(btn){btn.disabled=false;btn.textContent=orig;}return;}
-    var linhas=await r.json();var n=Array.isArray(linhas)?linhas.length:0;
-    if(btn){btn.disabled=false;btn.textContent=orig;}
-    if(!n){supaEstadoUI(false,'A nuvem n\u00e3o tem eventos para trazer.');return;}
-    supaEstadoUI(true,'A nuvem tem '+n+' evento(s). A aguardar a tua confirma\u00e7\u00e3o\u2026');
-    var aplicar=function(){
-      var novos=linhas.map(function(row){
-        if(row.dados&&typeof row.dados==='object')return row.dados;
-        return {id:row.id,cliente:row.cliente,dataISO:row.data_iso,dataDisplay:row.data_display,piso:row.piso,tipo:row.tipo,pax:row.pax,contacto:row.contacto,empresa:row.empresa,obs:row.obs,cancelado:row.cancelado};
-      });
-      evs.length=0; novos.forEach(function(e){evs.push(e);});
-      evs.sort(function(a,b){return (a.dataISO||'9999').localeCompare(b.dataISO||'9999');});
-      var _rl=religarEventos();
-      try{if(typeof sincronizarServicos==='function')sincronizarServicos();}catch(e){}
-      if(_rl.soltas&&typeof showToast==='function')
-        showToast(_rl.soltas+' linha(s) do mapa de técnicos ficaram sem evento — confirma o mapa.','err');
-      if(typeof rDash==='function')rDash();
-      gp('dashboard',document.getElementById('nav-dashboard'));
-      if(typeof showToast==='function')showToast(novos.length+' eventos trazidos da nuvem','ok');
-      supaEstadoUI(true,'\u2713 '+novos.length+' evento(s) trazidos da nuvem e a app atualizada.');
-    };
-    if(typeof showConfirm==='function'){
-      showConfirm('Trazer eventos da nuvem','A nuvem tem '+n+' evento(s). Isto vai substituir os eventos que a ferramenta tem agora em mem\u00f3ria pelos da nuvem. Os dados na nuvem e a c\u00f3pia local n\u00e3o se perdem. Continuar?',aplicar);
-    } else { aplicar(); }
-  }catch(e){
-    if(typeof showToast==='function')showToast('Falha de rede ao ler','err');
-    supaEstadoUI(false,'Falha de rede \u2014 '+((e&&e.message)?e.message:e));
-    if(btn){btn.disabled=false;btn.textContent=orig;}
+    repor();
+    supaEstadoUI(false,'Não foi possível chegar à nuvem — '+((e&&e.message)?e.message:e));
   }
 }
 async function supaAutoLerEventos(forcar){
@@ -6788,7 +6768,8 @@ function backupAplicar(d){
    la o `backupColeta()` inteiro de cinco em cinco segundos — tecnicos, cachets,
    fornecedores, precario, equipamento, orcamentos — e nao havia caminho nenhum
    para o trazer de volta: o `supaAutoLerEstado` so corre no ramo do DIRECTOR, e
-   o unico botao manual, o `supaTrazerEventos`, le so a tabela dos eventos.
+   o unico botao manual lia so a tabela dos eventos — e saiu no mesmo dia,
+   quando o Mike reparou que ficavam dois botoes a parecer a mesma coisa.
 
    O manual da app dizia, sobre a nuvem, «e o que te devolve os dados noutro
    computador». Nao devolvia. E o momento em que alguem descobre isso e o pior
