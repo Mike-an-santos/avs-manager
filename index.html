@@ -3307,7 +3307,7 @@ function _entrarApp(){
      60s e uma verificacao imediata. (2026-09-11) */
   try{if(typeof beoPollIniciar==='function')beoPollIniciar();}catch(e){}
   try{if(typeof iniciarRenovacaoCracha==='function')iniciarRenovacaoCracha();}catch(e){}
-  try{reporModoNormal(); if(ehDiretor()){_modoDiretor=true;aplicarModoDiretor();try{supaAutoLerEstado(true);supaAutoLerEventos(true);supaAutoLerOrcamentos(true);}catch(e){}}else{_modoDiretor=false;}}catch(e){}
+  try{reporModoNormal(); if(ehDiretor()){_modoDiretor=true;aplicarModoDiretor();try{supaAutoLerEstado(true);supaAutoLerEventos(true);supaAutoLerOrcamentos(true);}catch(e){}}else{_modoDiretor=false;try{supaReclamarEscrita();}catch(e){}}}catch(e){}
 }
 function logout(){_modoDiretor=false;if(_renovTimer){clearInterval(_renovTimer);_renovTimer=null;}try{reporModoNormal();}catch(e){}SUPA_TOKEN=null;try{localStorage.removeItem('sud_token');localStorage.removeItem('sud_refresh');}catch(e){}document.getElementById('ud').classList.remove('open');document.getElementById('app').style.display='none';document.getElementById('ls').style.display='flex';document.getElementById('lp').value='';document.getElementById('le').textContent='';}
 function startNotifCheck(){clearInterval(window._notifInt);window._notifInt=setInterval(checkNotifs,30000);checkNotifs();}
@@ -6380,6 +6380,103 @@ function supaSyncEventos(){
     fetch(SUPA_URL+'/rest/v1/eventos',{method:'POST',headers:Object.assign({},supaHeaders(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify(lista)}).catch(function(){});
   }catch(e){}
 }
+/* ===== UMA JANELA DE CADA VEZ (2026-09-16) =====
+   A gravacao automatica envia o ESTADO INTEIRO para a nuvem de 5 em 5 segundos,
+   mudasse ou nao mudasse alguma coisa, e nunca mais LE da nuvem depois do login.
+   Duas janelas da mesma conta abertas ao mesmo tempo escrevem uma por cima da
+   outra, e o objecto vai inteiro: a ultima escrita ganha sempre. A janela
+   esquecida a um canto, com o estado de ontem, continua a empurra-lo e desfaz o
+   trabalho de hoje de cinco em cinco segundos. Quem nao esta a fazer nada ganha
+   a quem esta a trabalhar.
+
+   Passa a haver uma DONA. Cada janela recebe um identificador ao arrancar e
+   inscreve-se numa linha propria do `config` (chave `sessao_escritora`, um
+   objecto pequeno — nao e o estado). A ultima a abrir fica dona: e essa que o
+   Mike esta a usar. As outras descobrem que perderam a vez, PARAM de escrever na
+   nuvem e dizem-no no ecra. Continuam a gravar no navegador — o trabalho dessa
+   janela nao se perde, so deixa de atropelar o das outras.
+
+   A PROVA DE FALHA VAI PARA UM LADO SO: se a verificacao nao chegar a resposta
+   — rede em baixo, a linha ainda nao existe, a politica do Supabase recusa — a
+   janela CONTINUA a escrever, como sempre fez. So se cala perante uma resposta
+   que diz, em letra redonda, que a dona e outra. Um problema de rede nunca pode
+   deixar o Mike sem sincronizacao em silencio: era trocar um defeito raro por um
+   defeito permanente.
+
+   O que isto NAO resolve: a janela que perde a vez ainda chega a escrever uma
+   vez depois de a perder (a verificacao e assincrona e a gravacao desse ciclo ja
+   seguiu). Uma escrita perdida em vez de uma tarde inteira. */
+var SESSAO_ID='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+var DONA_CHAVE='sessao_escritora';
+var DONA_INTERVALO_MS=15000;   /* de quanto em quanto se pergunta quem manda */
+var DONA_BATIDA_MS=60000;      /* de quanto em quanto a dona renova a inscricao */
+var _nuvemPerdida=false;       /* esta janela ja nao e a dona */
+var _donaVerificada=0;
+var _donaBatida=0;
+
+/* O carimbo do estado que esta janela tem em maos. Vai na linha da dona para
+   uma proxima janela poder perguntar "a nuvem tem trabalho mais recente do que
+   eu?" sem ter de descarregar o estado inteiro so para ver a data. */
+function _donaEstadoTs(){
+  try{return localStorage.getItem('sud_autosave_ts')||'';}catch(e){return '';}
+}
+function _donaCorpo(){
+  return {chave:DONA_CHAVE,valor:{id:SESSAO_ID,ts:new Date().toISOString(),estado_ts:_donaEstadoTs()}};
+}
+function supaReclamarEscrita(){
+  if(typeof SUPA_TOKEN==='undefined'||!SUPA_TOKEN)return;
+  if(typeof ehDiretor==='function'&&ehDiretor())return;
+  _nuvemPerdida=false; _donaBatida=Date.now(); _donaVerificada=Date.now();
+  try{_avisoJanela(false);}catch(e){}
+  try{
+    fetch(SUPA_URL+'/rest/v1/config',{method:'POST',headers:Object.assign({},supaHeaders(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify(_donaCorpo())}).catch(function(){});
+  }catch(e){}
+}
+/* Devolve true SO quando a nuvem responde e diz que a dona e outra janela.
+   Qualquer outro desfecho — erro, linha vazia, resposta estranha — devolve
+   false, que quer dizer "continua a escrever". */
+async function supaDonaEOutra(){
+  try{
+    var r=await fetch(SUPA_URL+'/rest/v1/config?chave=eq.'+DONA_CHAVE+'&select=valor',{headers:supaHeaders()});
+    if(!r||!r.ok)return false;
+    var linhas=await r.json();
+    if(!Array.isArray(linhas)||!linhas.length)return false;
+    var v=linhas[0]&&linhas[0].valor;
+    if(!v||!v.id)return false;
+    return v.id!==SESSAO_ID;
+  }catch(e){return false;}
+}
+function supaVigiarDona(){
+  if(_nuvemPerdida)return;
+  var agora=Date.now();
+  if(agora-_donaBatida>=DONA_BATIDA_MS){
+    _donaBatida=agora;
+    try{fetch(SUPA_URL+'/rest/v1/config',{method:'POST',headers:Object.assign({},supaHeaders(),{'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify(_donaCorpo())}).catch(function(){});}catch(e){}
+  }
+  if(agora-_donaVerificada<DONA_INTERVALO_MS)return;
+  _donaVerificada=agora;
+  supaDonaEOutra().then(function(outra){
+    if(outra&&!_nuvemPerdida){_nuvemPerdida=true;try{_avisoJanela(true);}catch(e){}}
+  });
+}
+/* O aviso e diferente do da falha de ligacao de proposito: aquele passa sozinho
+   quando a rede volta, este nao passa — exige uma decisao. Recarregar faz esta
+   janela voltar a ser a mais recente, e portanto a dona. */
+function _avisoJanela(mostrar){
+  var b=document.getElementById('janela-badge');
+  if(mostrar){
+    if(!b){
+      b=document.createElement('div');b.id='janela-badge';
+      b.style.cssText='position:fixed;bottom:16px;right:16px;z-index:9999;max-width:330px;background:#3a2a16;border:1px solid var(--cl,#d4956e);color:#f0dcc0;padding:13px 15px;border-radius:9px;font-size:12px;font-family:var(--font,sans-serif);line-height:1.55;box-shadow:0 4px 18px rgba(0,0,0,.45);';
+      b.innerHTML='<div style="font-weight:700;margin-bottom:5px;">Esta janela deixou de gravar na nuvem.</div>'
+        +'<div>A aplicação foi aberta noutro sítio, e é essa a janela que manda agora. '
+        +'O que fizeres aqui fica só neste navegador.</div>'
+        +'<button onclick="location.reload()" style="margin-top:10px;padding:6px 12px;background:var(--cl,#d4956e);border:0;border-radius:6px;color:#2a1a0c;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;">Recarregar e continuar aqui</button>';
+      document.body.appendChild(b);
+    }
+    b.style.display='block';
+  }else if(b){b.style.display='none';}
+}
 function supaSyncEstado(){
   try{
     if(typeof backupColeta!=='function')return;
@@ -6776,9 +6873,12 @@ function autosaveGuardar(){
     autosaveInstantaneo(localStorage.getItem('sud_autosave_data'));
     autosaveUI();
     if(SUPA_TOKEN && !(typeof ehDiretor==='function'&&ehDiretor())){
-      supaSyncEventos();
-      supaSyncOrcamentos();
-      supaSyncEstado();
+      try{supaVigiarDona();}catch(e){}
+      if(!_nuvemPerdida){
+        supaSyncEventos();
+        supaSyncOrcamentos();
+        supaSyncEstado();
+      }
     }
   }catch(e){}
 }
