@@ -1737,6 +1737,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
         </div>
         <div class="stx"><div class="stt">Cópia de segurança</div></div>
         <div class="sact-row">
+          <button id="backup-nuvem-btn" onclick="backupDaNuvem()" class="sbtn ghost" title="Traz o estado completo que está na nuvem">Da nuvem</button>
           <button onclick="document.getElementById('backup-file').click()" class="sbtn ghost">Importar</button>
           <input id="backup-file" type="file" accept="application/json,.json" style="display:none;" onchange="backupImportarFicheiro(this)">
           <button onclick="backupExportar()" class="sbtn">Exportar</button>
@@ -2000,7 +2001,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 
         <svg viewBox="0 0 860 500" style="width:100%;height:auto;font-family:var(--mono),monospace;"><defs><marker id="mh-ah2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--td)"/></marker><marker id="mh-ah2b" markerWidth="9" markerHeight="9" refX="0" refY="3" orient="auto-start-reverse" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="var(--td)"/></marker></defs><path d="M206,102 L316,160" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M206,174 L316,180" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M206,246 L316,200" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M206,318 L316,220" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M111,58 L111,72" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M111,362 L111,348" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M346,214 L346,288" fill="none" stroke="var(--td)" stroke-width="1.6" marker-end="url(#mh-ah2)"/><path d="M516,168 L640,58" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,172 L640,114" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M640,134 L516,190" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,312 L640,196" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,318 L640,268" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><path d="M516,326 L640,340" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)"/><rect x="16" y="16" width="190" height="42" rx="9" fill="var(--navy3)" stroke="var(--blf)" stroke-width="1.5"/><text x="111" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">PDF-SUD · BEOs</text><text x="111" y="56" text-anchor="middle" font-size="9" fill="var(--td)">app à parte · chega pela nuvem</text><rect x="16" y="74" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="98" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Calendário · Eventos</text><text x="111" y="114" text-anchor="middle" font-size="9" fill="var(--td)">datas · diárias · cancelados</text><rect x="16" y="146" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="170" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Recursos humanos</text><text x="111" y="186" text-anchor="middle" font-size="9" fill="var(--td)">cachets · serviços · horas extra</text><rect x="16" y="218" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="242" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Equipamento</text><text x="111" y="258" text-anchor="middle" font-size="9" fill="var(--td)">inventário · avarias · manutenção</text><rect x="16" y="290" width="190" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="111" y="314" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Orçamentos</text><text x="111" y="330" text-anchor="middle" font-size="9" fill="var(--td)">cada linha de custo → 1 fornecedor</text><rect x="16" y="362" width="190" height="42" rx="9" fill="var(--navy3)" stroke="var(--blf)" stroke-width="1.5"/><text x="111" y="386" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Fichas · Preçário SUD</text><text x="111" y="402" text-anchor="middle" font-size="9" fill="var(--td)">a fonte de verdade dos artigos</text><rect x="316" y="150" width="200" height="64" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="416" y="174" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Base de dados partilhada</text><text x="416" y="190" text-anchor="middle" font-size="9" fill="var(--td)">em memória, no browser</text><rect x="316" y="288" width="200" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="416" y="312" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Motor de cálculo</text><text x="416" y="328" text-anchor="middle" font-size="9" fill="var(--td)">orcCalc · resSUD · avsCompute</text><text x="444" y="238" text-anchor="middle" font-size="8.5" fill="var(--td)" letter-spacing="1">GUARDADA EM</text><rect x="372" y="246" width="46" height="22" rx="11" fill="var(--navy)" stroke="var(--bl)" stroke-width="1"/><text x="395" y="261" text-anchor="middle" font-size="8" fill="var(--ts)">browser</text><rect x="422" y="246" width="46" height="22" rx="11" fill="var(--navy)" stroke="var(--bl)" stroke-width="1"/><text x="445" y="261" text-anchor="middle" font-size="8" fill="var(--ts)">nuvem</text><rect x="472" y="246" width="46" height="22" rx="11" fill="var(--navy)" stroke="var(--bl)" stroke-width="1"/><text x="495" y="261" text-anchor="middle" font-size="8" fill="var(--ts)">ficheiro</text><rect x="640" y="30" width="204" height="50" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="54" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Dashboard</text><text x="742" y="70" text-anchor="middle" font-size="9" fill="var(--td)">resumo do dia / mês</text><rect x="640" y="96" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="120" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Plano de semana</text><text x="742" y="136" text-anchor="middle" font-size="9" fill="var(--td)">PDF por diária · para a equipa</text><rect x="640" y="168" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="192" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Mapas · O ano</text><text x="742" y="208" text-anchor="middle" font-size="9" fill="var(--td)">KPIs · gráficos · RH/Técnicos</text><rect x="640" y="240" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="264" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Relatório anual</text><text x="742" y="280" text-anchor="middle" font-size="9" fill="var(--td)">agrega adjudicados do ano</text><rect x="640" y="312" width="204" height="56" rx="9" fill="var(--navy3)" stroke="var(--cl)" stroke-width="1.5"/><text x="742" y="336" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Documento ao cliente</text><text x="742" y="352" text-anchor="middle" font-size="9" fill="var(--td)">só faturável + markup</text><rect x="567" y="94" width="22" height="13" rx="3" fill="var(--navy2)"/><text x="578" y="104" text-anchor="middle" font-size="8" fill="var(--td)">lê</text><rect x="552" y="160" width="52" height="13" rx="3" fill="var(--navy2)"/><text x="578" y="170" text-anchor="middle" font-size="8" fill="var(--td)">escreve</text><rect x="16" y="424" width="828" height="70" rx="11" fill="none" stroke="var(--bl)" stroke-width="1.3" stroke-dasharray="6 5"/><rect x="30" y="438" width="190" height="42" rx="9" fill="var(--navy2)" stroke="var(--td)" stroke-width="1.5"/><text x="125" y="462" text-anchor="middle" font-size="12" font-weight="700" fill="var(--tp)">Outros serviços</text><text x="125" y="478" text-anchor="middle" font-size="9" fill="var(--td)">formação · estúdio · avulso</text><path d="M220,459 L300,459" fill="none" stroke="var(--td)" stroke-width="1.3" marker-end="url(#mh-ah2)" stroke-dasharray="4 4"/><rect x="300" y="438" width="150" height="42" rx="9" fill="var(--navy2)" stroke="var(--td)" stroke-width="1.5"/><text x="375" y="463" text-anchor="middle" font-size="11.5" font-weight="700" fill="var(--tp)">PDF próprio</text><text x="474" y="452" font-size="10" font-weight="700" fill="var(--cl)">São à parte, de propósito.</text><text x="474" y="468" font-size="9.5" fill="var(--td)">Não entram nos mapas finais nem são contabilizados nas diárias</text><text x="474" y="482" font-size="9.5" fill="var(--td)">dos eventos — regra do Mike, 2026-09-04.</text></svg>
 
-        <div style="margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-left:3px solid var(--cl);border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--ts);line-height:1.55;">A base de dados vive em memória enquanto a app está aberta, e é guardada em <b>três</b> sítios: no <b>browser</b> (gravação automática, de 5 em 5 segundos), na <b>nuvem</b> (Supabase — é o que te devolve os dados noutro computador) e num <b>ficheiro</b>, quando exportas uma cópia de segurança. A cópia leva também o IVA e as regras de markup.</div>
+        <div style="margin-top:12px;background:var(--navy3);border:1px solid var(--border);border-left:3px solid var(--cl);border-radius:8px;padding:9px 12px;font-size:11.5px;color:var(--ts);line-height:1.55;">A base de dados vive em memória enquanto a app está aberta, e é guardada em <b>três</b> sítios: no <b>browser</b> (gravação automática, de 5 em 5 segundos), na <b>nuvem</b> (Supabase) e num <b>ficheiro</b>, quando exportas uma cópia de segurança. A cópia leva também o IVA e as regras de markup.<br><br><b>Para trazer os dados de volta</b> — num computador novo, ou depois de uma avaria — há duas vias, lado a lado na barra <b>Cópia de segurança</b> destas Definições: <b>Da nuvem</b>, que traz o estado até aos últimos segundos, e <b>Importar</b>, que traz o ficheiro que exportaste. Qualquer das duas substitui os dados deste computador, e ambas guardam primeiro uma cópia do que cá está, que fica no <b>Recuar</b>.<br><br>Se a app estiver aberta em <b>duas janelas</b> ao mesmo tempo, só a mais recente grava na nuvem. As outras avisam-te no ecrã e continuam a gravar no browser.</div>
       </div>
     </div>
 
@@ -6583,7 +6584,7 @@ function aplicarModoDiretor(){
     document.querySelectorAll('#uav span,#udis').forEach(function(el){el.textContent='TR';});
     avInitials('TR');
   }catch(e){}
-  try{if(!document.getElementById('dir-css')){var sc=document.createElement('style');sc.id='dir-css';sc.textContent='body.modo-diretor .btn-cu,body.modo-diretor .btn-rd,body.modo-diretor button[onclick*="empToggle"],body.modo-diretor button[onclick*="empGuardar"],body.modo-diretor button[onclick*="psAddManual"],body.modo-diretor button[onclick*="addDataTec"],body.modo-diretor button[onclick*="addMarkupRule"],body.modo-diretor button[onclick*="oc_novoForn"],body.modo-diretor button[onclick*="oc_novoPrec"],body.modo-diretor button[onclick*="oc_novoOrc"],body.modo-diretor button[onclick*="faAdd"],body.modo-diretor button[onclick*="faRemover"],body.modo-diretor button[onclick*="addSlot"],body.modo-diretor button[onclick*="editPrec"],body.modo-diretor button[onclick*="saveRelatorio"],body.modo-diretor button[onclick*="orcCancelar"]{display:none!important;}body.modo-diretor select[onchange*="orcDefinirForn"]{pointer-events:none!important;opacity:.6!important;}';document.head.appendChild(sc);}}catch(e){}
+  try{if(!document.getElementById('dir-css')){var sc=document.createElement('style');sc.id='dir-css';sc.textContent='body.modo-diretor .btn-cu,body.modo-diretor .btn-rd,body.modo-diretor button[onclick*="empToggle"],body.modo-diretor button[onclick*="empGuardar"],body.modo-diretor button[onclick*="psAddManual"],body.modo-diretor button[onclick*="addDataTec"],body.modo-diretor button[onclick*="addMarkupRule"],body.modo-diretor button[onclick*="oc_novoForn"],body.modo-diretor button[onclick*="oc_novoPrec"],body.modo-diretor button[onclick*="oc_novoOrc"],body.modo-diretor button[onclick*="faAdd"],body.modo-diretor button[onclick*="faRemover"],body.modo-diretor button[onclick*="addSlot"],body.modo-diretor button[onclick*="editPrec"],body.modo-diretor button[onclick*="backupDaNuvem"],body.modo-diretor button[onclick*="saveRelatorio"],body.modo-diretor button[onclick*="orcCancelar"]{display:none!important;}body.modo-diretor select[onchange*="orcDefinirForn"]{pointer-events:none!important;opacity:.6!important;}';document.head.appendChild(sc);}}catch(e){}
   try{document.body.classList.add('modo-diretor');}catch(e){}
   try{var nd=document.getElementById('nav-dashboard');if(!_dirJumpFeito&&typeof gp==='function'&&nd){gp('dashboard',nd);_dirJumpFeito=true;}}catch(e){}
 }
@@ -6631,6 +6632,7 @@ function libertarEspaco(){
     if(sn.length>1){sn.pop();localStorage.setItem('sud_autosave_snaps',JSON.stringify(sn));return true;}
   }catch(e){}
   try{if(localStorage.getItem('sud_backup_pre_import')){localStorage.removeItem('sud_backup_pre_import');return true;}}catch(e){}
+  try{if(localStorage.getItem('sud_backup_pre_nuvem')){localStorage.removeItem('sud_backup_pre_nuvem');return true;}}catch(e){}
   try{if(localStorage.getItem('sud_backup_pre_zero')){localStorage.removeItem('sud_backup_pre_zero');return true;}}catch(e){}
   try{var pm=JSON.parse(localStorage.getItem('sud_pre_migracao')||'[]');
     if(pm.length){pm.pop();localStorage.setItem('sud_pre_migracao',JSON.stringify(pm));return true;}}catch(e){}
@@ -6780,6 +6782,72 @@ function backupAplicar(d){
      a contar-se com o que viesse no ficheiro. */
   try{ if(typeof sincronizarServicos==='function')sincronizarServicos(); }catch(e){}
   if(typeof renderMapa==='function'){try{renderMapa();}catch(e){}}
+}
+/* ===== A PORTA DE VOLTA DA NUVEM (2026-09-16) =====
+   Ate hoje a nuvem era SO DE ESCRITA para o Mike. O `supaSyncEstado` despejava
+   la o `backupColeta()` inteiro de cinco em cinco segundos — tecnicos, cachets,
+   fornecedores, precario, equipamento, orcamentos — e nao havia caminho nenhum
+   para o trazer de volta: o `supaAutoLerEstado` so corre no ramo do DIRECTOR, e
+   o unico botao manual, o `supaTrazerEventos`, le so a tabela dos eventos.
+
+   O manual da app dizia, sobre a nuvem, «e o que te devolve os dados noutro
+   computador». Nao devolvia. E o momento em que alguem descobre isso e o pior
+   possivel: sentado num computador novo, depois de uma avaria, a espera que os
+   dados aparecam.
+
+   Sao agora DUAS VIAS, decisao do Mike a 2026-09-16: esta porta e o ficheiro de
+   copia de seguranca, lado a lado na mesma barra. Protegem de coisas
+   diferentes — se a nuvem estiver inacessivel ou mal configurada, o ficheiro e
+   dele e esta fora da rede.
+
+   E uma accao DESTRUTIVA: substitui os dados todos deste computador. Por isso
+   segue o mesmo desenho do `backupImportarFicheiro`, com uma coisa a mais —
+   mostra os DOIS LADOS antes de perguntar. Quem decide precisa de ver o que vem
+   e o que vai. */
+async function backupDaNuvem(){
+  if(typeof SUPA_TOKEN==='undefined'||!SUPA_TOKEN){
+    if(typeof showToast==='function')showToast('Inicia sessão na nuvem primeiro.','err');
+    return;
+  }
+  var btn=document.getElementById('backup-nuvem-btn'), orig=btn?btn.textContent:'';
+  var repor=function(){if(btn){btn.disabled=false;btn.textContent=orig;}};
+  if(btn){btn.disabled=true;btn.textContent='A ler…';}
+  var d=null;
+  try{
+    var r=await fetch(SUPA_URL+'/rest/v1/config?chave=eq.estado_app&select=valor',{headers:supaHeaders()});
+    if(!r||!r.ok){repor();if(typeof showToast==='function')showToast('Erro ao ler da nuvem ('+((r&&r.status)||'sem resposta')+').','err');return;}
+    var linhas=await r.json();
+    if(!Array.isArray(linhas)||!linhas.length||!linhas[0].valor){
+      repor();if(typeof showToast==='function')showToast('A nuvem ainda não tem uma cópia dos dados.','err');return;}
+    d=linhas[0].valor;
+  }catch(e){repor();if(typeof showToast==='function')showToast('Não foi possível chegar à nuvem.','err');return;}
+  repor();
+  /* A mesma guarda do ficheiro: o que vier tem de ser uma copia desta app. */
+  if(!d||d._app!=='AVS Manager'){
+    if(typeof showToast==='function')showToast('O que está na nuvem não é uma cópia do AVS Manager.','err');return;}
+
+  var la='conteúdo ilegível', ca='conteúdo ilegível';
+  try{la=snapResumo(JSON.stringify(d));}catch(e){}
+  try{ca=snapResumo(JSON.stringify(backupColeta()));}catch(e){}
+  var quando=''; try{if(d._data)quando=snapQuando(d._data);}catch(e){}
+
+  showConfirm('Trazer tudo da nuvem',
+     'NA NUVEM'+(quando?(' — '+quando):'')+':\n'+la+'\n\n'
+    +'NESTE COMPUTADOR:\n'+ca+'\n\n'
+    +'Isto substitui TODOS os dados deste computador pelos da nuvem. Guardo '
+    +'primeiro uma cópia dos actuais, para poderes voltar atrás pelo «Recuar». '
+    +'Continuar?',
+    function(){
+      try{guardarLocal('sud_backup_pre_nuvem',JSON.stringify(backupColeta()));}catch(e){}
+      backupAplicar(d);
+      if(typeof rAll==='function')rAll(); else if(typeof rDash==='function')rDash();
+      try{gp('dashboard',document.getElementById('nav-dashboard'));}catch(e){}
+      /* Esta janela passa a ser a que tem o que esta na nuvem — logo, a dona
+         (regra T). Sem isto ficaria calada a seguir a uma restauracao, que e
+         exactamente o momento em que se vai comecar a trabalhar. */
+      try{supaReclamarEscrita();}catch(e){}
+      if(typeof showToast==='function')showToast('Dados trazidos da nuvem.','ok');
+    });
 }
 function backupImportarFicheiro(input){
   var f=input.files&&input.files[0];if(!f)return;
@@ -6965,6 +7033,7 @@ function recuarPontos(){
   }
   varios('sud_autosave_snaps','Gravação automática');
   um('sud_backup_pre_import','Antes da última importação');
+  um('sud_backup_pre_nuvem','Antes de trazer da nuvem');
   um('sud_backup_pre_zero','Antes de «Começar do zero»');
   varios('sud_pre_migracao','Antes de converter os Outros serviços');
   um('sud_backup_pre_recuar','Antes do último «Repor»');
