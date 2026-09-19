@@ -6707,7 +6707,7 @@ function aplicarModoDiretor(){
     document.querySelectorAll('#uav span,#udis').forEach(function(el){el.textContent='TR';});
     avInitials('TR');
   }catch(e){}
-  try{if(!document.getElementById('dir-css')){var sc=document.createElement('style');sc.id='dir-css';sc.textContent='body.modo-diretor .btn-cu,body.modo-diretor .btn-rd,body.modo-diretor button[onclick*="empToggle"],body.modo-diretor button[onclick*="empGuardar"],body.modo-diretor button[onclick*="psAddManual"],body.modo-diretor button[onclick*="addDataTec"],body.modo-diretor button[onclick*="addMarkupRule"],body.modo-diretor button[onclick*="oc_novoForn"],body.modo-diretor button[onclick*="oc_novoPrec"],body.modo-diretor button[onclick*="oc_novoOrc"],body.modo-diretor button[onclick*="faAdd"],body.modo-diretor button[onclick*="faRemover"],body.modo-diretor button[onclick*="addSlot"],body.modo-diretor button[onclick*="editPrec"],body.modo-diretor button[onclick*="backupDaNuvem"],body.modo-diretor button[onclick*="saveRelatorio"],body.modo-diretor button[onclick*="orcCancelar"]{display:none!important;}body.modo-diretor select[onchange*="orcDefinirForn"]{pointer-events:none!important;opacity:.6!important;}';document.head.appendChild(sc);}}catch(e){}
+  try{if(!document.getElementById('dir-css')){var sc=document.createElement('style');sc.id='dir-css';sc.textContent='body.modo-diretor .btn-cu,body.modo-diretor .btn-rd,body.modo-diretor button[onclick*="empToggle"],body.modo-diretor button[onclick*="empGuardar"],body.modo-diretor button[onclick*="psAddManual"],body.modo-diretor button[onclick*="addDataTec"],body.modo-diretor button[onclick*="addMarkupRule"],body.modo-diretor button[onclick*="oc_novoForn"],body.modo-diretor button[onclick*="oc_novoPrec"],body.modo-diretor button[onclick*="oc_novoOrc"],body.modo-diretor button[onclick*="faAdd"],body.modo-diretor button[onclick*="faRemover"],body.modo-diretor button[onclick*="addSlot"],body.modo-diretor button[onclick*="editPrec"],body.modo-diretor button[onclick*="backupDaNuvem"],body.modo-diretor button[onclick*="saveRelatorio"],body.modo-diretor button[onclick*="orcCancelar"],body.modo-diretor button[onclick*="openIvaPanel"]{display:none!important;}body.modo-diretor select[onchange*="orcDefinirForn"]{pointer-events:none!important;opacity:.6!important;}';document.head.appendChild(sc);}}catch(e){}
   try{document.body.classList.add('modo-diretor');}catch(e){}
   try{var nd=document.getElementById('nav-dashboard');if(!_dirJumpFeito&&typeof gp==='function'&&nd){gp('dashboard',nd);_dirJumpFeito=true;}}catch(e){}
 }
@@ -10619,7 +10619,11 @@ function renderMarkupRules(){
   /* mostra-se pela MESMA ordem por que o getMarkupPct calcula (tecto crescente).
      Ate aqui a ordem no ecra era a de criacao e podia contradizer o calculo. */
   var regras=(cfgDoAno(cfgAnoSel).markupRules||[]).slice().sort(function(a,b){return mkTecto(a)-mkTecto(b);});
-  if(!regras.length){el.innerHTML='<div style="font-size:12px;color:var(--td);padding:4px 0;">Sem escalões. Clica em "+ Escalão".</div>';return;}
+  if(!regras.length){
+    el.innerHTML='<div style="font-size:12px;color:var(--td);padding:4px 0;">Sem escalões. Clica em "+ Escalão".</div>'
+      +cfgAvisoEscaloes(regras);
+    return;
+  }
   var cab='<div class="cfe-cab"><span>Valor do orçamento</span><span class="a">Markup</span><span></span></div>';
   var antes=0;
   /* O SINAL DA LINHA É CLICÁVEL (2026-09-19, pedido do Mike).
@@ -10682,7 +10686,10 @@ function cfgAlternarEscalao(id){
    Nos dois casos escreve-se o que acontece. Não se corrige nada por conta
    própria — os escalões são do Mike. */
 function cfgAvisoEscaloes(regras){
-  if(!regras||!regras.length)return '';
+  if(!regras||!regras.length){
+    return '<div class="cfe-aviso">Este ano ficou sem escalões: os orçamentos de '
+      +cfgAnoSel+' não levam markup nenhum (0%).</div>';
+  }
   var abertos=regras.filter(function(r){return !isFinite(mkTecto(r));});
   if(abertos.length>1){
     return '<div class="cfe-aviso">Há '+abertos.length+' escalões sem tecto. '
@@ -10712,7 +10719,15 @@ function saveCfg(){
   var e=cfgGarantirAno(cfgAnoSel);
   e.iva=parseFloat(document.getElementById('cfg-iva').value)||23;
   // os valores de base acompanham o ano corrente, para quem nunca abrir este painel
-  if(cfgAnoSel===new Date().getFullYear()){CFG.iva=e.iva;CFG.markupRules=e.markupRules;}
+  /* A lista de base so se substitui por outra COM CONTEUDO (2026-09-19).
+     Apagar todos os escaloes do ano corrente e carregar em Guardar punha
+     `CFG.markupRules` a [] — e o markup ficava a 0% em todos os anos, incluindo
+     os que nem entrada propria tinham. Sem erro e sem aviso, e ia para a nuvem
+     na gravacao seguinte. */
+  if(cfgAnoSel===new Date().getFullYear()){
+    CFG.iva=e.iva;
+    if(Array.isArray(e.markupRules)&&e.markupRules.length)CFG.markupRules=e.markupRules;
+  }
   try{guardarLocal('sud_cfg',JSON.stringify(CFG));}catch(e2){}
   document.getElementById('iva-panel').classList.remove('open');
   document.getElementById('iva-overlay').style.display='none';
@@ -10738,7 +10753,13 @@ function cfgDoAno(ano){
   return {
     ano:ano,
     iva:(e&&typeof e.iva==='number')?e.iva:CFG.iva,
-    markupRules:(e&&Array.isArray(e.markupRules)&&e.markupRules.length)?e.markupRules:CFG.markupRules,
+    /* Um ano com entrada propria manda na SUA lista, mesmo que esteja vazia
+       (2026-09-19). Ate aqui uma lista vazia caia para a lista de base, e o
+       painel mostrava escaloes que ja nao eram os do ano: apagavam-se todos e
+       o ecra continuava a mostrar dois. Um painel que mostra regras que ja nao
+       sao as do ano e um painel que mente — e e essa mentira que deixa carregar
+       em Guardar sem desconfiar. */
+    markupRules:(e&&Array.isArray(e.markupRules))?e.markupRules:CFG.markupRules,
     proprio:!!(e&&anteriores[0]===ano),
     herdadoDe:(anteriores.length&&anteriores[0]!==ano)?anteriores[0]:null
   };
