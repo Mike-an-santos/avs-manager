@@ -10645,7 +10645,7 @@ function renderMarkupRules(){
            aviso, que é texto corrido e aí o separador ajuda a ler. */
         +(antes>0?'<span class="fixo">'+(Math.round(+antes)||0)+'</span><span class="eur">€</span>':'')
       : sinal('até','Passar a valer para tudo acima deste valor')
-        +'<input type="number" value="'+t+'" oninput="upRule('+r.id+',\'max\',this.value===\'\'?null:parseFloat(this.value))"><span class="eur">€</span>';
+        +'<input type="number" value="'+t+'" oninput="upRuleTecto('+r.id+',this.value===\'\'?null:parseFloat(this.value))"><span class="eur">€</span>';
     if(!semTecto)antes=t;
     return '<div class="cfe'+(semTecto?' ultima':'')+'">'
       +'<div class="cfe-faixa">'+faixa+'</div>'
@@ -10662,6 +10662,21 @@ function fmtMil(n){return (Math.round(+n||0)).toString().replace(/\B(?=(\d{3})+(
    linha que estava aberta, propõe-se o dobro do maior que existe — a mesma
    conta do «+ Escalão» — porque esse campo estava vazio e não se escreve por
    cima de nada. Nunca se mexe noutra linha. */
+/* Limpar o campo do tecto É a outra maneira de abrir uma linha — e até
+   2026-09-19 os dados mudavam e o ecrã não: ficava a seta desenhada ao lado de
+   um campo vazio, e o aviso de baixo desactualizado. Desde que o sinal passou a
+   querer dizer alguma coisa, um sinal parado é um sinal a mentir.
+   Redesenha-se SÓ quando o campo fica vazio, que é o gesto deliberado. A cada
+   algarismo escrito não se redesenha nada — senão o campo fugia debaixo dos
+   dedos a meio de um número. */
+function upRuleTecto(id,v){
+  var e=cfgGarantirAno(cfgAnoSel);
+  var r=(e.markupRules||[]).filter(function(x){return x.id===id;})[0];
+  var eraAberto=r?!isFinite(mkTecto(r)):false;
+  upRule(id,'max',v);
+  if(v===null&&!eraAberto)renderMarkupRules();
+}
+
 function cfgAlternarEscalao(id){
   var e=cfgGarantirAno(cfgAnoSel);
   var r=(e.markupRules||[]).filter(function(x){return x.id===id;})[0];
@@ -10694,6 +10709,17 @@ function cfgAvisoEscaloes(regras){
   if(abertos.length>1){
     return '<div class="cfe-aviso">Há '+abertos.length+' escalões sem tecto. '
       +'Só o primeiro conta — dá tecto a um deles.</div>';
+  }
+  /* dois tectos iguais: o `getMarkupPct` devolve o primeiro e o segundo nunca
+     chega a contar. Não dava erro nem aviso — a linha ficava lá, morta. */
+  var vistos={},repetido=null;
+  regras.forEach(function(r){
+    var t=mkTecto(r); if(!isFinite(t))return;
+    if(vistos[t])repetido=t; else vistos[t]=1;
+  });
+  if(repetido!==null){
+    return '<div class="cfe-aviso">Dois escalões acabam no mesmo valor ('
+      +fmtMil(repetido)+' €). Só o primeiro conta.</div>';
   }
   if(!abertos.length){
     var ult=regras[regras.length-1];
