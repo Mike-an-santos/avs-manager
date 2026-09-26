@@ -12682,11 +12682,19 @@ function drillTecnicos(){
   var _avsD=(typeof avsCompute!=='undefined')?avsCompute(D.year):{eventos:[]};
   var _evRealD=(D._filterPeriod?D._filterPeriod(_avsD.eventos||[],'data'):(_avsD.eventos||[]));
   var nRealD=_evRealD.length;
+  /* O numerador tinha de acompanhar o denominador (pedido do Mike,
+     2026-09-26): «custo» somava o período INTEIRO (podia incluir eventos
+     futuros já com técnico atribuído), mas nRealD só conta os já realizados
+     — dividir um pelo outro inflava a média. «Custo técnicos», ao lado,
+     continua a mostrar o período inteiro (é um total, não uma média). */
+  var hoje=localDate(new Date());
+  var custoReal=servs.filter(function(x){return x.data&&x.data<=hoje;})
+    .reduce(function(s,x){return s+servCustoTec(x);},0);
   var ct=document.getElementById('drill-ct');ct.innerHTML='';
   var mg2=document.createElement('div');mg2.className='g4';mg2.style.marginBottom='20px';
   [{label:'Eventos realizados',val:nRealD},{label:'Técnicos activos',val:new Set(servs.flatMap(function(s){return s.tecs;})).size},
    {label:'Custo técnicos',val:fmtEur(custo),sub:custoHex?('inclui '+fmtEur(custoHex)+' de horas extra'):'',style:'color:var(--amf)'},
-   {label:'Média/evento',val:fmtEur(nRealD?custo/nRealD:0)},
+   {label:'Média/evento',val:fmtEur(nRealD?custoReal/nRealD:0)},
   ].forEach(function(m){mg2.appendChild(mkMetric(m.label,m.val,m.sub||'',m.style||''));});
   ct.appendChild(mg2);
   var ec=document.createElement('div');ec.className='card';
@@ -14682,7 +14690,25 @@ function eqStats(){
   var base=0,otVal=0,otH=0;
   servs.forEach(function(s){(s.custos||[]).forEach(function(c){base+=c;});(s.hextra||[]).forEach(function(hh){otVal+=hh.val;otH+=hh.h;});});
   var nEv=(typeof evs!=='undefined'?evs:[]).filter(function(e){return e.dataISO && eqNoPeriodo(e.dataISO) && !e.cancelado;}).length;
-  return {nEv:nEv,total:base+otVal,otVal:otVal,otH:otH,mediaEvento:nEv?(base+otVal)/nEv:0,mediaHxH:nEv?otH/nEv:0,mediaHxVal:nEv?otVal/nEv:0};
+  /* AS MÉDIAS SÃO SÓ DO QUE JÁ ACONTECEU (pedido do Mike, 2026-09-26).
+     «Total» e «Custo total técnicos» (cartão 3) continuam a somar o período
+     inteiro, planeamento futuro incluído — servem para ver o que aí vem.
+     Mas uma média calculada com eventos que ainda não aconteceram não é uma
+     média, é uma projecção a fingir de facto: se só 8 dos 12 eventos do mês
+     já se realizaram, a «média por evento» tem de dividir pelos 8, nunca
+     pelos 12 — mistura pago (o que já se sabe) com previsto (o que ainda
+     pode mudar). Motivado pela importação do Excel: eventos futuros passaram
+     a ter técnico e horas atribuídos, e entravam nestas médias como se já
+     tivessem acontecido. */
+  var hoje=localDate(new Date());
+  var servsReal=servs.filter(function(s){return s.data && s.data<=hoje;});
+  var baseReal=0,otValReal=0,otHReal=0;
+  servsReal.forEach(function(s){(s.custos||[]).forEach(function(c){baseReal+=c;});(s.hextra||[]).forEach(function(hh){otValReal+=hh.val;otHReal+=hh.h;});});
+  var nEvReal=(typeof evs!=='undefined'?evs:[]).filter(function(e){return e.dataISO && eqNoPeriodo(e.dataISO) && !e.cancelado && e.dataISO<=hoje;}).length;
+  return {nEv:nEv,nEvReal:nEvReal,total:base+otVal,otVal:otVal,otH:otH,
+    mediaEvento:nEvReal?(baseReal+otValReal)/nEvReal:0,
+    mediaHxH:nEvReal?otHReal/nEvReal:0,
+    mediaHxVal:nEvReal?otValReal/nEvReal:0};
 }
 /* Os doze meses do ano em análise, em custo de equipa — a forma do ano, sem
    controlo nenhum. Lê `servCustoTec()`, por isso respeita a REGRA P. */
@@ -14711,7 +14737,10 @@ function eqCard(n){
   var el=document.getElementById('eq-c'+n+'-val');if(!el)return;
   var st=eqStats(), lbl=eqPeriodoLabel();
   if(n===1){el.innerHTML='<div class="mtc-linha"><span class="mtc-mv">'+fmtEur(st.mediaEvento)+'</span></div>'
-    +'<div class="mtc-ms">'+eqPlural(st.nEv,'evento','eventos')+' • '+lbl+'</div>';}
+    /* nEvReal, não nEv: a legenda tem de dizer por quantos eventos a média
+       foi mesmo dividida (só os já realizados), senão «12 eventos» ao lado
+       de uma média sobre 8 engana. (2026-09-26) */
+    +'<div class="mtc-ms">'+eqPlural(st.nEvReal,'evento','eventos')+' • '+lbl+'</div>';}
   else if(n===2){
     var _l=function(rot,val,forte){
       return '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;'
@@ -15086,14 +15115,26 @@ function orcVendaDirecta(o){
      ESTIMATIVA  markup, e tudo o que dele deriva
    O valor de venda NAO e receita da SUD: e de quem fornece. A parte da SUD e a
    venda directa (real) mais o markup (estimado). */
-function relContas(ano){
+/* `ateHoje` (2026-09-26, REGRA V, pedido do Mike): «os cálculos das médias
+   podem ter todos a mesma regra... até ao dia de hoje. No final do ano, será
+   a média do ano. O que não faz sentido é cálculos baseados em estimativas.»
+   Sem argumento (o que quase todas as chamadas continuam a fazer — o ecrã,
+   o PDF, o arquivo do histórico), `relContas` devolve o ANO INTEIRO, tal
+   como sempre devolveu: são totais e factos já concretizados (um orçamento
+   Adjudicado é dinheiro contratado, mesmo que o evento seja no futuro), não
+   médias, e o Mike não pediu para deixarem de contar o que já está
+   planeado. Com `ateHoje=true`, filtra tudo por `data<=hoje` ANTES de correr
+   as MESMAS fórmulas — é só para as MÉDIAS (ver `rRel()`, secção «Médias do
+   ano»): nunca uma segunda fórmula, só uma segunda janela de dados. */
+function relContas(ano,ateHoje){
   ano=parseInt(ano,10)||CUR_Y;
+  var hoje=localDate(new Date());
   var todos=(typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
-    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano;});
+    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&(!ateHoje||o.data<=hoje);});
   var adj=todos.filter(function(o){return o.estado==='Adjudicado';});   // regra F
   adj.forEach(function(o){try{orcApply(o);}catch(e){}});
   var servs=(typeof DB_SERVICOS!=='undefined'?DB_SERVICOS:[]).filter(function(x){
-    return x&&x.data&&parseInt(x.data.split('-')[0],10)===ano;});
+    return x&&x.data&&parseInt(x.data.split('-')[0],10)===ano&&(!ateHoje||x.data<=hoje);});
 
   var venda=adj.reduce(function(t,o){return t+orcVenda(o);},0);
   var vendaDirecta=adj.reduce(function(t,o){return t+orcVendaDirecta(o);},0);
@@ -15106,6 +15147,7 @@ function relContas(ano){
      Ate hoje o Relatorio contava `servs.length`, que sao DIARIAS: um evento de
      dois dias contava dois. */
   var de=ano+'-01-01', ate=ano+'-12-31';
+  if(ateHoje&&hoje<ate)ate=hoje;
   var lista=(typeof evs!=='undefined'?evs:[]);
   var eventos=(typeof contarEventosEntre==='function')?contarEventosEntre(lista,de,ate):0;
   var diarias=(typeof contarDiariasEntre==='function')?contarDiariasEntre(lista,de,ate):servs.length;
@@ -15371,9 +15413,16 @@ function rRel(){
 
   /* --- medias --- */
   if(REL_CFG.secs.tendencias){
-    var activos=c.byM.filter(function(b){return b.venda>0||b.custoTec>0;});
+    /* REGRA V: as médias são só do que já aconteceu — nunca do ano inteiro,
+       que pode incluir orçamentos e serviços de eventos futuros. `cReal` usa
+       as MESMAS fórmulas do `c` de sempre (é a mesma função, `relContas`),
+       só que com `data<=hoje`. O «Mês com mais/menos facturação» fica de
+       fora: não é uma média, é uma pergunta sobre TODO o ano (qual mês
+       rendeu mais), e essa continua a fazer sentido olhar ao ano completo. */
+    var cReal=relContas(ano,true);
+    var activos=cReal.byM.filter(function(b){return b.venda>0||b.custoTec>0;});
     var maxM=c.byM.reduce(function(a,b){return b.venda>a.venda?b:a;},{venda:0,m:'—'});
-    var minM=activos.length?activos.reduce(function(a,b){return b.venda<a.venda?b:a;}):null;
+    var minM=(function(){var at=c.byM.filter(function(b){return b.venda>0||b.custoTec>0;});return at.length?at.reduce(function(a,b){return b.venda<a.venda?b:a;}):null;})();
     var me=function(rot,val,nota,cor){
       return '<div style="display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;">'
         +'<span style="color:var(--td);">'+rot+'</span>'
@@ -15384,18 +15433,18 @@ function rRel(){
       +'<div class="ct">Médias do ano <div class="ctl"></div></div>'
       +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;">'
       +'<div style="background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:14px;">'
-        +'<div style="font-size:10px;color:var(--ts);font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Por evento e por diária</div>'
-        +me('Custo da equipa por evento',fe(c.eventos?c.custoTec/c.eventos:0),'· '+c.eventos+(c.eventos===1?' evento':' eventos'),'var(--amf)')
-        +me('Custo da equipa por diária',fe(c.diarias?c.custoTec/c.diarias:0),'· '+c.diarias+(c.diarias===1?' diária':' diárias'),'var(--amf)')
-        +me('Custo SUD por evento',fe(c.eventos?c.custoSUD/c.eventos:0),'','var(--rdf)')
-        +me('Resultado SUD por evento '+EST,fe(c.eventos?c.resultadoTec/c.eventos:0),'',c.resultadoTec>=0?'var(--gnf)':'var(--rdf)')
+        +'<div style="font-size:10px;color:var(--ts);font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Por evento e por diária — só o já realizado</div>'
+        +me('Custo da equipa por evento',fe(cReal.eventos?cReal.custoTec/cReal.eventos:0),'· '+cReal.eventos+(cReal.eventos===1?' evento':' eventos'),'var(--amf)')
+        +me('Custo da equipa por diária',fe(cReal.diarias?cReal.custoTec/cReal.diarias:0),'· '+cReal.diarias+(cReal.diarias===1?' diária':' diárias'),'var(--amf)')
+        +me('Custo SUD por evento',fe(cReal.eventos?cReal.custoSUD/cReal.eventos:0),'','var(--rdf)')
+        +me('Resultado SUD por evento '+EST,fe(cReal.eventos?cReal.resultadoTec/cReal.eventos:0),'',cReal.resultadoTec>=0?'var(--gnf)':'var(--rdf)')
       +'</div>'
       +'<div style="background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:14px;">'
-        +'<div style="font-size:10px;color:var(--ts);font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Meses e orçamentos</div>'
-        +me('Valor facturado médio mensal',fe(activos.length?c.venda/activos.length:0),'· '+activos.length+' de 12 meses')
-        +me('Valor médio por orçamento adj.',fe(c.nAdj?c.venda/c.nAdj:0),'· '+c.nAdj+(c.nAdj===1?' orçamento':' orçamentos'))
-        +me('Mês com mais facturação',maxM.m,'· '+fe(maxM.venda),'var(--gnf)')
-        +me('Mês com menos facturação',minM?minM.m:'—',minM?('· '+fe(minM.venda)):'','var(--amf)')
+        +'<div style="font-size:10px;color:var(--ts);font-family:var(--mono);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Meses e orçamentos — só o já realizado</div>'
+        +me('Valor facturado médio mensal',fe(activos.length?cReal.venda/activos.length:0),'· '+activos.length+' de 12 meses')
+        +me('Valor médio por orçamento adj.',fe(cReal.nAdj?cReal.venda/cReal.nAdj:0),'· '+cReal.nAdj+(cReal.nAdj===1?' orçamento':' orçamentos'))
+        +me('Mês com mais facturação (ano inteiro)',maxM.m,'· '+fe(maxM.venda),'var(--gnf)')
+        +me('Mês com menos facturação (ano inteiro)',minM?minM.m:'—',minM?('· '+fe(minM.venda)):'','var(--amf)')
       +'</div></div></div>');
   }
 
@@ -15566,7 +15615,18 @@ function exportRelatorioPDF(ano){
   var tecArr=Object.keys(tecStats).map(function(k){return tecStats[k];});
   var tecMaisAloc=tecArr.slice().sort(function(a,b){return b.servicos-a.servicos;});
   var totalAloc=tecArr.reduce(function(s,t){return s+t.servicos;},0);
-  var mediaHextra=tecArr.length?tecArr.reduce(function(s,t){return s+t.hextra;},0)/tecArr.length:0;
+  /* «Média h. extra» é a única média desta secção — as outras (Alocações,
+     Mais alocado, Custo por técnico) continuam a contar o ano inteiro, com o
+     que já está planeado. A média muda: só entra quem já trabalhou até hoje
+     (pedido do Mike, 2026-09-26), senão um técnico só com horas extra
+     lançadas para daqui a dois meses já pesava na média de agora. */
+  var hoje=localDate(new Date());
+  var tecHextraReal={};
+  servs.filter(function(s){return s.data&&s.data<=hoje;}).forEach(function(s){
+    (s.hextra||[]).forEach(function(hh){var nome=tecNome(hh.tecId);if(!tecHextraReal[nome])tecHextraReal[nome]=0;tecHextraReal[nome]+=hh.h||0;});
+  });
+  var tecArrRealNomes=Object.keys(tecHextraReal);
+  var mediaHextra=tecArrRealNomes.length?tecArrRealNomes.reduce(function(s,k){return s+tecHextraReal[k];},0)/tecArrRealNomes.length:0;
   var deptData=[{label:'Luz',val:funcCount.Luz,col:'#52c47a'},{label:'Áudio',val:funcCount.Audio,col:'#d4902a'},{label:'Vídeo',val:funcCount.Video,col:'#5ba3d9'}].filter(function(d){return d.val>0;});
   var custoTecBars=tecArr.slice().sort(function(a,b){return b.custo-a.custo;}).slice(0,8).map(function(t){return {label:t.nome,val:Math.round(t.custo)};});
   /* CORRIGIDO (revisão geral, 2026-09-25). Havia aqui uma SEGUNDA conta do
