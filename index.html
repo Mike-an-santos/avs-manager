@@ -102,6 +102,9 @@ html,body{height:100%;background:var(--navy);color:var(--tp);font-family:var(--f
 .navnav svg{width:15px;height:15px;}
 .navnav-flat{border:none;}
 .navnav-flat:hover{box-shadow:none;filter:brightness(1.4);}
+/* mesma seta do «navnav-flat» junto às Definições, mas noutra cor — usada na
+   navegação de quinzena a quinzena do Mapa de Serviços (2026-09-26, pedido do Mike) */
+.navnav-quinz{color:var(--blf);}
 .dtd{font-size:13px;font-weight:700;color:var(--tp);line-height:1.2;}
 .dtt{font-size:11px;color:var(--copper);font-family:var(--mono);letter-spacing:.06em;}
 .uchip-sm{padding:3px 8px 3px 3px;gap:6px;}
@@ -2592,6 +2595,10 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
         <div class="sh" style="flex-wrap:wrap;gap:12px;">
           <div class="st">Mapa de serviços</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <div style="display:flex;align-items:center;gap:4px;" title="Navegar quinzena a quinzena">
+              <button class="navnav navnav-flat navnav-quinz" title="Quinzena anterior" onclick="mapaQuinzenaNav(-1)" aria-label="Quinzena anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+              <button class="navnav navnav-flat navnav-quinz" title="Quinzena seguinte" onclick="mapaQuinzenaNav(1)" aria-label="Quinzena seguinte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            </div>
             <div style="display:flex;align-items:center;gap:8px;background:var(--navy3);border:2px solid var(--bl);border-radius:8px;padding:5px 14px;">
               <label style="font-size:11px;color:var(--ts);font-weight:600;">De</label>
               <input type="date" id="ms-from" onchange="renderMapa()" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;">
@@ -6253,6 +6260,51 @@ function saveAddRow(){
   cm('m-addrow');syncAll();
 }
 function setPreset(p){const n=new Date();const y=n.getFullYear();const m=String(n.getMonth()+1).padStart(2,'0');const last=new Date(y,n.getMonth()+1,0).getDate();if(p===1){document.getElementById('ms-from').value=`${y}-${m}-01`;document.getElementById('ms-to').value=`${y}-${m}-15`;}else if(p===2){document.getElementById('ms-from').value=`${y}-${m}-16`;document.getElementById('ms-to').value=`${y}-${m}-${last}`;}else{document.getElementById('ms-from').value=`${y}-01-01`;document.getElementById('ms-to').value=`${y}-12-31`;}renderMapa();}
+/* NAVEGAÇÃO POR QUINZENA no Mapa de Serviços (2026-09-26, pedido do Mike: os
+   pagamentos com o número dos recibos organizam-se por quinzena, e só apareciam
+   em baixo depois de ele ir seleccionar a quinzena à mão no calendário).
+   A quinzena é sempre 1 a 15 ou 16 ao último dia do mês — as mesmas duas
+   metades que setPreset(1)/setPreset(2) já desenhavam (esses ficam como
+   estavam, a mexer sempre no mês de hoje). A novidade é navegar quinzena a
+   quinzena a partir de QUALQUER "De" que já esteja no ecrã — por isso lê-se o
+   índice a partir de ms-from, não da data de hoje, e cada clique desloca-se
+   uma metade de mês para trás ou para a frente, atravessando meses e anos. */
+function quinzenaIndice(dataStr){
+  var p=(dataStr||'').split('-').map(Number);
+  if(p.length!==3||!p[0]||!p[1]||!p[2])return null;
+  return {y:p[0],m:p[1],metade:(p[2]<=15?0:1)};
+}
+function quinzenaPorIndice(y,m,metade){
+  while(m<1){m+=12;y--;}
+  while(m>12){m-=12;y++;}
+  var mm=String(m).padStart(2,'0');
+  if(metade===0)return {de:y+'-'+mm+'-01',ate:y+'-'+mm+'-15'};
+  var ultimo=new Date(y,m,0).getDate();
+  return {de:y+'-'+mm+'-16',ate:y+'-'+mm+'-'+String(ultimo).padStart(2,'0')};
+}
+function quinzenaAtual(){
+  var q=quinzenaIndice(localDate(new Date()));
+  return quinzenaPorIndice(q.y,q.m,q.metade);
+}
+function quinzenaAdjacente(dataStr,dir){
+  var q=quinzenaIndice(dataStr);
+  if(!q)return null;
+  var y=q.y,m=q.m,metade=q.metade;
+  if(dir>0){if(metade===0)metade=1;else{metade=0;m++;}}
+  else if(dir<0){if(metade===1)metade=0;else{metade=1;m--;}}
+  return quinzenaPorIndice(y,m,metade);
+}
+function mapaQuinzenaNav(dir){
+  var fromEl=document.getElementById('ms-from');
+  var toEl=document.getElementById('ms-to');
+  if(!fromEl||!toEl)return;
+  var base=fromEl.value||localDate(new Date());
+  var q=quinzenaAdjacente(base,dir);
+  if(!q)return;
+  fromEl.value=q.de;
+  toEl.value=q.ate;
+  renderMapa();
+}
 var MESES_PT=['Janeiro','Fevereiro','Mar\u00e7o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 function toggleMesMenu(e){if(e)e.stopPropagation();var menu=document.getElementById('mes-menu');if(!menu)return;if(!menu.dataset.built){menu.innerHTML=MESES_PT.map(function(nm,i){return '<button type="button" class="mes-item" onclick="pickMes('+(i+1)+')">'+nm+'</button>';}).join('');menu.dataset.built='1';}menu.style.display=(menu.style.display==='block')?'none':'block';}
 function pickMes(m){var y=new Date().getFullYear(),mm=String(m).padStart(2,'0'),last=new Date(y,m,0).getDate();document.getElementById('ms-from').value=y+'-'+mm+'-01';document.getElementById('ms-to').value=y+'-'+mm+'-'+String(last).padStart(2,'0');var menu=document.getElementById('mes-menu');if(menu)menu.style.display='none';renderMapa();}
@@ -8552,16 +8604,16 @@ function psArrLargar(i,e){
 }
 
 function msInit(){
-  // Data por omissão do Mapa de Técnicos: o mês em que estamos
+  // Data por omissão do Mapa de Técnicos: a quinzena em que estamos (2026-09-26,
+  // pedido do Mike — os recibos e pagamentos organizam-se por quinzena, não por
+  // mês, e assim já aparecem em baixo sem ele ter de ir seleccionar nada à mão).
   var de=document.getElementById('ms-from');
   var ate=document.getElementById('ms-to');
   if(!de||!ate)return;
   if(!de.value||!ate.value){
-    var n=new Date();
-    var y=n.getFullYear(),m=n.getMonth();
-    var last=new Date(y,m+1,0).getDate();
-    de.value=y+'-'+String(m+1).padStart(2,'0')+'-01';
-    ate.value=y+'-'+String(m+1).padStart(2,'0')+'-'+String(last).padStart(2,'0');
+    var q=quinzenaAtual();
+    de.value=q.de;
+    ate.value=q.ate;
   }
 }
 function psInit(){
@@ -9078,7 +9130,17 @@ function psRenderHist(){
     }catch(e){}
     return '';
   };
-  el.innerHTML=PS_HIST.map(function(h){
+  /* ORDEM DO HISTÓRICO — mais recente primeiro (2026-09-26, pedido do Mike).
+     REGRA O — isto é só ordem de apresentação, nunca se guarda: PS_HIST guarda
+     pela ordem em que se clicou "Guardar" (`unshift`), que só coincide com a
+     ordem das semanas se se guardar sempre em sequência. Guardar uma semana
+     atrasada depois de já se terem guardado semanas mais recentes deixava-a
+     presa na posição de quando foi clicada, não na da sua própria data — daí
+     aparecer no fim quando devia estar no meio. Ordena-se aqui, a cada
+     desenho, pelo campo `de` (já em AAAA-MM-DD, por isso a comparação de texto
+     chega) — sem tocar em PS_HIST nem no que lá está guardado. */
+  var lista=PS_HIST.slice().sort(function(a,b){ return (b.de||'').localeCompare(a.de||''); });
+  el.innerHTML=lista.map(function(h){
     var head='<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;" onclick="psHistToggle('+h.id+')">'
       +'<div style="flex:1;">'
         +'<div style="font-size:13px;font-weight:700;color:var(--tp);">'+psSemanaLabel(h.de)+'Plano '+fmtPT(h.de)+' — '+fmtPT(h.ate)+'</div>'
@@ -15503,13 +15565,24 @@ function exportRelatorioPDF(ano){
   });
   var tecArr=Object.keys(tecStats).map(function(k){return tecStats[k];});
   var tecMaisAloc=tecArr.slice().sort(function(a,b){return b.servicos-a.servicos;});
-  var custoTecTotal=tecArr.reduce(function(s,t){return s+t.custo;},0);
   var totalAloc=tecArr.reduce(function(s,t){return s+t.servicos;},0);
   var mediaHextra=tecArr.length?tecArr.reduce(function(s,t){return s+t.hextra;},0)/tecArr.length:0;
   var deptData=[{label:'Luz',val:funcCount.Luz,col:'#52c47a'},{label:'Áudio',val:funcCount.Audio,col:'#d4902a'},{label:'Vídeo',val:funcCount.Video,col:'#5ba3d9'}].filter(function(d){return d.val>0;});
   var custoTecBars=tecArr.slice().sort(function(a,b){return b.custo-a.custo;}).slice(0,8).map(function(t){return {label:t.nome,val:Math.round(t.custo)};});
-  var custoTecMensal=MES.map(function(m){return {label:m,val:0};});
-  servs.forEach(function(s){var mi=parseInt(s.data.split('-')[1])-1;var c=((s.custos||[]).reduce(function(a,b){return a+b;},0))+((s.hextra||[]).reduce(function(a,hh){return a+(hh.val||0);},0));custoTecMensal[mi].val+=c;});
+  /* CORRIGIDO (revisão geral, 2026-09-25). Havia aqui uma SEGUNDA conta do
+     custo total de equipa e do seu total por mês — `custoTecTotal` e o
+     `servs.forEach` que enchia `custoTecMensal` — a somar `s.custos`/
+     `s.hextra` à mão, exactamente o padrão que o comentário da REGRA P
+     (2026-09-21, acima) já tinha identificado como o defeito a evitar («perde
+     as horas extra de quem não tem linha de cachet nesse serviço») e corrigira
+     no cartão do Dashboard. Este PDF continuava com a fórmula antiga — e como
+     o KPI "Custo da equipa" umas linhas acima (15625) já usa `C.custoTec`
+     (via `servCustoTec()`, a fonte única), o mesmo documento podia mostrar
+     dois números diferentes de custo de equipa em duas secções, o mesmo tipo
+     de defeito já apanhado a 2026-09-15 com dois "Custo SUD" no mesmo
+     relatório. `C.byM[].custoTec` já traz o valor certo por mês — não há nada
+     a recalcular. */
+  var custoTecMensal=C.byM.map(function(b){return {label:b.m,val:b.custoTec};});
 
   // ---- resultado por cliente ----
   var clientes={};adj.forEach(function(o){var c=o.cliente||'—';if(!clientes[c])clientes[c]=0;clientes[c]+=resSUD(o);});
@@ -15678,7 +15751,7 @@ function exportRelatorioPDF(ano){
   eqp+='<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:18px;">';
   eqp+=kpi('Alocações',totalAloc,servs.length+' serviços',P.copper);
   eqp+=kpi('Mais alocado',tecMaisAloc.length?tecMaisAloc[0].nome:'—',tecMaisAloc.length?tecMaisAloc[0].servicos+' serviços':'',P.gn);
-  eqp+=kpi('Custo equipa',fe(custoTecTotal),'no ano',P.rd);
+  eqp+=kpi('Custo equipa',fe(C.custoTec),'no ano',P.rd);
   eqp+=kpi('Média h. extra',mediaHextra.toFixed(1)+'h','por técnico',P.am);
   eqp+='</div>';
   eqp+='<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:14px;">';
