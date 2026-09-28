@@ -2730,7 +2730,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
       <div class="metrics" id="track-metrics"></div>
       <div class="card" style="padding:0;overflow-x:auto;">
         <table>
-          <thead><tr><th>Nº</th><th>Data</th><th>Cliente</th><th>Evento</th><th>Total s/ IVA</th><th>Estado</th><th>Observações</th><th></th></tr></thead>
+          <thead><tr><th>Nº</th><th>Data</th><th>Fornecedor</th><th>Evento</th><th>Total s/ IVA</th><th>Estado</th><th>Observações</th><th></th></tr></thead>
           <tbody id="track-tbody"></tbody>
         </table>
       </div>
@@ -2783,7 +2783,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
       <div class="card" style="padding:0;overflow-x:auto;margin-bottom:20px;">
         <table>
           <thead><tr>
-            <th>Nº</th><th>Data</th><th>Cliente / Evento</th>
+            <th>Nº</th><th>Data</th><th>Fornecedor / Evento</th>
             <th>Valor venda</th><th>Markup (est.)</th><th>Custo SUD</th><th>Resultado SUD</th><th>Estado</th>
           </tr></thead>
           <tbody id="mapa-tbody"></tbody>
@@ -10586,7 +10586,7 @@ function rTrack(){
     <tr onclick="abrirEditor(${o.id})" style="cursor:pointer;">
       <td class="val-c" style="font-size:12px;">${_esc(o.num)}</td>
       <td style="color:var(--ts);font-family:var(--mono);font-size:12px;">${fmtDate(o.data)}</td>
-      <td style="font-weight:600;">${_esc(o.cliente)||'—'}</td>
+      <td style="font-weight:600;">${_esc(orcFornecedor(o))}</td>
       <td style="color:var(--ts);">${_esc(o.evento)||'—'}</td>
       <td class="val-c">${fmtEur(orcVenda(o))}</td>
       <td>
@@ -10791,8 +10791,8 @@ function oc_rOrcList(){
       +'<td class="val-c" style="font-size:12px;">'+o.num+'</td>'
       +'<td style="color:var(--ts);font-family:var(--mono);font-size:12px;white-space:nowrap;">'+fmtDate(o.data)+'</td>'
       +'<td>'+sBadge(o.estado)+'</td>'
-      +'<td style="font-weight:700;">'+(o.cliente||'—')+'</td>'
-      +'<td style="color:var(--ts);">'+(o.evento||'—')+'</td>'
+      +'<td style="font-weight:700;">'+_esc(orcFornecedor(o))+'</td>'
+      +'<td style="color:var(--ts);">'+_esc(o.evento||'—')+'</td>'
       +'<td class="val-c">'+fmtEur(orcVenda(o))+'</td>'
       +'<td style="color:var(--td);font-size:11px;text-align:center;">'+o.linhas.length+'</td>'
       +'<td style="white-space:nowrap;">'
@@ -10805,7 +10805,7 @@ function oc_rOrcList(){
   el.innerHTML=orcVerificacoesHTML()
     +'<div class="card" style="padding:0;overflow-x:auto;">'
     +'<table><thead><tr>'
-    +'<th>Nº</th><th>Data</th><th>Estado</th><th>Cliente</th><th>Evento</th><th>Total s/ IVA</th><th>Linhas</th><th></th>'
+    +'<th>Nº</th><th>Data</th><th>Estado</th><th>Fornecedor</th><th>Evento</th><th>Total s/ IVA</th><th>Linhas</th><th></th>'
     +'</tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 
@@ -10975,6 +10975,13 @@ function renderEditor(){
     <div class="oe-zona">
       <div class="oe-zt">Quem e quando</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 18px;">
+        <div><label class="oe-lbl">Fornecedor</label>
+          <!-- Calculado, nunca escrito à mão — o mesmo `fornEnv` que já aparece
+               em baixo, em "Gestão interna" (orcFornecedoresEnvolvidos). Vem
+               também aqui ao cimo, a pedido do Mike (2026-09-28): antes só se
+               via depois de descer o ecrã todo. -->
+          <div class="oe-f" style="color:${fornEnv.length?'var(--gnf)':'var(--td)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${fornEnv.length?_esc(fornEnv.join(' · ')):''}">${fornEnv.length?_esc(fornEnv.join(' · ')):'—'}</div>
+        </div>
         <div><label class="oe-lbl">Evento</label>
           <div id="oe-evento" class="oe-f" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;" onclick="orcEvPicker()" title="Associar a um evento do calendário">
             <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;${orcSel.evId?'':'color:var(--td);'}">${orcSel.evId?_esc(orcSel.evento||''):'Associar a um evento…'}</span>
@@ -11617,7 +11624,7 @@ function rMapa(){
     return`<tr>
       <td style="font-family:var(--mono);font-size:11px;color:var(--cl);">${o.num}</td>
       <td style="color:var(--ts);font-family:var(--mono);font-size:12px;">${fmtDate(o.data)}</td>
-      <td><div style="font-weight:600;">${o.cliente||'—'}</div><div style="font-size:11px;color:var(--ts);">${o.evento||''}</div></td>
+      <td><div style="font-weight:600;">${_esc(orcFornecedor(o))}</div><div style="font-size:11px;color:var(--ts);">${_esc(o.evento||'')}</div></td>
       <td class="val-c" style="font-weight:700;color:var(--tp);background:rgba(212,149,110,.07);">${fmtEur(orcVenda(o))}</td>
       <td style="color:var(--amf);font-family:var(--mono);">${fmtEur(orcMarkup(o))}<div style="font-size:10px;color:var(--td);">${o.markup||0}%</div></td>
       <td style="color:var(--rdf);font-family:var(--mono);font-weight:700;">${fmtEur(orcCustoSUDReal(o))}</td>
