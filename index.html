@@ -3100,6 +3100,18 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
   </div>
 </div>
 
+<!-- Estatutos dos orçamentos — mesmo molde do painel de grupos acima (m-osgrupo),
+     outra lista. Aberto a partir do "+" ao lado do <select> de estatuto no
+     editor de orçamentos (2026-09-29). -->
+<div class="mo" id="m-estatutos" onclick="if(event.target===this)cm('m-estatutos')">
+  <div class="modal" style="width:360px;">
+    <div class="mott">Estatutos <button class="btn btn-sm btn-gh" onclick="cm('m-estatutos')" style="padding:3px 8px;">✕</button></div>
+    <div class="fi"><label>Nome do estatuto</label><input id="estatuto-novo-nome" placeholder="Ex: Pool, Restaurante…" onkeydown="if(event.key==='Enter')estatutoGuardarNovo()"></div>
+    <div id="estatutos-lista" style="display:flex;flex-direction:column;gap:6px;margin-top:4px;max-height:220px;overflow-y:auto;"></div>
+    <div class="mf"><div></div><div style="display:flex;gap:8px;"><button class="btn btn-sm btn-gh" onclick="cm('m-estatutos')">Fechar</button><button class="btn btn-sm btn-cu" onclick="estatutoGuardarNovo()">Criar</button></div></div>
+  </div>
+</div>
+
 <!-- Painel onde o servico se escreve. O Grupo e o Titulo estao aqui em cima
      porque sao do SERVICO; a tabela em baixo e uma linha por tecnico. Guarda os
      mesmos ids de sempre (`os-tbody`, `os-total`) para as funcoes que ja
@@ -3564,6 +3576,13 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
         <div class="rc-t"><div class="rl" style="color:var(--cl);">Resultado SUD</div><div class="rv" id="vv-r-resultado">—</div></div>
       </div>
 
+      <!-- ESTATUTOS DOS ORÇAMENTOS — passo 6 (2026-09-29): "corte dentro do
+           detalhe", nunca uma segunda coluna na tabela de cima (capitulo-o-
+           ano-decisao.md, Parte II, §9a). Só ganha conteúdo (vvRenderEstatutos)
+           quando o próprio período tem orçamentos de mais do que um estatuto —
+           senão fica vazio, sem caixa nenhuma a repetir o resumo de cima. -->
+      <div id="vv-estatutos"></div>
+
       <div class="cpd-filtros">
         <input type="text" id="vv-f-nome" placeholder="Pesquisar orçamento, evento ou cliente…" autocomplete="off" oninput="vvRender()">
       </div>
@@ -4014,6 +4033,16 @@ let OS_GRUPOS=[];
 let OUTROS_SERVICOS=[];
 let OS_HIST=[];
 let osFiltro={ano:'',mes:'',grupo:'',tec:''};
+/* ESTATUTOS DOS ORÇAMENTOS — passo 2, 2026-09-29, pedido do Mike
+   (claude/capitulo-o-ano-decisao.md, Parte II). Um registo pequeno, gerido num
+   painel no molde dos grupos dos Outros serviços (OS_GRUPOS, acima) — mesma
+   ideia, outra lista. "Normal" é o valor por omissão de todo o orçamento sem
+   estatuto escolhido e nunca pode ser eliminado: é o que o passo 4 (avsCompute)
+   vai filtrar sozinho, e as 230 diárias reais não podem ficar órfãs dele.
+   Sem lógica por nome nenhuma além desta: um novo estatuto (Pool, Restaurante,
+   ou o que for) entra na lista e usa exactamente as mesmas fórmulas que o
+   Normal — é uma dimensão de classificação, não um cálculo diferente. */
+let ESTATUTOS=['Normal'];
 
 const DB={
   tec:[
@@ -6348,12 +6377,14 @@ var SEM_RODA_CFG={
     // (mapa-ano) — não o ano corrente, ao contrário do Mapa de Serviços.
     ano:function(){var s=document.getElementById('mapa-ano');return (s&&s.value)?parseInt(s.value,10):new Date().getFullYear();},
     aplicar:function(ano,n){
-      // Escolher uma semana larga o fornecedor/mês que estivessem activos —
-      // pela mesma razão contrária do mapaFiltroAplicar(): só um dos dois
-      // tipos de filtro de cada vez, para nunca voltarem a cruzar-se por
-      // baixo dos panos. 2026-09-22, bug apontado pelo Mike.
+      // Escolher uma semana larga o fornecedor/mês/estatuto que estivessem
+      // activos — pela mesma razão contrária do mapaFiltroAplicar(): só um
+      // dos dois tipos de filtro de cada vez, para nunca voltarem a
+      // cruzar-se por baixo dos panos. 2026-09-22, bug apontado pelo Mike
+      // (o estatuto juntou-se-lhes na B33, passo 5).
       mapaFornFiltro=null;
       mapaMesFiltro='';
+      mapaEstatutoFiltro='';
       mapaSemFiltro=n;
       rMapa();
     }
@@ -7814,7 +7845,7 @@ function backupColeta(){
        arrumada a mao morria ao recarregar a pagina — o mesmo defeito que o ivEQ
        teve. */
     PS_ORDEM:PS_ORDEM,PS_AVULSAS:PS_AVULSAS,DB_EMPRESA:DB_EMPRESA,mapaRows:mapaRows,mapaRemovidos:mapaRemovidos,manI:manI,CFG:CFG,notas:_notas(),
-    OUTROS_SERVICOS:OUTROS_SERVICOS,OS_GRUPOS:OS_GRUPOS,OS_HIST:OS_HIST};
+    OUTROS_SERVICOS:OUTROS_SERVICOS,OS_GRUPOS:OS_GRUPOS,OS_HIST:OS_HIST,ESTATUTOS:ESTATUTOS};
 }
 function backupExportar(){
   try{
@@ -7892,6 +7923,12 @@ function backupAplicar(d){
   if(d.OUTROS_SERVICOS)arr(OUTROS_SERVICOS,d.OUTROS_SERVICOS);
   if(d.OS_GRUPOS)arr(OS_GRUPOS,d.OS_GRUPOS);
   if(d.OS_HIST)arr(OS_HIST,d.OS_HIST);
+  if(d.ESTATUTOS)arr(ESTATUTOS,d.ESTATUTOS);
+  // "Normal" nunca pode faltar, mesmo vindo de uma cópia antiga (sem este campo,
+  // fica o ['Normal'] inicial) ou de uma cópia estragada à mão. Sem esta linha,
+  // um restauro sem "Normal" deixava o passo 4 (avsCompute) sem estatuto nenhum
+  // para filtrar.
+  if(ESTATUTOS.indexOf('Normal')<0)ESTATUTOS.unshift('Normal');
   if(d.notas){try{guardarLocal('sud_notas',JSON.stringify(d.notas));}catch(e){}}
   if(d.CFG&&typeof d.CFG==='object'){
     if(typeof d.CFG.iva==='number')CFG.iva=d.CFG.iva;
@@ -10810,9 +10847,73 @@ function oc_rOrcList(){
 }
 
 function oc_novoOrc(){
-  const o={id:nid++,num:orcNum(),data:localDate(new Date()),cliente:'',evId:null,responsavel:'',espaco:'',dataEvento:'',evento:'',notas:'',estado:'Em aberto',markup:0,custo:0,linhas:[],total:0};
+  const o={id:nid++,num:orcNum(),data:localDate(new Date()),cliente:'',evId:null,responsavel:'',espaco:'',dataEvento:'',evento:'',notas:'',estado:'Em aberto',estatuto:'Normal',markup:0,custo:0,linhas:[],total:0};
   DB_ORC.push(o);orcSel=o;
   abrirEditor(o.id);
+}
+
+/* ESTATUTOS DOS ORÇAMENTOS — passo 2/3 (2026-09-29, ver ESTATUTOS acima).
+   Um orçamento sem `estatuto` é um orçamento «Normal»: é o valor por omissão,
+   para que os orçamentos já existentes (criados antes deste campo existir) não
+   fiquem sem classificação nenhuma. Lê-se sempre por aqui — nunca `o.estatuto`
+   a direito — para um passo futuro que filtre por «Normal» não excluir por
+   engano tudo o que ainda não foi tocado no editor. */
+function orcEstatuto(o){return (o&&o.estatuto)||'Normal';}
+
+function estatutosGuardarAuto(){
+  if(typeof autosaveLigado==='function'&&autosaveLigado()&&typeof autosaveGuardar==='function'){try{autosaveGuardar();}catch(e){}}
+}
+function estatutosAbrir(){
+  var inp=document.getElementById('estatuto-novo-nome');if(inp)inp.value='';
+  estatutosRenderLista();
+  om('m-estatutos');
+  setTimeout(function(){var i=document.getElementById('estatuto-novo-nome');if(i)i.focus();},60);
+}
+// Lista, dentro do painel, todos os estatutos já criados — cada um com uma cruz
+// para eliminar, excepto "Normal", que nunca a tem: é o valor por omissão e não
+// pode deixar de existir. Eliminar um estatuto só o tira da lista/autocomplete;
+// os orçamentos que já o usam não são alterados (mesmo princípio do
+// osGrupoEliminar, para o OS_GRUPOS).
+function estatutosRenderLista(){
+  var box=document.getElementById('estatutos-lista');if(!box)return;
+  var lista=ESTATUTOS.slice().sort(function(a,b){return a.localeCompare(b);});
+  box.innerHTML=lista.map(function(e){
+    var protegido=(e==='Normal');
+    return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--navy3);border:1px solid var(--bl);border-radius:5px;padding:6px 10px;">'
+      +'<span style="font-size:12px;color:var(--tp);">'+psEsc(e)+(protegido?' <span style="color:var(--td);font-size:10px;">(por omissão)</span>':'')+'</span>'
+      +(protegido?'':'<button class="slot-rm" title="Eliminar estatuto" onclick="estatutoEliminar(\''+e.replace(/'/g,"\\'")+'\')">×</button>')
+    +'</div>';
+  }).join('');
+}
+function estatutoEliminar(nome){
+  if(nome==='Normal')return; // nunca eliminável — o botão já nem aparece, isto é rede a mais
+  showConfirm('Eliminar estatuto','Tens a certeza que queres eliminar o estatuto "'+nome+'"? Os orçamentos que já o usam não são alterados.',function(){
+    var idx=ESTATUTOS.findIndex(function(e){return e===nome;});
+    if(idx>=0)ESTATUTOS.splice(idx,1);
+    estatutosRenderLista();
+    estatutosRenderSelects();
+    estatutosGuardarAuto();
+    showToast('Estatuto removido','ok');
+  });
+}
+function estatutoGuardarNovo(){
+  var inp=document.getElementById('estatuto-novo-nome');
+  var v=(inp?inp.value:'').trim();
+  if(!v)return;
+  var existe=ESTATUTOS.some(function(e){return e.toLowerCase()===v.toLowerCase();});
+  if(!existe)ESTATUTOS.push(v);
+  if(inp)inp.value='';
+  estatutosRenderLista();
+  estatutosRenderSelects();
+  estatutosGuardarAuto();
+  showToast(existe?'Esse estatuto já existia.':'Estatuto "'+v+'" criado.','ok');
+}
+// Actualiza o <select> do editor de orçamentos, se estiver aberto, para o
+// estatuto acabado de criar aparecer sem fechar e reabrir o orçamento.
+function estatutosRenderSelects(){
+  var sel=document.getElementById('oe-estatuto');if(!sel||!orcSel)return;
+  var atual=sel.value||orcEstatuto(orcSel);
+  sel.innerHTML=ESTATUTOS.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===atual?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
 }
 
 function abrirEditor(id){
@@ -10902,6 +11003,7 @@ function saveEditorValues(){
   if(g('oe-data'))orcSel.data=g('oe-data').value||orcSel.data;
   if(g('oe-notas'))orcSel.notas=g('oe-notas').value;
   if(g('oe-estado'))orcSel.estado=g('oe-estado').value;
+  if(g('oe-estatuto'))orcSel.estatuto=g('oe-estatuto').value||'Normal';
   if(g('oe-markup')){orcSel.markup=parseFloat(g('oe-markup').value)||0;}
   orcApply(orcSel);
 }
@@ -10994,6 +11096,12 @@ function renderEditor(){
         <div><label class="oe-lbl">Data do orçamento</label><input type="date" id="oe-data" class="oe-f" value="${orcSel.data||''}"></div>
         <div><label class="oe-lbl">Estado</label>
           <select id="oe-estado" class="oe-f">${ESTADOS.map(e=>`<option value="${e}"${e===orcSel.estado?' selected':''}>${e}</option>`).join('')}</select>
+        </div>
+        <div><label class="oe-lbl">Estatuto</label>
+          <div style="display:flex;gap:6px;">
+            <select id="oe-estatuto" class="oe-f" style="flex:1;min-width:0;">${ESTATUTOS.map(e=>`<option value="${e}"${e===orcEstatuto(orcSel)?' selected':''}>${e}</option>`).join('')}</select>
+            <button type="button" class="btn-ic" title="Gerir estatutos" onclick="estatutosAbrir()" style="width:38px;flex-shrink:0;padding:0;font-size:16px;font-weight:700;line-height:1;">+</button>
+          </div>
         </div>
       </div>
     </div>
@@ -11261,6 +11369,27 @@ function orcCalc(o){
           semIva:semIva,iva:iva,ivaPct:taxaIva,comIva:semIva+iva,
           resultado:receitaSUD-custoSUD};
 }
+/* REGRA F, extraída (2026-09-29). Até aqui «só o adjudicado conta» estava
+   escrito dezoito vezes no ficheiro — catorze como `estado==='Adjudicado'`,
+   quatro como a guarda negada `estado!=='Adjudicado'`. Não é o mesmo defeito
+   que o Custo SUD ou o custo dos técnicos já tiveram (aqui as dezoito cópias
+   sempre disseram a mesma coisa) — mas é o MESMO RISCO à espera de acontecer,
+   e é o passo que os Estatutos dos orçamentos (`claude/capitulo-o-ano-decisao.md`,
+   Parte II) pedem antes de lhes tocar: uma dimensão nova entra numa função só,
+   não em dezoito sítios à mão.
+   Só oito desses dezoito sítios são tocados agora — os que a funcionalidade
+   dos estatutos vai mesmo usar: o Mapa de orçamentos inteiro (lista principal,
+   cartão "Peso no ano" e histórico por ano — as três contas de rMapa), o
+   avsCompute (dois sítios), o painel partilhado vvAbrir/vvOrcamentosDoPeriodo,
+   o fornContas e o relContas. Os outros dez (Tracking, orcProbs, drillReceita
+   — três sítios, ainda ao serviço do "Valor facturado" do Relatório e do
+   caixote mensal de "O ano" —, anCaixotesMensal, cpdOrcamentosDoEvento,
+   cpdOrcamentosDoPeriodo, rAnalise, exportRelatorioPDF) continuam com a
+   comparação escrita à mão, de propósito — não têm razão nenhuma, por agora,
+   para saber que estatutos existem. */
+function orcEntraNosMapas(o){
+  return !!(o && o.estado==='Adjudicado');
+}
 /* O SUD e uma entidade com o mesmo estatuto de um fornecedor (regra do Mike):
    material proprio e artigos do Precario SUD sao atribuidos a ela, nao ficam sem
    dono. Nao tem ficha em DB_FORN, por isso usa um id proprio. */
@@ -11505,6 +11634,19 @@ var mapaMesFiltro='';
    render, pelo mesmo semanaParaIntervalo() que a leitura semanal dos Mapas
    já usa (REGRA U). */
 var mapaSemFiltro=null;
+/* ESTATUTOS DOS ORÇAMENTOS — passo 5, 2026-09-29, pedido do Mike
+   (claude/capitulo-o-ano-decisao.md, Parte II). Um terceiro chip, no MESMO
+   molde do fornecedor: uma dimensão categórica (o "quê"), não um período —
+   por isso combina-se com fornecedor E com mês, tal como fornecedor já se
+   combina com mês. Guarda só o NOME do estatuto (nunca um índice): REGRA O,
+   uma tabela derivada nunca se guarda, e o valor por omissão de "" significa
+   "todos os estatutos", nunca "Normal" — o Mapa lista tudo o que é
+   Adjudicado, sem filtrar por estatuto por omissão (ao contrário do
+   avsCompute(), que filtra sempre e sem chip — passo 4, B32). */
+var mapaEstatutoFiltro='';
+function mapaEstatutoContagem(nome){
+  return (typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){return orcEstatuto(o)===nome;}).length;
+}
 var MESES_CURTO=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 var MESES_LONGO=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 /* Os dois filtros, em chips. O `osChip` e o mesmo dos Outros servicos: por baixo
@@ -11528,10 +11670,23 @@ function mapaRenderFiltros(){
   }));
   /* o <select> do mes guarda o numero, mas o chip mostra o nome */
   var mesLb=mapaMesFiltro?MESES_LONGO[parseInt(mapaMesFiltro,10)-1]:'';
+  /* O chip de Estatuto só aparece quando há mais do que "Normal" para
+     escolher — com um único estatuto na lista, o chip seria um filtro que
+     nunca filtra nada (a mesma razão pela qual o filtro de ano do Mapa de
+     Fornecedores não aparece quando não filtra, B3). */
+  var opEstatuto=[{v:'',t:'Todos os estatutos'}].concat((typeof ESTATUTOS!=='undefined'?ESTATUTOS:['Normal']).map(function(e){
+    var n=mapaEstatutoContagem(e);
+    return {v:e, t:e+(n?' ('+n+')':'')};
+  }));
+  var chipEstatuto=(typeof ESTATUTOS!=='undefined'&&ESTATUTOS.length>1)
+    ?osChip('mapa-f-estatuto','Estatutos',mapaEstatutoFiltro||'',opEstatuto,'mapaFiltroAplicar()')
+    :'';
   caixa.innerHTML=osChip('mapa-f-forn','Fornecedores',mapaFornFiltro||'',opForn,'mapaFiltroAplicar()')
-    +osChip('mapa-f-mes','Meses',mesLb,opMes,'mapaFiltroAplicar()');
+    +osChip('mapa-f-mes','Meses',mesLb,opMes,'mapaFiltroAplicar()')
+    +chipEstatuto;
   var sf=document.getElementById('mapa-f-forn'); if(sf)sf.value=mapaFornFiltro||'';
   var sm=document.getElementById('mapa-f-mes');  if(sm)sm.value=mapaMesFiltro||'';
+  var se=document.getElementById('mapa-f-estatuto'); if(se)se.value=mapaEstatutoFiltro||'';
   // O "limpar" vive FORA da caixa dos chips — sempre num único sítio fixo
   // (2026-09-22: antes podia aparecer aqui OU debaixo da Semana). Desde o
   // B15 (2026-09-23) esse sítio é o INÍCIO da linha do cabeçalho, não o
@@ -11541,19 +11696,22 @@ function mapaRenderFiltros(){
   var lim=document.getElementById('mapa-limpar');
   if(lim)lim.innerHTML=mapaHaFiltro()?'<span class="mfz-lim" onclick="mapaFiltroLimpar()" title="Limpar os filtros">limpar</span>':'';
 }
-function mapaHaFiltro(){return !!(mapaFornFiltro||mapaMesFiltro||mapaSemFiltro);}
+function mapaHaFiltro(){return !!(mapaFornFiltro||mapaMesFiltro||mapaEstatutoFiltro||mapaSemFiltro);}
 function mapaFiltroAplicar(){
-  var sf=document.getElementById('mapa-f-forn'), sm=document.getElementById('mapa-f-mes');
+  var sf=document.getElementById('mapa-f-forn'), sm=document.getElementById('mapa-f-mes'),
+      se=document.getElementById('mapa-f-estatuto');
   mapaFornFiltro=(sf&&sf.value)?sf.value:null;
   mapaMesFiltro=(sm&&sm.value)?sm.value:'';
-  // Escolher fornecedor/mês larga a semana que estivesse activa — senão os
-  // dois filtros ficavam a cruzar-se por baixo dos panos e o ecrã parecia
-  // "bloqueado" (linhas a zero sem se perceber porquê). 2026-09-22, bug
-  // apontado pelo Mike: só um dos dois tipos de filtro de cada vez.
+  mapaEstatutoFiltro=(se&&se.value)?se.value:'';
+  // Escolher fornecedor/mês/estatuto larga a semana que estivesse activa —
+  // senão os filtros ficavam a cruzar-se por baixo dos panos e o ecrã
+  // parecia "bloqueado" (linhas a zero sem se perceber porquê). 2026-09-22,
+  // bug apontado pelo Mike: só um dos dois tipos de filtro de cada vez —
+  // agora com o estatuto do lado de fornecedor/mês, nunca do lado da semana.
   mapaSemFiltro=null;
   rMapa();
 }
-function mapaFiltroLimpar(){mapaFornFiltro=null;mapaMesFiltro='';mapaSemFiltro=null;rMapa();}
+function mapaFiltroLimpar(){mapaFornFiltro=null;mapaMesFiltro='';mapaEstatutoFiltro='';mapaSemFiltro=null;rMapa();}
 /* Trocar de ano larga a semana escolhida — uma semana pertence a um ano
    concreto (REGRA U), e mantê-la ao mudar de ano dava o mesmo "bloqueio" que
    o mapaFiltroAplicar() tinha: o ecrã a mostrar sempre a mesma fatia
@@ -11566,11 +11724,12 @@ function rMapa(){
   // So orcamentos ADJUDICADOS (decisao do Mike, 2026-09-01): a adjudicacao e o
   // momento em que um valor deixa de ser hipotese. Os que estao em aberto ou
   // enviados contam-se no Tracking; aqui misturavam real com hipotetico na mesma soma.
-  let orcs=DB_ORC.filter(o=>parseInt(o.data.split('-')[0])===ano&&o.estado==='Adjudicado');
+  let orcs=DB_ORC.filter(o=>parseInt(o.data.split('-')[0])===ano&&orcEntraNosMapas(o));
   // O filtro actua so nas barras da tabela; as metricas e o historico por ano
   // continuam a cobrir o ano inteiro.
   let orcsBarras=mapaFornFiltro?orcs.filter(function(o){return fornIgual(orcFornecedor(o),mapaFornFiltro);}):orcs;
   if(mapaMesFiltro)orcsBarras=orcsBarras.filter(function(o){return o.data&&o.data.split('-')[1]===mapaMesFiltro;});
+  if(mapaEstatutoFiltro)orcsBarras=orcsBarras.filter(function(o){return orcEstatuto(o)===mapaEstatutoFiltro;});
   if(mapaSemFiltro){
     let ivSem=semanaParaIntervalo(ano,mapaSemFiltro);
     orcsBarras=orcsBarras.filter(function(o){return o.data&&o.data>=ivSem.de&&o.data<=ivSem.ate;});
@@ -11592,9 +11751,9 @@ function rMapa(){
        em Mapas · O ano.
        Passa a medir DINHEIRO e a comparar adjudicados com adjudicados: quanto
        pesa o recorte no valor venda do ano. (Mike, 2026-09-11.) */
-    const vendaAno=DB_ORC.filter(function(o){return o.data&&parseInt(o.data.split('-')[0])===ano&&o.estado==='Adjudicado';})
+    const vendaAno=DB_ORC.filter(function(o){return o.data&&parseInt(o.data.split('-')[0])===ano&&orcEntraNosMapas(o);})
                          .reduce(function(s2,o){return s2+orcVenda(o);},0);
-    const temFiltro=!!(mapaFornFiltro||mapaMesFiltro);
+    const temFiltro=!!(mapaFornFiltro||mapaMesFiltro||mapaEstatutoFiltro);
     /* Sem filtro o recorte E o ano: o cartao diria 100%, que nao e informacao.
        Desaparece, como o botao "Hoje" do calendario e a caixa da gravacao
        automatica — nao se oferece um cartao a quem ja la esta. */
@@ -11641,7 +11800,7 @@ function rMapa(){
 
   // Histórico por ano
   const histEl=document.getElementById('mapa-hist');if(!histEl)return;
-  const adjudicados=DB_ORC.filter(o=>o.estado==='Adjudicado');
+  const adjudicados=DB_ORC.filter(o=>orcEntraNosMapas(o));
   const todosAnos=[...new Set(adjudicados.map(o=>parseInt(o.data.split('-')[0])))].sort((a,b)=>b-a);
   if(!todosAnos.length){histEl.innerHTML='';return;}
   histEl.innerHTML=todosAnos.map(y=>{
@@ -12896,7 +13055,15 @@ function avsCompute(ano){
   // Conta SÓ as linhas marcadas manualmente como Custo SUD (nunca o total da quinzena).
   var custoSUDTotal=0;
   (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
-    if(o.estado!=='Adjudicado') return;
+    if(!orcEntraNosMapas(o)) return;
+    /* ESTATUTOS DOS ORÇAMENTOS — passo 4, 2026-09-29, pedido do Mike
+       (claude/capitulo-o-ano-decisao.md, Parte II): «o avsCompute()
+       ("custo por diária") continua automaticamente só com
+       estatuto==='Normal', sem chip nem excepção visível». A regra F
+       (orcEntraNosMapas) fica intacta — isto é uma segunda condição, não
+       uma substituição. orcEstatuto(o), nunca o.estatuto em bruto: um
+       orçamento sem o campo lê como 'Normal' e continua a contar. */
+    if(orcEstatuto(o)!=='Normal') return;
     if(!o.data||parseInt(o.data.split('-')[0])!==ano) return;
     /* pela regra S: o equipamento da casa marcado como custo nao e custo. Sem
        isto, o «custo por evento» — o numero mais importante da ferramenta —
@@ -12918,7 +13085,8 @@ function avsCompute(ano){
      custoSUDTotal) — nunca dois números a fingir reconciliar. */
   var porEvento={};   // evId -> soma real dos orçamentos ligados a ele
   (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
-    if(o.estado!=='Adjudicado') return;
+    if(!orcEntraNosMapas(o)) return;
+    if(orcEstatuto(o)!=='Normal') return;   // passo 4 — ver nota acima
     if(!o.data||parseInt(o.data.split('-')[0])!==ano) return;
     if(o.evId===null||o.evId===undefined) return;      // sem ligação: fica no bolo comum
     porEvento[o.evId]=(porEvento[o.evId]||0)+orcCustoSUDReal(o);
@@ -13956,7 +14124,7 @@ function vvOrdenar(campo){
    período. */
 function vvOrcamentosDoPeriodo(){
   return (typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
-    if(o.estado!=='Adjudicado') return false;
+    if(!orcEntraNosMapas(o)) return false;
     if(!o.data||parseInt(o.data.split('-')[0],10)!==VV_STATE.ano) return false;
     if(VV_STATE.semana && (typeof semanaISO==='function') && semanaISO(o.data).semana!==VV_STATE.semana) return false;
     if(VV_STATE.mes!=='' && (parseInt(o.data.slice(5,7),10)-1)!==parseInt(VV_STATE.mes,10)) return false;
@@ -14040,6 +14208,54 @@ function vvRenderAvisos(linhas){
   box.innerHTML=html;
 }
 
+/* ESTATUTOS DOS ORÇAMENTOS — passo 6, 2026-09-29, pedido do Mike
+   (claude/capitulo-o-ano-decisao.md, Parte II, §9a): "nos mapas — como corte
+   dentro do detalhe, nunca como segunda coluna em todos os cartões". Agrega
+   as MESMAS linhas que o resumo do painel já soma — nunca uma segunda
+   leitura do período (quem chama passa sempre o "linhas" do vvRender, já
+   filtrado por mês/semana/pesquisa). Só entram estatutos com pelo menos um
+   orçamento nestas linhas: um estatuto registado mas ausente do período não
+   é informação, é ruído. A ordem segue o registo ESTATUTOS (Normal primeiro,
+   sempre); um estatuto entretanto eliminado do registo mas ainda escrito em
+   orçamentos antigos (estatutoEliminar() nunca reescreve orçamentos) entra
+   no fim, nunca desaparece — nenhum euro se perde da soma. */
+function vvEstatutosAgregado(linhas){
+  var mapa={};
+  linhas.forEach(function(o){
+    var nome=orcEstatuto(o);
+    if(!mapa[nome]) mapa[nome]={nome:nome,n:0,venda:0,markup:0,vendaDirecta:0,custoSUD:0,resultado:0};
+    var e=mapa[nome];
+    e.n++; e.venda+=orcVenda(o); e.markup+=orcMarkup(o); e.vendaDirecta+=orcVendaDirecta(o);
+    e.custoSUD+=orcCustoSUDReal(o); e.resultado+=resSUD(o);
+  });
+  var ordem=(typeof ESTATUTOS!=='undefined'?ESTATUTOS:['Normal']).slice();
+  Object.keys(mapa).forEach(function(nome){ if(ordem.indexOf(nome)<0) ordem.push(nome); });
+  return ordem.map(function(nome){return mapa[nome];}).filter(function(e){return e&&e.n>0;});
+}
+/* Só desenha quando o PRÓPRIO PERÍODO filtrado tem mais do que um estatuto —
+   nunca pelo tamanho do registo ESTATUTOS: um "Pool" registado mas sem
+   nenhum orçamento neste mês não é motivo para mostrar uma caixa com uma
+   única linha a repetir o resumo de cima. */
+function vvRenderEstatutos(linhas){
+  var box=document.getElementById('vv-estatutos'); if(!box) return;
+  var porEstatuto=vvEstatutosAgregado(linhas);
+  if(porEstatuto.length<2){ box.innerHTML=''; return; }
+  box.innerHTML='<div class="ce-bloco"><div class="ce-tit">Por estatuto</div>'
+    +'<table><thead><tr><th>Estatuto</th><th class="ar">Nº</th><th class="ar cor-c">Valor venda</th>'
+    +'<th class="ar cor-h">Markup</th><th class="ar cor-vd">Venda directa</th><th class="ar cor-s">Custo SUD</th>'
+    +'<th class="ar">Resultado SUD</th></tr></thead><tbody>'
+    +porEstatuto.map(function(e){
+      return '<tr><td style="font-weight:600;">'+_esc(e.nome)+'</td>'
+        +'<td class="ar">'+e.n+'</td>'
+        +'<td class="ar cor-c">'+fmtEur(e.venda)+'</td>'
+        +'<td class="ar cor-h">'+fmtEur(e.markup)+'</td>'
+        +'<td class="ar cor-vd">'+(e.vendaDirecta?fmtEur(e.vendaDirecta):'—')+'</td>'
+        +'<td class="ar cor-s">'+fmtEur(e.custoSUD)+'</td>'
+        +'<td class="ar" style="color:'+(e.resultado>=0?'var(--gnf)':'var(--rdf)')+';">'+fmtEur(e.resultado)+'</td></tr>';
+    }).join('')
+    +'</tbody></table></div>';
+}
+
 function vvRender(){
   var linhas=vvFiltrados();
   linhas.sort(function(a,b){
@@ -14103,6 +14319,7 @@ function vvRender(){
   tfRes.style.color = totResultado>=0 ? 'var(--gnf)' : 'var(--rdf)';
 
   vvRenderAvisos(linhas);
+  vvRenderEstatutos(linhas);
 
   var subExtra='';
   if(VV_STATE.semana) subExtra=' · Semana '+VV_STATE.semana;
@@ -14989,7 +15206,7 @@ function eqBreadcrumb(){
    Quem quiser este numero chama esta funcao. Nao se volta a somar a mao. */
 function fornContas(ano){
   var orcs=(typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
-    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&o.estado==='Adjudicado';});
+    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&orcEntraNosMapas(o);});
   /* o custoEntries e derivado no orcApply; garantir que esta em dia antes de somar */
   orcs.forEach(function(o){try{orcApply(o);}catch(e){}});
 
@@ -15138,7 +15355,7 @@ function relContas(ano,ateHoje){
   var hoje=localDate(new Date());
   var todos=(typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
     return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&(!ateHoje||o.data<=hoje);});
-  var adj=todos.filter(function(o){return o.estado==='Adjudicado';});   // regra F
+  var adj=todos.filter(function(o){return orcEntraNosMapas(o);});   // regra F, via orcEntraNosMapas (2026-09-29)
   adj.forEach(function(o){try{orcApply(o);}catch(e){}});
   var servs=(typeof DB_SERVICOS!=='undefined'?DB_SERVICOS:[]).filter(function(x){
     return x&&x.data&&parseInt(x.data.split('-')[0],10)===ano&&(!ateHoje||x.data<=hoje);});
@@ -15198,6 +15415,27 @@ function relContas(ano,ateHoje){
     var c=cli[k]; c.resultado=c.vendaDirecta+c.markup-c.custoSUD; return c;
   }).sort(function(a,b){return b.venda-a.venda;});
 
+  /* ESTATUTOS DOS ORÇAMENTOS — passo 7, 2026-09-29, pedido do Mike
+     (claude/capitulo-o-ano-decisao.md, Parte II, §9b): "no Relatório (ecrã) —
+     uma tabela [...] linha por estatuto, com nº de orçamentos, valor de venda,
+     Custo SUD, markup estimado e resultado". Mesmo molde do "Por cliente"
+     logo acima — MESMA lista `adj` (regra F, já aplicada), nunca uma segunda
+     leitura do ano. A ordem segue o registo ESTATUTOS (Normal primeiro); um
+     estatuto entretanto eliminado do registo mas ainda escrito em orçamentos
+     antigos entra no fim — nenhum euro se perde. */
+  var estMapa={};
+  adj.forEach(function(o){
+    var nome=orcEstatuto(o);
+    if(!estMapa[nome])estMapa[nome]={nome:nome,n:0,venda:0,custoSUD:0,markup:0,vendaDirecta:0};
+    var e=estMapa[nome];
+    e.n++; e.venda+=orcVenda(o); e.custoSUD+=orcCustoSUDReal(o);
+    e.markup+=orcMarkup(o); e.vendaDirecta+=orcVendaDirecta(o);
+  });
+  var estOrdem=(typeof ESTATUTOS!=='undefined'?ESTATUTOS:['Normal']).slice();
+  Object.keys(estMapa).forEach(function(nome){ if(estOrdem.indexOf(nome)<0) estOrdem.push(nome); });
+  var porEstatuto=estOrdem.map(function(nome){return estMapa[nome];}).filter(function(e){return e&&e.n>0;})
+    .map(function(e){ e.resultado=e.vendaDirecta+e.markup-e.custoSUD; return e; });
+
   return {ano:ano,
     venda:venda, vendaDirecta:vendaDirecta, markup:markup, receitaSUD:receitaSUD,
     custoSUD:custoSUD, custoTec:custoTec,
@@ -15206,7 +15444,7 @@ function relContas(ano,ateHoje){
     eventos:eventos, diarias:diarias,
     nOrc:todos.length, nAdj:adj.length,
     taxa:todos.length?Math.round(adj.length/todos.length*100):0,
-    byM:byM, clientes:clientes, adj:adj, servs:servs};
+    byM:byM, clientes:clientes, porEstatuto:porEstatuto, adj:adj, servs:servs};
 }
 /* A variacao entre dois anos, em PERCENTAGEM. A taxa de adjudicacao usava
    `taxa - taxaAnterior`, que sao PONTOS percentuais, e escrevia-lhe «%». */
@@ -15218,9 +15456,12 @@ function relVar(agora,antes){
 // Report config state
 var REL_CFG={
   /* `manutencao` nasceu a 2026-09-15, por decisao do Mike: «a manutenção do
-     equipamento deverá estar incluída no relatório final». */
+     equipamento deverá estar incluída no relatório final». `estatuto` nasceu a
+     2026-09-29 (passo 7 dos Estatutos dos orçamentos) — o MESMO interruptor
+     vai servir a folha do PDF no passo 8 (§9c): "o painel já liga e desliga
+     tópicos: entra como mais um interruptor". Não se cria um segundo. */
   secs:{receita:true,tecnicos:true,fornecedores:true,manutencao:true,
-        graficos:true,mensal:true,comparativo:true,tendencias:true},
+        graficos:true,mensal:true,comparativo:true,tendencias:true,estatuto:true},
   ano:CUR_Y
 };
 /* As folhas do relatorio, por ordem. O `d(c)` diz o que aquela folha leva — o
@@ -15229,6 +15470,10 @@ var REL_CFG={
 var REL_SECS=[
   {k:'receita',      l:'Eventos adjudicados e por cliente',
    d:function(c){return c.nAdj+(c.nAdj===1?' orçamento · ':' orçamentos · ')+fmtEur(c.venda);}},
+  {k:'estatuto',     l:'Por estatuto',
+   d:function(c){var p=c.porEstatuto||[];
+     if(p.length<=1)return 'só "'+(p[0]?p[0].nome:'Normal')+'" em '+c.ano;
+     return p.length+' estatutos · '+fmtEur(c.venda);}},
   {k:'tecnicos',     l:'Equipa técnica',
    d:function(c){return c.diarias+(c.diarias===1?' diária · ':' diárias · ')+fmtEur(c.custoTec);}},
   {k:'fornecedores', l:'Material sublocado',
@@ -15384,6 +15629,34 @@ function rRel(){
           +'<td class="val-c">'+fe(x.venda)+'</td>'
           +'<td class="ar" style="font-family:var(--mono);color:'+(x.custoSUD?'var(--rdf)':'var(--td)')+';">'+fe(x.custoSUD)+'</td>'
           +'<td class="ar" style="font-family:var(--mono);font-weight:700;color:'+(x.resultado>=0?'var(--amf)':'var(--rdf)')+';">'+fe(x.resultado)+'</td></tr>';
+      }).join('')
+      +'</tbody></table></div>');
+  }
+
+  /* --- por estatuto (passo 7, 2026-09-29, pedido do Mike, B35) ----------
+     claude/capitulo-o-ano-decisao.md, Parte II, §9b: "uma tabela, no molde
+     da que já existe por fornecedor: linha por estatuto, com nº de
+     orçamentos, valor de venda, Custo SUD, markup estimado e resultado. Uma
+     tabela, não cinco cartões." O molde escolhido foi "Por cliente", que é a
+     tabela ainda viva com exactamente esta forma (o antigo ecrã por
+     fornecedor saiu em B28, 2026-09-25) — mesmas colunas de facto primeiro,
+     estimativa marcada por último.
+     Só desenha quando o PRÓPRIO ANO tem mais do que um estatuto: com só
+     "Normal", a tabela repetiria o total do ano numa linha só — a mesma
+     regra da caixa "Por estatuto" do painel Valor venda (passo 6). */
+  if(REL_CFG.secs.estatuto&&c.porEstatuto&&c.porEstatuto.length>1){
+    add('<div class="card" style="padding:0;overflow:hidden;margin-bottom:14px;">'
+      +'<div class="ct" style="padding:16px 18px 0;">Por estatuto <div class="ctl"></div></div>'
+      +'<div style="padding:0 18px 4px;font-size:11.5px;color:var(--td);">Mesma classificação dos orçamentos nos Mapas. As duas primeiras colunas são factos; markup e resultado são estimativa.</div>'
+      +'<table><thead><tr><th>Estatuto</th><th class="ar">Orç.</th><th class="ar">Valor venda</th>'
+      +'<th class="ar">Custo SUD</th><th class="ar">Markup '+EST+'</th><th class="ar">Resultado '+EST+'</th></tr></thead><tbody>'
+      +c.porEstatuto.map(function(x){
+        return '<tr><td style="font-weight:600;">'+_esc(x.nome)+'</td>'
+          +'<td class="ar">'+x.n+'</td>'
+          +'<td class="val-c">'+fe(x.venda)+'</td>'
+          +'<td class="ar" style="font-family:var(--mono);color:'+(x.custoSUD?'var(--rdf)':'var(--td)')+';">'+fe(x.custoSUD)+'</td>'
+          +'<td class="ar" style="font-family:var(--mono);color:var(--amf);">'+fe(x.markup)+'</td>'
+          +'<td class="ar" style="font-family:var(--mono);font-weight:700;color:'+(x.resultado>=0?'var(--gnf)':'var(--rdf)')+';">'+fe(x.resultado)+'</td></tr>';
       }).join('')
       +'</tbody></table></div>');
   }
@@ -15813,6 +16086,39 @@ function exportRelatorioPDF(ano){
   } else { evp+='<div style="color:'+P.td+';font-size:12px;padding:18px 4px;">Sem orçamentos adjudicados em '+ano+'.</div>'; }
   evp+='</div>';
 
+  // ---- POR ESTATUTO (passo 8, 2026-09-29, pedido do Mike, B36) ------------
+  /* claude/capitulo-o-ano-decisao.md, Parte II, §9c: "No PDF anual — uma
+     folha nova, 'Por estatuto'. É a forma que o documento já tem (regra do
+     Mike: cada tópico começa numa folha nova), e o painel 'O que vai no
+     PDF' já liga e desliga tópicos: entra como mais um interruptor."
+     O interruptor é o MESMO 'estatuto' que o passo 7 (B35) criou para a
+     tabela do ecrã — nenhum segundo criado aqui (ver REL_CFG.secs, acima
+     na função relContas). "Nunca no PDF do cliente" (§9c): esta função é o
+     Relatório Anual interno, nunca o PDF de orçamento que vai para o
+     cliente — a regra já está cumprida por estarmos na função certa; não é
+     preciso um interruptor extra para isso.
+     Mesmo molde da tabela do ecrã (passo 7): Estatuto, Orç., Valor venda,
+     Custo SUD, Markup (est.), Resultado (est.) — as duas primeiras colunas
+     de valores são factos, as duas últimas são estimativa.
+     Só entra no documento quando o ano tem mais do que um estatuto (ver a
+     montagem do documento, mais abaixo) — a mesma regra da tabela do ecrã
+     e da caixa do painel Valor venda: com só "Normal" a folha inteira
+     repetiria, numa única linha, os totais que a capa e a Visão financeira
+     já mostram — pior aqui do que no ecrã, porque seria uma folha A4 gasta
+     nisso. */
+  var estp=sec('Por estatuto');
+  estp+='<div style="font-size:10px;color:'+P.td+';margin-bottom:14px;line-height:1.6;">Mesma classificação dos orçamentos nos Mapas. As duas primeiras colunas de valores são factos; markup e resultado são estimativa.</div>';
+  estp+='<table><thead><tr>'+th('Estatuto')+th('Orç.',1)+th('Valor venda',1)+th('Custo SUD',1)+th('Markup (est.)',1)+th('Resultado (est.)',1)+'</tr></thead><tbody>';
+  estp+=(C.porEstatuto||[]).map(function(x){return '<tr>'
+    +'<td style="padding:9px 8px;border-bottom:1px solid '+P.border+';font-size:11px;color:'+P.tp+';font-weight:600;">'+x.nome+'</td>'
+    +'<td style="padding:9px 8px;border-bottom:1px solid '+P.border+';text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:11px;">'+x.n+'</td>'
+    +'<td style="padding:9px 8px;border-bottom:1px solid '+P.border+';text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:700;">'+fe(x.venda)+'</td>'
+    +'<td style="padding:9px 8px;border-bottom:1px solid '+P.border+';text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:'+P.rd+';">'+fe(x.custoSUD)+'</td>'
+    +'<td style="padding:9px 8px;border-bottom:1px solid '+P.border+';text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:11px;color:'+P.am+';">'+fe(x.markup)+'</td>'
+    +'<td style="padding:9px 8px;border-bottom:1px solid '+P.border+';text-align:right;font-family:\'IBM Plex Mono\',monospace;font-size:11px;font-weight:700;color:'+(x.resultado>=0?P.gn:P.rd)+';">'+fe(x.resultado)+'</td></tr>';}).join('');
+  estp+='</tbody></table>';
+  estp+='</div>';
+
   // ---- EQUIPA TÉCNICA ----
   var eqp=sec('Equipa técnica');
   eqp+='<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:18px;">';
@@ -15973,6 +16279,10 @@ function exportRelatorioPDF(ano){
   var _on=function(k){return !(typeof REL_CFG!=='undefined'&&REL_CFG.secs&&REL_CFG.secs[k]===false);};
   var topicos=[fin];
   if(_on('receita'))topicos.push(evp);
+  /* passo 8 (B36): a folha só entra com mais de um estatuto no ano — ver a
+     nota na definição de `estp`, acima, junto à tabela dos eventos
+     adjudicados. */
+  if(_on('estatuto')&&C.porEstatuto&&C.porEstatuto.length>1)topicos.push(estp);
   if(_on('tecnicos'))topicos.push(eqp);
   if(_on('fornecedores'))topicos.push(subp);
   if(_on('manutencao'))topicos.push(manp);
