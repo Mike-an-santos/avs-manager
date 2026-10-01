@@ -442,6 +442,38 @@ tbody tr:hover td{background:var(--navy3);}
   .os-res-bloco{flex:1 1 45%;}
   .os-res-bloco+.os-res-bloco{border-left:none;}
 }
+/* B42 (2026-10-01, "Opção A" das três maquetes que o Mike escolheu): o
+   resumo deixa de estar sempre aberto. Fica reduzido a uma linha — o total
+   e uns pontinhos de cor (os grupos com mais peso) — que se expande ao
+   clicar, revelando os MESMOS três blocos (Por técnico/grupo/serviço) de
+   sempre; nada nesses blocos mudou. O bloco "Total gasto" (que era um
+   quarto cartão) passou a viver só aqui no cabeçalho. */
+.os-res-cab{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;}
+.os-res-cab:hover .os-res-seta{color:var(--tp);}
+.os-res-cab-esq{display:flex;align-items:baseline;gap:14px;}
+.os-res-cab .os-res-tot{font-size:20px;}
+.os-res-dots{display:flex;align-items:center;gap:5px;}
+.os-res-dot{width:7px;height:7px;border-radius:50%;flex:none;}
+.os-res-seta{flex:none;color:var(--td);font-size:10px;transition:transform .15s;}
+.os-res-seta.aberto{transform:rotate(180deg);}
+.os-res-det{max-height:0;overflow:hidden;transition:max-height .22s ease;}
+.os-res-det.aberto{max-height:220px;}
+.os-res-det .os-res{padding-top:14px;}
+/* A busca por texto (título ou técnico) vive AO LADO do resumo, não dentro
+   dele — é um <input> estático (nunca reescrito por innerHTML), para nunca
+   repetir o tipo de falha da B41 (um campo vivo apagado a meio da escrita). */
+.osz-resumo-linha{display:flex;align-items:flex-start;gap:14px;width:100%;}
+.osz-resumo-linha #os-hist-res{flex:1;min-width:0;}
+.osz-busca{flex:none;width:210px;max-width:40%;display:flex;align-items:center;gap:6px;
+  background:var(--navy3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;}
+.osz-busca svg{flex:none;width:12px;height:12px;stroke:var(--td);fill:none;stroke-width:2;}
+.osz-busca input{background:none;border:none;outline:none;color:var(--tp);font-size:11.5px;width:100%;font-family:var(--font);}
+.osz-busca input::placeholder{color:var(--td);}
+.osz-busca.on{border-color:var(--copper);}
+@media(max-width:700px){
+  .osz-resumo-linha{flex-wrap:wrap;}
+  .osz-busca{width:100%;max-width:none;}
+}
 .os-date-ti{-webkit-appearance:none;appearance:none;background:var(--navy3);border:2px solid var(--bl);border-radius:4px;outline:none;color:var(--tp);font-family:var(--mono);font-weight:700;font-size:11px;width:112px;height:26px;box-sizing:border-box;padding:2px 6px;text-align:center;color-scheme:dark;transition:.2s;}
 .os-date-ti:focus{border-color:var(--copper);}
 .os-date-ti::-webkit-inner-spin-button,.os-date-ti::-webkit-outer-spin-button,.os-date-ti::-webkit-clear-button{-webkit-appearance:none;appearance:none;display:none;width:0;height:0;margin:0;}
@@ -474,11 +506,32 @@ tbody tr:hover td{background:var(--navy3);}
 .os-sug-vazio{padding:6px 10px;font-size:11px;color:var(--td);font-style:italic;}
 .os-tot-v{color:var(--cl);font-family:var(--mono);font-weight:700;font-size:12px;}
 /* Historico: barras baixas, so com data de emissao, titulo e grupo */
-.os-hb{display:flex;align-items:center;gap:12px;padding:6px 10px 6px 12px;margin-bottom:4px;background:var(--navy2);border:1px solid var(--bl);border-radius:6px;max-width:520px;cursor:pointer;transition:.15s;}
+/* B42 (2026-10-01, "Opção A" escolhida pelo Mike, de três maquetes): o
+   max-width:520px aqui ficou esquecido do desenho de DUAS colunas (B39) —
+   o B40 pôs a lista a ocupar a largura toda do painel, mas cada ficha
+   continuava presa a 520px, sobrando um vão morto vazio à direita de cada
+   uma (visível no print que o Mike mandou). Sai por completo: a ficha
+   passa a ocupar a largura real da lista. */
+.os-hb{display:flex;align-items:center;gap:12px;padding:6px 10px 6px 12px;margin-bottom:4px;background:var(--navy2);border:1px solid var(--bl);border-radius:6px;cursor:pointer;transition:.15s;}
 .os-hb:hover{border-color:var(--cl);background:var(--navy3);}
 .os-hb-data{flex-shrink:0;width:80px;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--cl);}
 .os-hb-tit{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.os-hb-gr{flex-shrink:0;font-size:11px;color:var(--ts);white-space:nowrap;}
+/* O grupo passa de texto simples a uma etiqueta colorida (a MESMA cor da
+   risca à esquerda da ficha, osCorDe() — ver mais abaixo); a cor em si vem
+   inline, por ficha. */
+.os-hb-gr{flex-shrink:0;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:5px;white-space:nowrap;}
+/* A risca de cor à esquerda da ficha (cor do grupo) e os círculos do(s)
+   técnico(s) — as duas pistas visuais que a Opção A acrescentou para se
+   distinguir uma ficha de outra num relance, sem abrir nada. */
+.os-hb-acc{flex:none;align-self:stretch;width:3px;border-radius:2px;}
+.os-hb-avs{flex:none;display:flex;align-items:center;}
+.os-hb-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:9px;font-weight:700;color:#0b1220;border:2px solid var(--navy2);flex:none;}
+.osz-lista .os-hb:hover .os-hb-av{border-color:var(--navy3);}
+.os-hb-av+.os-hb-av,.os-hb-av-mais{margin-left:-7px;}
+.os-hb-av-mais{width:20px;height:20px;border-radius:50%;background:var(--navy4);color:var(--td);flex:none;
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;font-weight:700;
+  border:2px solid var(--navy2);}
 /* Painel de detalhe de um servico guardado */
 .os-det-l{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--bl);font-size:12px;}
 .os-det-l .k{color:var(--td);}
@@ -1226,8 +1279,18 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
   font-weight:700;color:var(--cl);white-space:nowrap;}
 .osz-t .l{flex:1;height:1px;background:var(--border);}
 .osz-t-c{font-size:10px;font-family:var(--mono);color:var(--td);white-space:nowrap;}
+/* B42 (2026-10-01, bug apanhado pelo Mike): o `overflow:hidden` aqui existia
+   só para o cartão ganhar cantos arredondados — mas também cortava, pela
+   base, QUALQUER coisa que tentasse abrir por cima e passasse do fundo do
+   cartão: a roda de Semana (que precisa de ~340px de altura) e os popovers
+   "+N mais" do resumo. Com um histórico curto (o cartão inteiro baixo), a
+   roda ficava cortada a meio — foi o que o Mike viu e mandou o print. Sai
+   daqui; os dois sítios que mesmo precisavam de recortar os próprios cantos
+   (o topo do painel e o fundo da lista) ganham o arredondamento sozinhos,
+   mais abaixo (`.osz-lista`) — e nenhum deles tem nada que precise de
+   escapar para fora de si próprio. */
 .osz-reg{display:flex;flex-direction:column;background:var(--navy2);border:1px solid var(--border);
-  border-radius:11px;overflow:hidden;}
+  border-radius:11px;}
 /* B40 (2026-09-30, pedido do Mike): o layout de DUAS COLUNAS (B39: esquerda
    com filtros+lista, direita fixa a 340px com o resumo) deixava um vão morto
    na coluna esquerda — a barra de filtros só precisa de ~800px numa linha,
@@ -1273,7 +1336,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .osz-datas input[type=date]{background:none;border:none;outline:none;color:var(--tp);font-size:11px;
   font-family:var(--mono);font-weight:700;width:98px;}
 .osz-datas .tr{color:var(--td);}
-.osz-lista{flex:1;min-height:0;overflow-y:auto;max-height:420px;}
+.osz-lista{flex:1;min-height:0;overflow-y:auto;max-height:420px;border-radius:0 0 11px 11px;}
 .osz-vazio{padding:26px 14px;text-align:center;color:var(--td);font-style:italic;font-size:12px;}
 /* Dentro do cartao, as fichas deixam de ser caixas com moldura propria — isso
    fazia caixas dentro de caixas — e passam a linhas separadas por um fio. */
@@ -2740,6 +2803,19 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
           <span class="l"></span><span class="osz-t-c" id="os-z2-c"></span></div>
         <div class="osz-reg">
           <div class="osz-topo">
+            <!-- B42 (2026-10-01, "Opção A" das três maquetes): o resumo e a busca
+                 sobem para a primeira linha (o que se quer ver OU procurar de
+                 imediato); os filtros descem para a segunda. O campo de busca é
+                 estático — nunca é reescrito por osRenderResumo()/osRenderHist() —
+                 para nunca repetir o tipo de falha da B41 (um campo vivo apagado a
+                 meio da escrita por um innerHTML que o redesenha). -->
+            <div class="osz-resumo-linha">
+              <span id="os-hist-res" style="flex:1;min-width:0;"></span>
+              <span class="osz-busca">
+                <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="5"/><line x1="11" y1="11" x2="14.5" y2="14.5"/></svg>
+                <input id="os-busca" placeholder="Procurar título ou técnico…" oninput="osBuscaMudou(this.value)">
+              </span>
+            </div>
             <div class="osz-bar">
               <span id="os-filtros" style="display:contents;"></span>
               <span class="sem-wrap">
@@ -2755,7 +2831,6 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
                 </div>
               </span>
             </div>
-            <div id="os-hist-res"></div>
           </div>
           <div class="osz-lista" id="os-hist"></div>
         </div>
@@ -4114,7 +4189,7 @@ let OS_HIST=[];
    "ate" são sempre as datas reais que decidem o filtro (REGRA O: nada
    derivado se guarda a mais — o mês e a semana convertem-se logo em datas).
    "semana" fica só para o botão saber que número mostrar. */
-let osFiltro={periodo:'',de:'',ate:'',semana:null,grupo:'',tec:''};
+let osFiltro={periodo:'',de:'',ate:'',semana:null,grupo:'',tec:'',busca:''};
 /* ESTATUTOS DOS ORÇAMENTOS — passo 2, 2026-09-29, pedido do Mike
    (claude/capitulo-o-ano-decisao.md, Parte II). Um registo pequeno, gerido num
    painel no molde dos grupos dos Outros serviços (OS_GRUPOS, acima) — mesma
@@ -16989,10 +17064,18 @@ function osPassaFiltro(sv,l){
   if(f.ate&&(l.data||'')>f.ate)return false;
   if(f.grupo&&sv.grupo!==f.grupo)return false;
   if(f.tec&&l.tecNome!==f.tec)return false;
+  // B42: a busca por texto (título, grupo, técnico ou serviço da barra) é só
+  // mais uma condição da mesma conjunção — entra na lista quem já passava E
+  // tem a palavra procurada nalgum destes quatro campos.
+  if(f.busca){
+    var q=f.busca.toLowerCase();
+    var alvo=((sv.titulo||'')+' '+(sv.grupo||'')+' '+(l.tecNome||'')+' '+(l.servico||'')).toLowerCase();
+    if(alvo.indexOf(q)<0)return false;
+  }
   return true;
 }
 function osHaFiltro(){
-  var f=osFiltro;return !!(f.periodo||f.grupo||f.tec);
+  var f=osFiltro;return !!(f.periodo||f.grupo||f.tec||f.busca);
 }
 
 // Barras de um servico que passam no filtro. Um servico SEM barras nenhumas
@@ -17003,6 +17086,29 @@ function osHistPassam(sv){
   if(!linhas.length)return osHaFiltro()?null:[];
   var p=linhas.filter(function(l){return osPassaFiltro(sv,l);});
   return p.length?p:null;
+}
+// ---- Cor por nome (B42) -----------------------------------------------------
+// Grupo e técnico são texto livre — não há uma lista fixa de "grupos
+// possíveis" para lhes dar cor uma a uma, ao contrário dos quatro blocos do
+// resumo (OS_RES_CORES, a seguir). Em vez disso, a MESMA palavra dá sempre a
+// MESMA cor (um hash simples do texto escolhe uma de sete cores já usadas
+// noutras zonas da aplicação — nenhuma cor nova) — e cores diferentes para
+// palavras diferentes a maior parte das vezes, que é tudo o que se precisa
+// para distinguir fichas num relance (a risca à esquerda da ficha, a
+// etiqueta do grupo, os círculos do(s) técnico(s), os pontinhos do resumo).
+var OS_COR_PALETA=[
+  {c:'var(--cl)',  rgb:'212,149,110'},
+  {c:'var(--blf)', rgb:'91,163,217'},
+  {c:'var(--gnf)', rgb:'82,196,122'},
+  {c:'var(--puf)', rgb:'155,127,232'},
+  {c:'var(--amf)', rgb:'212,144,42'},
+  {c:'var(--tlf)', rgb:'64,200,184'},
+  {c:'var(--rdf)', rgb:'217,96,96'}
+];
+function osCorDe(texto){
+  var s=String(texto||''),h=0;
+  for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0;}
+  return OS_COR_PALETA[Math.abs(h)%OS_COR_PALETA.length];
 }
 // ---- Painel de resultados --------------------------------------------------
 // Le exactamente o mesmo conjunto que a lista mostra (osHistPassam), para os
@@ -17093,18 +17199,39 @@ if(document.addEventListener)document.addEventListener('click',function(e){
   document.querySelectorAll('.os-res-pop.on').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.os-res-mais.aberto').forEach(function(b){b.classList.remove('aberto');});
 });
+// B42: o resumo nasce sempre FECHADO — é um relance (total + pontinhos), não
+// uma parede de números. Guarda-se um único estado porque só existe um
+// resumo no ecrã (tal como SEM_RODA_CFG só precisa de um popover aberto de
+// cada vez). Abrir/fechar é só CSS (max-height) — não torna a desenhar nada,
+// por isso nunca perde o estado de um popover "+N mais" que esteja aberto.
+var OS_RES_ABERTO=false;
+function osResToggle(){
+  OS_RES_ABERTO=!OS_RES_ABERTO;
+  var det=document.getElementById('os-res-det'),seta=document.getElementById('os-res-seta');
+  if(det)det.classList.toggle('aberto',OS_RES_ABERTO);
+  if(seta)seta.classList.toggle('aberto',OS_RES_ABERTO);
+}
 function osRenderResumo(){
   var box=document.getElementById('os-hist-res');if(!box)return;
   if(!OS_HIST.length){box.innerHTML='';return;}
   var d=osResDados();
   var ct=OS_RES_CORES.total;
-  var totalStyle='--mk:'+ct.mk+';--nm:'+ct.nm+';--wash2:rgba('+ct.rgb+',.18);';
-  var h='<div class="os-res">'
-    +'<div class="os-res-bloco" style="'+totalStyle+'"><div class="os-res-top">'
-      +'<div class="os-res-ic">'+OS_RES_ICONES.total+'</div><div class="os-res-lbl">Total gasto</div></div>'
-      +'<div class="os-res-tot">'+fmtEur(d.total)+'</div>'
-      +'<div class="os-res-sub">'+d.servicos+(d.servicos===1?' serviço':' serviços')+'</div>'
-    +'</div>';
+  // Os pontinhos do cabeçalho: até três grupos, os de maior peso — a mesma
+  // cor (osCorDe) que a risca de cada ficha na lista vai usar, para o
+  // resumo e a lista lerem-se como a mesma linguagem visual.
+  var gruposOrd=Object.keys(d.porGrupo).sort(function(a,b){return d.porGrupo[b]-d.porGrupo[a];});
+  var dots=gruposOrd.slice(0,3).map(function(g){
+    return '<span class="os-res-dot" style="background:'+osCorDe(g).c+'" title="'+psEsc(g)+'"></span>';
+  }).join('');
+  var h='<div class="os-res-cab" style="--nm:'+ct.nm+';" onclick="osResToggle()">'
+      +'<div class="os-res-cab-esq">'
+        +'<div><div class="os-res-tot">'+fmtEur(d.total)+'</div>'
+        +'<div class="os-res-sub">'+d.servicos+(d.servicos===1?' serviço':' serviços')+' no período</div></div>'
+        +'<div class="os-res-dots">'+dots+'</div>'
+      +'</div>'
+      +'<span class="os-res-seta'+(OS_RES_ABERTO?' aberto':'')+'" id="os-res-seta">▾</span>'
+    +'</div>'
+    +'<div class="os-res-det'+(OS_RES_ABERTO?' aberto':'')+'" id="os-res-det"><div class="os-res">';
   if(!d.servicos){
     h+='<div class="os-res-bloco os-res-bloco-vazio"><div class="os-res-vazio">Nada a repartir com estes filtros.</div></div>';
   } else {
@@ -17112,7 +17239,7 @@ function osRenderResumo(){
      +osResBloco('grupo','Por grupo',d.porGrupo,d.total)
      +osResBloco('servico','Por serviço',d.porServico,d.total);
   }
-  h+='</div>';
+  h+='</div></div>';
   box.innerHTML=h;
 }
 // Uma <tr> por tecnico: Data, Tecnico, Servico, Recibo, Cachet e o x. O Grupo e
@@ -17245,9 +17372,30 @@ function osHistEmissao(sv){
   if(!d||isNaN(d.getTime()))return '—';
   return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
 }
+// Os circulos do(s) tecnico(s) de uma ficha (B42) — ate dois, pela ordem em
+// que aparecem nas barras que passam no filtro, sem repetir nome; o resto
+// fica atras de um "+N" (sem popover proprio: e so para o relance, o painel
+// de detalhe ja lista todos ao abrir a ficha).
+function osHistAvataresHTML(passam){
+  var vistos={},nomes=[];
+  (passam||[]).forEach(function(l){
+    var n=(l.tecNome||'').trim();
+    if(n&&!vistos[n]){vistos[n]=1;nomes.push(n);}
+  });
+  if(!nomes.length)return '';
+  var MAX=2;
+  var h='<span class="os-hb-avs">'+nomes.slice(0,MAX).map(function(n){
+    return '<span class="os-hb-av" style="background:'+osCorDe(n).c+'" title="'+psEsc(n)+'">'+psEsc(n.charAt(0).toUpperCase())+'</span>';
+  }).join('');
+  if(nomes.length>MAX)h+='<span class="os-hb-av-mais" title="'+psEsc(nomes.slice(MAX).join(', '))+'">+'+(nomes.length-MAX)+'</span>';
+  return h+'</span>';
+}
 // Cada ficha mostra so tres coisas: data de emissao, titulo e grupo. Tudo o
 // resto (barras, tecnicos, recibos, valores) fica no painel que abre ao clicar
 // na data — assim a lista fica curta e legivel mesmo com muitos servicos.
+// B42: ganhou mais duas pistas visuais (a risca de cor do grupo e o(s)
+// circulo(s) do(s) tecnico(s)) — nenhuma delas muda o que a ficha GUARDA,
+// so como se le num relance (ver osCorDe, mais acima).
 function osRenderHist(){
   var box=document.getElementById('os-hist');if(!box)return;
   if(!OS_HIST.length){
@@ -17271,10 +17419,13 @@ function osRenderHist(){
        sem abrir cada uma. So conta o que passa no filtro, para bater certo com
        a soma ao lado. */
     var valLinha=passam.reduce(function(t,l){return t+(+l.valor||0);},0);
+    var corGr=sv.grupo?osCorDe(sv.grupo):null;
     html+='<div class="os-hb" title="Ver o serviço guardado" onclick="osHistAbrir('+i+')">'
+      +'<span class="os-hb-acc" style="background:'+(corGr?corGr.c:'var(--border)')+'"></span>'
       +'<div class="os-hb-data">'+psEsc(osHistEmissao(sv))+'</div>'
+      +osHistAvataresHTML(passam)
       +'<div class="os-hb-tit">'+psEsc(sv.titulo||servs[0]||'(sem nome)')+'</div>'
-      +'<div class="os-hb-gr">'+(sv.grupo?psEsc(sv.grupo):'—')+'</div>'
+      +(sv.grupo?'<div class="os-hb-gr" style="color:'+corGr.c+';background:rgba('+corGr.rgb+',.16)">'+psEsc(sv.grupo)+'</div>':'')
       +'<div class="os-hb-v">'+fmtEur(valLinha)+'</div>'
       +'<button class="slot-rm" title="Apagar do histórico" onclick="event.stopPropagation();osHistApagar('+i+')">×</button>'
     +'</div>';
@@ -17517,7 +17668,20 @@ function osFiltroAplicar(){
   osRenderHist();
 }
 function osFiltroLimpar(){
-  osFiltro.periodo='';osFiltro.de='';osFiltro.ate='';osFiltro.semana=null;osFiltro.grupo='';osFiltro.tec='';
+  osFiltro.periodo='';osFiltro.de='';osFiltro.ate='';osFiltro.semana=null;osFiltro.grupo='';osFiltro.tec='';osFiltro.busca='';
+  var sb=document.getElementById('os-busca');
+  if(sb){sb.value='';if(sb.parentElement)sb.parentElement.classList.remove('on');}
+  osRenderFiltros();
+  osRenderHist();
+}
+// B42: a caixa de busca (#os-busca) é estática — vive fora do #os-filtros,
+// nunca é redesenhada por osRenderFiltros()/osRenderHist() — por isso é
+// seguro chamar os dois a cada tecla sem repetir a falha da B41 (um campo
+// vivo apagado a meio da escrita por um innerHTML que o redesenha).
+function osBuscaMudou(v){
+  osFiltro.busca=v||'';
+  var campo=document.getElementById('os-busca');
+  if(campo&&campo.parentElement)campo.parentElement.classList.toggle('on',!!osFiltro.busca);
   osRenderFiltros();
   osRenderHist();
 }
