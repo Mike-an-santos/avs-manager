@@ -393,23 +393,55 @@ tbody tr:hover td{background:var(--navy3);}
    substituidos pelos botoes redondos. O desenho deles ficou aqui quinze regras,
    e o codigo que os movia ficou no ficheiro, a procurar elementos que ja nao
    existiam. Saiu tudo a 2026-09-13. */
-/* Painel de resultados, a direita das barras do historico */
-.os-res{background:var(--navy2);border:1px solid var(--bl);border-radius:8px;padding:14px 16px;}
-.os-res-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--td);margin-bottom:4px;}
-.os-res-tot{font-family:var(--mono);font-size:21px;font-weight:700;color:var(--cl);line-height:1.1;}
-.os-res-sub{font-size:11px;color:var(--ts);margin-top:5px;}
-.os-res-bloco{margin-top:14px;padding-top:12px;border-top:1px solid var(--bl);}
+/* Painel de resultados — B40 (2026-09-30, pedido do Mike): deixou de ser UM
+   cartao com moldura propria (fundo, borda, cantos) empilhando Total, depois
+   Por tecnico numa grelha larga, depois Por grupo/Por servico lado a lado.
+   Passa a QUATRO blocos iguais, lado a lado, a largura toda do painel — sem
+   caixa a volta de cada um ("sem caixotes"): so uma barra colorida no topo,
+   um icone e o numero dao a identidade de cada bloco. As cores (--mk tom
+   escuro para a marca, --nm tom claro para o numero, --wash2 para o fundo
+   ligeiro do icone) sao definidas inline por bloco, a partir de
+   OS_RES_CORES — as mesmas quatro cores ja validadas no Dashboard/«O ano»,
+   nenhuma nova. Cada bloco de reparticao mostra so os 4 maiores por valor;
+   o resto fica atras de um "+N mais…" que abre a lista completa numa janela
+   flutuante ancorada ao proprio bloco (osResPopToggle) — a mesma mecanica
+   que a roda da Semana (SEM_RODA_CFG) ja usa nesta sub-aba. */
+.os-res{display:flex;align-items:stretch;width:100%;}
+.os-res-bloco{position:relative;flex:1;min-width:0;padding:12px 20px 14px;border-top:3px solid var(--mk);}
+.os-res-bloco+.os-res-bloco{border-left:1px solid var(--border);}
+.os-res-bloco-vazio{display:flex;align-items:center;justify-content:center;border-top-color:var(--border);}
+.os-res-top{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.os-res-ic{flex:none;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  background:var(--wash2);color:var(--mk);}
+.os-res-ic svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.os-res-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--td);}
+.os-res-tot{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--nm);line-height:1;}
+.os-res-sub{font-size:10px;color:var(--td);margin-top:3px;}
+.os-res-items{display:flex;flex-direction:column;gap:6px;}
 .os-res-l{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11px;}
-.os-res-n{color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
-.os-res-v{font-family:var(--mono);font-weight:700;color:var(--tp);white-space:nowrap;}
-.os-res-bar{height:3px;background:var(--navy4);border-radius:2px;margin:3px 0 9px;overflow:hidden;}
-.os-res-bar i{display:block;height:100%;background:var(--cl);border-radius:2px;}
+.os-res-n{color:var(--tp);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.os-res-v{font-family:var(--mono);font-weight:700;color:var(--nm);white-space:nowrap;}
+.os-res-bar{height:2.5px;background:var(--wash2);border-radius:2px;margin-top:3px;overflow:hidden;}
+.os-res-bar i{display:block;height:100%;background:var(--mk);border-radius:2px;}
 .os-res-vazio{font-size:11px;color:var(--td);font-style:italic;}
-/* Reparticoes em grelha: aproveita a largura em vez de descer tudo em coluna */
-.os-res-items{display:grid;gap:0 20px;}
-.os-res-items.larga{grid-template-columns:repeat(auto-fill,minmax(165px,1fr));}
-.os-res-cols{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;}
-.os-res-cols .os-res-bloco{min-width:0;}
+.os-res-mais{font-size:10px;color:var(--td);font-family:var(--mono);margin-top:5px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:3px;}
+.os-res-mais:hover{color:var(--nm);}
+.os-res-mais svg{width:8px;height:8px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .15s;}
+.os-res-mais.aberto svg{transform:rotate(180deg);}
+.os-res-pop{position:absolute;top:100%;left:20px;right:20px;margin-top:6px;background:var(--navy3);
+  border:1px solid var(--border);border-top:3px solid var(--mk);border-radius:8px;padding:10px 14px 12px;
+  box-shadow:0 14px 34px rgba(0,0,0,.5);z-index:30;max-height:230px;overflow-y:auto;display:none;}
+.os-res-pop.on{display:block;}
+.os-res-pop-tit{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);
+  font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--td);margin-bottom:8px;}
+.os-res-pop-x{cursor:pointer;color:var(--td);font-size:13px;line-height:1;}
+.os-res-pop-x:hover{color:var(--tp);}
+@media(max-width:900px){
+  .os-res{flex-wrap:wrap;}
+  .os-res-bloco{flex:1 1 45%;}
+  .os-res-bloco+.os-res-bloco{border-left:none;}
+}
 .os-date-ti{-webkit-appearance:none;appearance:none;background:var(--navy3);border:2px solid var(--bl);border-radius:4px;outline:none;color:var(--tp);font-family:var(--mono);font-weight:700;font-size:11px;width:112px;height:26px;box-sizing:border-box;padding:2px 6px;text-align:center;color-scheme:dark;transition:.2s;}
 .os-date-ti:focus{border-color:var(--copper);}
 .os-date-ti::-webkit-inner-spin-button,.os-date-ti::-webkit-outer-spin-button,.os-date-ti::-webkit-clear-button{-webkit-appearance:none;appearance:none;display:none;width:0;height:0;margin:0;}
@@ -1194,12 +1226,35 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
   font-weight:700;color:var(--cl);white-space:nowrap;}
 .osz-t .l{flex:1;height:1px;background:var(--border);}
 .osz-t-c{font-size:10px;font-family:var(--mono);color:var(--td);white-space:nowrap;}
-.osz-reg{display:flex;align-items:stretch;background:var(--navy2);border:1px solid var(--border);
+.osz-reg{display:flex;flex-direction:column;background:var(--navy2);border:1px solid var(--border);
   border-radius:11px;overflow:hidden;}
-.osz-esq{flex:1 1 52%;min-width:0;border-right:1px solid var(--border);display:flex;flex-direction:column;}
-.osz-dir{flex:1 1 48%;min-width:0;padding:14px 17px;}
-.osz-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;
-  border-bottom:1px solid var(--border);flex-wrap:wrap;}
+/* B40 (2026-09-30, pedido do Mike): o layout de DUAS COLUNAS (B39: esquerda
+   com filtros+lista, direita fixa a 340px com o resumo) deixava um vão morto
+   na coluna esquerda — a barra de filtros só precisa de ~800px numa linha,
+   mas cada ficha da lista tem max-width:520px desde sempre, por isso a
+   coluna (que tinha de caber os filtros) sobrava por baixo da lista, e o
+   resumo à direita, preso a 340px, ficava apertado com vários técnicos.
+   Fica resolvido tirando os filtros e o resumo de dentro da lista: os dois
+   ganham uma linha própria (`.osz-topo`), à largura toda do painel e
+   CENTRADA — outro pedido do Mike, "para o painel ficar equilibrado" já
+   que a lista por baixo também passa a ocupar a largura toda — e a lista
+   desce para uma faixa própria, sozinha, a toda a largura: é o que se usa
+   mais vezes (abrir uma ficha, apagar, conferir uma data), por isso é quem
+   fica com o espaço. O resumo (`.os-res`, mais acima) deixa de ser uma
+   coluna fixa e passa a uma faixa horizontal sem caixa própria.
+   NOTA (mesmo dia, apanhado nos testes visuais): `.osz-topo` tem de ser
+   `align-items:stretch`, não `center`. O `#os-hist-res` (o contentor onde
+   `osRenderResumo()` injeta o `.os-res`) não tem `width` própria — com
+   `align-items:center` um filho flex sem largura definida encolhe para o
+   conteúdo ("fit-content"), por isso o `.os-res` lá dentro (que tem
+   `width:100%`) ficava a 100% de uma caixa já encolhida a meio da largura
+   real do painel, e os nomes no popover "+N mais" apareciam cortados a
+   uma letra. Com `stretch`, `#os-hist-res` ocupa sempre a largura toda do
+   `.osz-topo`, tal como `.osz-bar` (que já tinha `width:100%` explícito e
+   por isso nunca mostrou o problema). */
+.osz-topo{padding:16px 20px 16px;border-bottom:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:stretch;gap:16px;}
+.osz-bar{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;width:100%;}
 .osz-chip{font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:20px;cursor:pointer;
   background:var(--navy3);border:1px solid var(--border);color:var(--ts);
   transition:border-color .14s,color .14s;position:relative;}
@@ -1208,6 +1263,16 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .osz-chip.lim{border-style:dashed;color:var(--td);}
 .osz-chip select{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
 .osz-chip-l{pointer-events:none;}
+/* O intervalo manual "De—Até" dos Outros serviços (2026-09-30) — o mesmo chip
+   redondo dos outros filtros, só que com dois <input type=date> lá dentro em
+   vez de um <select>. */
+.osz-datas{display:flex;align-items:center;gap:6px;background:var(--navy3);border:1px solid var(--border);
+  border-radius:20px;padding:4px 12px 4px 10px;font-size:11px;font-family:var(--mono);}
+.osz-datas.on{border-color:var(--copper);background:rgba(184,115,85,.15);}
+.osz-datas label{font-size:9.5px;color:var(--ts);font-weight:600;}
+.osz-datas input[type=date]{background:none;border:none;outline:none;color:var(--tp);font-size:11px;
+  font-family:var(--mono);font-weight:700;width:98px;}
+.osz-datas .tr{color:var(--td);}
 .osz-lista{flex:1;min-height:0;overflow-y:auto;max-height:420px;}
 .osz-vazio{padding:26px 14px;text-align:center;color:var(--td);font-style:italic;font-size:12px;}
 /* Dentro do cartao, as fichas deixam de ser caixas com moldura propria — isso
@@ -1217,14 +1282,8 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .osz-lista .os-hb:last-child{border-bottom:none;}
 .osz-lista .os-hb:hover{background:var(--navy3);}
 .osz-lista .os-hb-v{flex:none;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--cl);}
-.osz-dir .os-res{background:none;border:none;padding:0;border-radius:0;}
 .osz-lista .os-hb .slot-rm{opacity:0;transition:opacity .14s;}
 .osz-lista .os-hb:hover .slot-rm,.osz-lista .os-hb:focus-within .slot-rm{opacity:1;}
-@media(max-width:980px){
-  .osz-reg{flex-wrap:wrap;}
-  .osz-esq{flex:1 1 100%;border-right:none;border-bottom:1px solid var(--border);}
-  .osz-dir{flex:1 1 100%;}
-}
 
 /* ===== OUTROS SERVICOS — o servico escreve-se num painel (2026-09-10) ========
    A barra de edicao vivia no ecra da aba, com oito colunas. As duas mais largas
@@ -2680,11 +2739,25 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
         <div class="osz-t"><span class="osz-t-n">Registados</span>
           <span class="l"></span><span class="osz-t-c" id="os-z2-c"></span></div>
         <div class="osz-reg">
-          <div class="osz-esq">
-            <div class="osz-bar" id="os-filtros"></div>
-            <div class="osz-lista" id="os-hist"></div>
+          <div class="osz-topo">
+            <div class="osz-bar">
+              <span id="os-filtros" style="display:contents;"></span>
+              <span class="sem-wrap">
+                <button class="osz-chip" id="os-sem-btn" onclick="toggleSemMenu(event,'os')">Semana</button>
+                <div id="os-sem-pop" class="sem-pop">
+                  <div class="sem-tit" id="os-sem-tit">Semana ISO</div>
+                  <div class="sem-visor">
+                    <div class="sem-faixa"></div>
+                    <div class="sem-lista" id="os-sem-lista"></div>
+                    <div class="sem-fade-t"></div>
+                    <div class="sem-fade-b"></div>
+                  </div>
+                </div>
+              </span>
+            </div>
+            <div id="os-hist-res"></div>
           </div>
-          <div class="osz-dir" id="os-hist-res"></div>
+          <div class="osz-lista" id="os-hist"></div>
         </div>
       </div>
     </div>
@@ -4032,7 +4105,16 @@ let rhHlKey=null;
 let OS_GRUPOS=[];
 let OUTROS_SERVICOS=[];
 let OS_HIST=[];
-let osFiltro={ano:'',mes:'',grupo:'',tec:''};
+/* 2026-09-30, pedido do Mike: Mês, Semana e "De—Até" passam a ser três formas
+   de escolher UM período só (nunca dois ao mesmo tempo, por baixo dos panos —
+   o mesmo raciocínio do mapaSemFiltro/VV_STATE/CPD_STATE). O "Ano" saiu da
+   barra (dossier fechado em pendentes.md a 2026-09-30): esta sub-aba não tem
+   selector de ano nenhum, tal como o Mapa de Serviços — "periodo" guarda só
+   QUAL dos três está activo (para os botões saberem o que mostrar), e "de"/
+   "ate" são sempre as datas reais que decidem o filtro (REGRA O: nada
+   derivado se guarda a mais — o mês e a semana convertem-se logo em datas).
+   "semana" fica só para o botão saber que número mostrar. */
+let osFiltro={periodo:'',de:'',ate:'',semana:null,grupo:'',tec:''};
 /* ESTATUTOS DOS ORÇAMENTOS — passo 2, 2026-09-29, pedido do Mike
    (claude/capitulo-o-ano-decisao.md, Parte II). Um registo pequeno, gerido num
    painel no molde dos grupos dos Outros serviços (OS_GRUPOS, acima) — mesma
@@ -6425,6 +6507,26 @@ var SEM_RODA_CFG={
       EQ_STATE.semana=n;
       eqRender();
     }
+  },
+  /* 2026-09-30, pedido do Mike: Outros Serviços (Recursos humanos) ganha a
+     mesma roda. Esta sub-aba não tem NENHUM selector de ano (o "Ano" saiu da
+     barra de filtros no mesmo pedido — dossier fechado em pendentes.md) — por
+     isso, exactamente como o Mapa de Serviços ('ms', acima), a semana é
+     sempre do ano corrente. A semana escolhida converte-se logo num
+     intervalo de datas (osFiltro.de/ate) — a mesma representação que o "Mês"
+     e o "De—Até" manual já usam (REGRA O: nada derivado fica guardado a mais). */
+  os:{
+    btn:'os-sem-btn', pop:'os-sem-pop', tit:'os-sem-tit', lista:'os-sem-lista',
+    ano:function(){return new Date().getFullYear();},
+    aplicar:function(ano,n){
+      var iv=semanaParaIntervalo(ano,n);
+      osFiltro.periodo='semana';
+      osFiltro.de=iv.de;
+      osFiltro.ate=iv.ate;
+      osFiltro.semana=n;
+      osRenderFiltros();
+      osRenderHist();
+    }
   }
 };
 function toggleSemMenu(e,chave){
@@ -6464,6 +6566,7 @@ function semRodaConstruir(chave){
   if(chave==='orc'&&mapaSemFiltro)semanaInicial=Math.min(Math.max(mapaSemFiltro,1),total);
   else if(chave==='cpd'&&CPD_STATE.semana)semanaInicial=Math.min(Math.max(CPD_STATE.semana,1),total);
   else if(chave==='vv'&&VV_STATE.semana)semanaInicial=Math.min(Math.max(VV_STATE.semana,1),total);
+  else if(chave==='os'&&osFiltro.semana)semanaInicial=Math.min(Math.max(osFiltro.semana,1),total);
   else{
     var hoje=semanaISO(localDate(new Date()));
     semanaInicial=(hoje.ano===ano)?hoje.semana:(hoje.ano>ano?total:1);
@@ -16736,14 +16839,16 @@ function osGuardarAuto(){
 }
 // Campos do SERVICO (Grupo, Servico, Observacoes) — nao voltam a desenhar a
 // tabela, para nao perder o foco enquanto se escreve.
+// NOTA (B41, 2026-10-01, apanhado pelo Mike): o grupo so entra na lista de
+// sugestoes (OS_GRUPOS) quando o servico e mesmo guardado — ver osGuardar.
+// Aqui, a cada letra, so se actualiza o valor do proprio servico em edicao;
+// antes, isto tambem empurrava o texto a meio da escrita para OS_GRUPOS,
+// e qualquer paragem, correcao ou saida do campo a meio ficava gravada
+// para sempre como um "grupo" a parte (foi assim que apareceram o "r" e o
+// "re", sem o Mike alguma vez os ter escrito como definitivos).
 function osUpServico(sid,campo,val){
   var sv=osAcharServico(sid);if(!sv)return;
   sv[campo]=val;
-  if(campo==='grupo'){
-    var g=(val||'').trim();
-    if(g&&!OS_GRUPOS.some(function(x){return x.toLowerCase()===g.toLowerCase();}))OS_GRUPOS.push(g);
-    osRenderGrupoDatalist();
-  }
   osGuardarAuto();
 }
 // Campos da LINHA (Data, Recibo, Cachet).
@@ -16880,14 +16985,14 @@ function osLimparTec(sid,lid){
 // ---- Filtros e desenho da tabela ------------------------------------------
 function osPassaFiltro(sv,l){
   var f=osFiltro;
-  if(f.ano&&(l.data||'').slice(0,4)!==f.ano)return false;
-  if(f.mes&&(l.data||'').slice(5,7)!==f.mes)return false;
+  if(f.de&&(l.data||'')<f.de)return false;
+  if(f.ate&&(l.data||'')>f.ate)return false;
   if(f.grupo&&sv.grupo!==f.grupo)return false;
   if(f.tec&&l.tecNome!==f.tec)return false;
   return true;
 }
 function osHaFiltro(){
-  var f=osFiltro;return !!(f.ano||f.mes||f.grupo||f.tec);
+  var f=osFiltro;return !!(f.periodo||f.grupo||f.tec);
 }
 
 // Barras de um servico que passam no filtro. Um servico SEM barras nenhumas
@@ -16920,40 +17025,94 @@ function osResDados(){
 // As reparticoes aparecem SEMPRE, mesmo com uma linha so. Esconde-las quando o
 // filtro as reduz a um unico valor era esconder precisamente o que se acabou de
 // escolher: filtrar por um tecnico e nao ver o nome dele nos resultados.
-function osResBloco(titulo,mapa,total,larga){
-  var chaves=Object.keys(mapa);
-  if(!chaves.length)return '';
-  chaves.sort(function(a,b){return mapa[b]-mapa[a];});
-  return '<div class="os-res-bloco"><div class="os-res-lbl">'+titulo+'</div>'
-    +'<div class="os-res-items'+(larga?' larga':'')+'">'
-    +chaves.map(function(k){
-      var pct=total>0?Math.round(mapa[k]/total*100):0;
-      return '<div class="os-res-it">'
-        +'<div class="os-res-l"><span class="os-res-n" title="'+psEsc(k)+'">'+psEsc(k)+'</span><span class="os-res-v">'+fmtEur(mapa[k])+'</span></div>'
-        +'<div class="os-res-bar"><i style="width:'+pct+'%;"></i></div>'
-      +'</div>';
-    }).join('')
-    +'</div>'
-  +'</div>';
+/* Cores e icones dos quatro blocos do resumo (B40) — as mesmas cores ja
+   validadas no Dashboard/«O ano»: --mk pinta a marca (barra, icone, barrinha
+   de proporcao), --nm pinta o numero (precisa de mais brilho que uma marca),
+   --wash2 e o fundo ligeiro do icone. Nenhuma cor nova. */
+var OS_RES_CORES={
+  total:  {mk:'#bd7448', nm:'#d4956e', rgb:'189,116,72'},
+  tecnico:{mk:'#4a90c8', nm:'#5ba3d9', rgb:'74,144,200'},
+  grupo:  {mk:'#c78420', nm:'#d4902a', rgb:'199,132,32'},
+  servico:{mk:'#3fae66', nm:'#52c47a', rgb:'63,174,102'}
+};
+var OS_RES_ICONES={
+  total:'<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M10.2 5.6c-.8-.7-1.8-1-2.7-.6-1.3.6-1.9 2-1.9 3s.6 2.4 1.9 3c.9.4 1.9.1 2.7-.6"/><path d="M4.3 6.6h4.2M4.3 9.4h4.2"/></svg>',
+  tecnico:'<svg viewBox="0 0 16 16"><circle cx="8" cy="5.2" r="2.5"/><path d="M3 13.2c0-2.7 2.2-4.3 5-4.3s5 1.6 5 4.3"/></svg>',
+  grupo:'<svg viewBox="0 0 16 16"><path d="M3 3.2h4.6L13 8.6l-4.8 4.8L3 8.2z"/><circle cx="5.6" cy="5.8" r=".9" fill="currentColor" stroke="none"/></svg>',
+  servico:'<svg viewBox="0 0 16 16"><path d="M10.6 3.3a2.9 2.9 0 00-3.7 3.7L2.4 12.5l1.1 1.1 5.5-4.5a2.9 2.9 0 003.7-3.7l-1.7 1.7-1.3-.3-.3-1.3z"/></svg>'
+};
+function osResItemHTML(k,v,total){
+  var pct=total>0?Math.round(v/total*100):0;
+  return '<div class="os-res-it"><div class="os-res-l"><span class="os-res-n" title="'+psEsc(k)+'">'+psEsc(k)+'</span><span class="os-res-v">'+fmtEur(v)+'</span></div>'
+    +'<div class="os-res-bar"><i style="width:'+pct+'%;"></i></div></div>';
 }
+// Cada bloco mostra so os 4 maiores por valor; o resto fica atras de um
+// "+N mais…" que abre (osResPopToggle) a lista completa numa janela
+// flutuante ancorada ao proprio bloco — a mesma mecanica que a roda da
+// Semana (SEM_RODA_CFG) ja usa nesta sub-aba.
+function osResBloco(chave,titulo,mapa,total){
+  var c=OS_RES_CORES[chave];
+  var style='--mk:'+c.mk+';--nm:'+c.nm+';--wash2:rgba('+c.rgb+',.18);';
+  var h='<div class="os-res-bloco" style="'+style+'"><div class="os-res-top">'
+    +'<div class="os-res-ic">'+OS_RES_ICONES[chave]+'</div><div class="os-res-lbl">'+titulo+'</div></div>';
+  var chaves=Object.keys(mapa);
+  if(!chaves.length)return h+'<div class="os-res-vazio">Nada a repartir.</div></div>';
+  chaves.sort(function(a,b){return mapa[b]-mapa[a];});
+  var resto=chaves.length-4;
+  h+='<div class="os-res-items">'+chaves.slice(0,4).map(function(k){return osResItemHTML(k,mapa[k],total);}).join('')+'</div>';
+  if(resto>0){
+    h+='<div class="os-res-mais" id="os-res-mais-'+chave+'" onclick="osResPopToggle(\''+chave+'\')">'
+        +'+'+resto+' mais<svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></div>'
+      +'<div class="os-res-pop" id="os-res-pop-'+chave+'">'
+        +'<div class="os-res-pop-tit">'+titulo+' — todos ('+chaves.length+')<span class="os-res-pop-x" onclick="event.stopPropagation();osResPopFechar(\''+chave+'\')">×</span></div>'
+        +chaves.map(function(k){return osResItemHTML(k,mapa[k],total);}).join('')
+      +'</div>';
+  }
+  return h+'</div>';
+}
+function osResPopToggle(chave){
+  var pop=document.getElementById('os-res-pop-'+chave);if(!pop)return;
+  var abrir=!pop.classList.contains('on');
+  document.querySelectorAll('.os-res-pop.on').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.os-res-mais.aberto').forEach(function(b){b.classList.remove('aberto');});
+  if(abrir){
+    pop.classList.add('on');
+    var btn=document.getElementById('os-res-mais-'+chave);if(btn)btn.classList.add('aberto');
+  }
+}
+function osResPopFechar(chave){
+  var pop=document.getElementById('os-res-pop-'+chave);if(pop)pop.classList.remove('on');
+  var btn=document.getElementById('os-res-mais-'+chave);if(btn)btn.classList.remove('aberto');
+}
+// document.addEventListener protegido: o ambiente MINIMO da bateria de
+// logica (testes-recursos-humanos.js) da um `document` sem addEventListener
+// (so getElementById/querySelector), para apanhar codigo que dependa de mais
+// do que a app expõe mesmo como global — ver o cabecalho desse ficheiro.
+if(document.addEventListener)document.addEventListener('click',function(e){
+  if(e.target.closest&&(e.target.closest('.os-res-pop')||e.target.closest('.os-res-mais')))return;
+  document.querySelectorAll('.os-res-pop.on').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.os-res-mais.aberto').forEach(function(b){b.classList.remove('aberto');});
+});
 function osRenderResumo(){
   var box=document.getElementById('os-hist-res');if(!box)return;
   if(!OS_HIST.length){box.innerHTML='';return;}
   var d=osResDados();
-  var h='<div class="os-res">';
-  h+='<div class="os-res-lbl">Total gasto</div>';
-  h+='<div class="os-res-tot">'+fmtEur(d.total)+'</div>';
-  h+='<div class="os-res-sub">'+d.servicos+(d.servicos===1?' serviço':' serviços')+'</div>';
-  // Os tecnicos sao a lista que mais cresce: vao em grelha larga, tantos por
-  // linha quantos couberem. Grupo e servico sao listas curtas e ficam lado a
-  // lado, a ocupar metade cada um.
-  var blocos=osResBloco('Por técnico',d.porTec,d.total,true);
-  var g=osResBloco('Por grupo',d.porGrupo,d.total);
-  var e=osResBloco('Por serviço',d.porServico,d.total);
-  if(g&&e)blocos+='<div class="os-res-cols">'+g+e+'</div>';
-  else blocos+=g+e;
-  if(!blocos)blocos='<div class="os-res-bloco"><div class="os-res-vazio">Nada a repartir com estes filtros.</div></div>';
-  h+=blocos+'</div>';
+  var ct=OS_RES_CORES.total;
+  var totalStyle='--mk:'+ct.mk+';--nm:'+ct.nm+';--wash2:rgba('+ct.rgb+',.18);';
+  var h='<div class="os-res">'
+    +'<div class="os-res-bloco" style="'+totalStyle+'"><div class="os-res-top">'
+      +'<div class="os-res-ic">'+OS_RES_ICONES.total+'</div><div class="os-res-lbl">Total gasto</div></div>'
+      +'<div class="os-res-tot">'+fmtEur(d.total)+'</div>'
+      +'<div class="os-res-sub">'+d.servicos+(d.servicos===1?' serviço':' serviços')+'</div>'
+    +'</div>';
+  if(!d.servicos){
+    h+='<div class="os-res-bloco os-res-bloco-vazio"><div class="os-res-vazio">Nada a repartir com estes filtros.</div></div>';
+  } else {
+    h+=osResBloco('tecnico','Por técnico',d.porTec,d.total)
+     +osResBloco('grupo','Por grupo',d.porGrupo,d.total)
+     +osResBloco('servico','Por serviço',d.porServico,d.total);
+  }
+  h+='</div>';
   box.innerHTML=h;
 }
 // Uma <tr> por tecnico: Data, Tecnico, Servico, Recibo, Cachet e o x. O Grupo e
@@ -17006,6 +17165,14 @@ function osGuardar(){
   // Devolve se guardou mesmo: o painel so se fecha quando alguma coisa foi
   // arquivada. Fechar sobre um aviso de erro dava a entender que tinha guardado.
   if(osServicoVazio(sv)){showToast('Não há nada para guardar.','err');return false;}
+  // So aqui — ao guardar de vez — e que o grupo entra na lista de sugestoes
+  // (B41). Nada do que fica por guardar (descartado, ou so a meio da escrita)
+  // chega a tocar em OS_GRUPOS.
+  var g=(sv.grupo||'').trim();
+  if(g&&!OS_GRUPOS.some(function(x){return x.toLowerCase()===g.toLowerCase();})){
+    OS_GRUPOS.push(g);
+    osRenderGrupoDatalist();
+  }
   var copia=JSON.parse(JSON.stringify(sv));
   copia.guardadoEm=new Date().toISOString();
   OS_HIST.unshift(copia);
@@ -17234,30 +17401,42 @@ function osChip(id, etiqueta, valor, opcoes, aoMudar){
   return h;
 }
 function osRenderFiltros(){
-  var anos={},gUsados={},tUsados={};
+  var gUsados={},tUsados={};
   OS_HIST.forEach(function(sv){
     if(sv.grupo)gUsados[sv.grupo]=1;
     (sv.linhas||[]).forEach(function(l){
-      if(l.data)anos[l.data.slice(0,4)]=1;
       if(l.tecNome)tUsados[l.tecNome]=1;
     });
   });
   var caixa=document.getElementById('os-filtros');
   if(caixa){
-    var opAno=[{v:'',t:'Todos os anos'}].concat(Object.keys(anos).sort().map(function(a){return {v:a,t:a};}));
     var opMes=[{v:'',t:'Todos os meses'}].concat(OS_MESES_LB.map(function(m,i){
       return {v:String(i+1).padStart(2,'0'), t:m};}));
     var opGr=[{v:'',t:'Todos os grupos'}].concat(Object.keys(gUsados).sort().map(function(g){return {v:g,t:g};}));
     var opTe=[{v:'',t:'Todos os técnicos'}].concat(Object.keys(tUsados).sort().map(function(t){return {v:t,t:t};}));
-    var mesLb=osFiltro.mes?OS_MESES_LB[parseInt(osFiltro.mes,10)-1]:'';
+    var mesAtivo=osFiltro.periodo==='mes';
+    var mesVal=mesAtivo?osFiltro.de.slice(5,7):'';
+    var mesLb=mesAtivo?OS_MESES_LB[parseInt(mesVal,10)-1]:'';
+    var datasAtivo=osFiltro.periodo==='datas';
     caixa.innerHTML=
-       osChip('os-f-ano','Todos os anos',osFiltro.ano,opAno,'osFiltroAplicar()')
-      +osChip('os-f-mes','Todos os meses',mesLb,opMes,"osMesEscolher(this.value)")
+       osChip('os-f-mes','Todos os meses',mesLb,opMes,"osPeriodoMes(this.value)")
+      +'<span class="osz-datas'+(datasAtivo?' on':'')+'">'
+        +'<label>De</label><input type="date" id="os-f-de" value="'+(datasAtivo?osFiltro.de:'')+'" onchange="osPeriodoData()">'
+        +'<span class="tr">—</span>'
+        +'<label>Até</label><input type="date" id="os-f-ate" value="'+(datasAtivo?osFiltro.ate:'')+'" onchange="osPeriodoData()">'
+      +'</span>'
       +osChip('os-f-grupo','Todos os grupos',osFiltro.grupo,opGr,'osFiltroAplicar()')
       +osChip('os-f-tec','Todos os técnicos',osFiltro.tec,opTe,'osFiltroAplicar()')
       +(osHaFiltro()?'<span class="osz-chip lim" onclick="osFiltroLimpar()" title="Limpar os filtros">limpar</span>':'');
     /* o <select> do mes guarda o numero, mas o botao mostra o nome */
-    var sm=document.getElementById('os-f-mes'); if(sm)sm.value=osFiltro.mes||'';
+    var sm=document.getElementById('os-f-mes'); if(sm)sm.value=mesVal;
+  }
+  /* O botão "Semana" é estático (vive fora deste innerHTML, tal como o
+     sem-btn-orc do Mapa de orçamentos) — só o texto e o estado "on" mudam. */
+  var semBtn=document.getElementById('os-sem-btn');
+  if(semBtn){
+    if(osFiltro.periodo==='semana'){semBtn.textContent='Sem. '+osFiltro.semana;semBtn.classList.add('on');}
+    else{semBtn.textContent='Semana';semBtn.classList.remove('on');}
   }
   /* Aqui chamavam-se mais duas coisas: uma desenhava a grelha dos meses, a outra
      marcava o funil. As duas saiam na primeira linha desde 2026-09-04, porque os
@@ -17286,13 +17465,40 @@ function osTecNomes(str){
 }
 // Meses abreviados, como no seletor do Calendario.
 var OS_MESES=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-// O mes nao vem de um <select>: e escolhido na grelha e guardado em osFiltro.mes.
-// Clicar em "Todos" (mm vazio) limpa o mes; clicar no mes ja escolhido tambem.
-function osMesEscolher(mm){
-  /* Do <select> vem sempre um valor: escolher "Todos os meses" manda ''. A regra
-     antiga — carregar no mes ja escolhido limpa-o — era da grelha de botoes e
-     aqui so faria o mes desaparecer sem se perceber porque. */
-  osFiltro.mes=mm||'';
+// O mes nao vem de uma grelha: e escolhido no <select> do chip, e converte-se
+// logo num intervalo de datas (osFiltro.de/ate) — a MESMA representação que a
+// Semana e o "De—Até" manual usam, para nunca haver dois caminhos de filtro a
+// dizerem coisas diferentes (2026-09-30). Sem selector de "Ano" nesta sub-aba
+// (dossier fechado, pendentes.md), o mês é sempre do ANO CORRENTE — tal como
+// o "Mês" do Mapa de Serviços, que também não tem selector de ano nenhum. Para
+// um mês de outro ano, o filtro manual "De—Até" continua a poder qualquer data.
+function osPeriodoMes(mm){
+  mm=mm||'';
+  if(!mm){
+    // "Todos os meses": larga o período (mas não mexe em grupo/técnico).
+    osFiltro.periodo='';osFiltro.de='';osFiltro.ate='';osFiltro.semana=null;
+    osRenderFiltros();
+    osRenderHist();
+    return;
+  }
+  var y=new Date().getFullYear();
+  var last=new Date(y,parseInt(mm,10),0).getDate();
+  osFiltro.periodo='mes';
+  osFiltro.de=y+'-'+mm+'-01';
+  osFiltro.ate=y+'-'+mm+'-'+String(last).padStart(2,'0');
+  osFiltro.semana=null;
+  osRenderFiltros();
+  osRenderHist();
+}
+// O intervalo manual "De—Até" (2026-09-30, pedido do Mike) — o mesmo padrão do
+// ms-from/ms-to do Mapa de Serviços, só que aqui os dois campos vivem dentro
+// do mesmo chip. Cada campo pode ficar vazio (sem limite desse lado); só passa
+// a ser o período activo quando pelo menos um dos dois tem data.
+function osPeriodoData(){
+  var de=(document.getElementById('os-f-de')||{}).value||'';
+  var ate=(document.getElementById('os-f-ate')||{}).value||'';
+  osFiltro.periodo=(de||ate)?'datas':'';
+  osFiltro.de=de;osFiltro.ate=ate;osFiltro.semana=null;
   osRenderFiltros();
   osRenderHist();
 }
@@ -17303,7 +17509,6 @@ function osMesEscolher(mm){
    Os filtros vivem agora nos botoes redondos, que dizem sozinhos o que esta
    escolhido. (2026-09-13) */
 function osFiltroAplicar(){
-  osFiltro.ano=(document.getElementById('os-f-ano')||{}).value||'';
   osFiltro.grupo=(document.getElementById('os-f-grupo')||{}).value||'';
   osFiltro.tec=(document.getElementById('os-f-tec')||{}).value||'';
   /* Volta a desenhar os botoes, para cada um passar a mostrar o que esta
@@ -17312,7 +17517,7 @@ function osFiltroAplicar(){
   osRenderHist();
 }
 function osFiltroLimpar(){
-  osFiltro.ano='';osFiltro.mes='';osFiltro.grupo='';osFiltro.tec='';
+  osFiltro.periodo='';osFiltro.de='';osFiltro.ate='';osFiltro.semana=null;osFiltro.grupo='';osFiltro.tec='';
   osRenderFiltros();
   osRenderHist();
 }
