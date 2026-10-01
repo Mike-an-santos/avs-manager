@@ -454,7 +454,7 @@ tbody tr:hover td{background:var(--navy3);}
 .os-res-cab .os-res-tot{font-size:20px;}
 .os-res-dots{display:flex;align-items:center;gap:5px;}
 .os-res-dot{width:7px;height:7px;border-radius:50%;flex:none;}
-.os-res-seta{flex:none;color:var(--td);font-size:10px;transition:transform .15s;}
+.os-res-seta{flex:none;color:var(--td);font-size:16px;transition:transform .15s;}
 .os-res-seta.aberto{transform:rotate(180deg);}
 .os-res-det{max-height:0;overflow:hidden;transition:max-height .22s ease;}
 .os-res-det.aberto{max-height:220px;}
@@ -520,18 +520,11 @@ tbody tr:hover td{background:var(--navy3);}
    risca à esquerda da ficha, osCorDe() — ver mais abaixo); a cor em si vem
    inline, por ficha. */
 .os-hb-gr{flex-shrink:0;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:5px;white-space:nowrap;}
-/* A risca de cor à esquerda da ficha (cor do grupo) e os círculos do(s)
-   técnico(s) — as duas pistas visuais que a Opção A acrescentou para se
-   distinguir uma ficha de outra num relance, sem abrir nada. */
+/* A risca de cor à esquerda da ficha (cor do grupo) — a pista visual que a
+   Opção A acrescentou para se distinguir uma ficha de outra num relance, sem
+   abrir nada. (Os círculos dos técnicos que também existiram aqui, no B42,
+   saíram a pedido do Mike no mesmo dia — ver B43.) */
 .os-hb-acc{flex:none;align-self:stretch;width:3px;border-radius:2px;}
-.os-hb-avs{flex:none;display:flex;align-items:center;}
-.os-hb-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:9px;font-weight:700;color:#0b1220;border:2px solid var(--navy2);flex:none;}
-.osz-lista .os-hb:hover .os-hb-av{border-color:var(--navy3);}
-.os-hb-av+.os-hb-av,.os-hb-av-mais{margin-left:-7px;}
-.os-hb-av-mais{width:20px;height:20px;border-radius:50%;background:var(--navy4);color:var(--td);flex:none;
-  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:8px;font-weight:700;
-  border:2px solid var(--navy2);}
 /* Painel de detalhe de um servico guardado */
 .os-det-l{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--bl);font-size:12px;}
 .os-det-l .k{color:var(--td);}
@@ -17372,30 +17365,13 @@ function osHistEmissao(sv){
   if(!d||isNaN(d.getTime()))return '—';
   return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
 }
-// Os circulos do(s) tecnico(s) de uma ficha (B42) — ate dois, pela ordem em
-// que aparecem nas barras que passam no filtro, sem repetir nome; o resto
-// fica atras de um "+N" (sem popover proprio: e so para o relance, o painel
-// de detalhe ja lista todos ao abrir a ficha).
-function osHistAvataresHTML(passam){
-  var vistos={},nomes=[];
-  (passam||[]).forEach(function(l){
-    var n=(l.tecNome||'').trim();
-    if(n&&!vistos[n]){vistos[n]=1;nomes.push(n);}
-  });
-  if(!nomes.length)return '';
-  var MAX=2;
-  var h='<span class="os-hb-avs">'+nomes.slice(0,MAX).map(function(n){
-    return '<span class="os-hb-av" style="background:'+osCorDe(n).c+'" title="'+psEsc(n)+'">'+psEsc(n.charAt(0).toUpperCase())+'</span>';
-  }).join('');
-  if(nomes.length>MAX)h+='<span class="os-hb-av-mais" title="'+psEsc(nomes.slice(MAX).join(', '))+'">+'+(nomes.length-MAX)+'</span>';
-  return h+'</span>';
-}
 // Cada ficha mostra so tres coisas: data de emissao, titulo e grupo. Tudo o
 // resto (barras, tecnicos, recibos, valores) fica no painel que abre ao clicar
 // na data — assim a lista fica curta e legivel mesmo com muitos servicos.
-// B42: ganhou mais duas pistas visuais (a risca de cor do grupo e o(s)
-// circulo(s) do(s) tecnico(s)) — nenhuma delas muda o que a ficha GUARDA,
-// so como se le num relance (ver osCorDe, mais acima).
+// B42: ganhou uma pista visual extra (a risca de cor do grupo) — nao muda o
+// que a ficha GUARDA, so como se le num relance (ver osCorDe, mais acima).
+// B43: os circulos do(s) tecnico(s), que o B42 tambem tinha posto aqui,
+// sairam a pedido do Mike no mesmo dia.
 function osRenderHist(){
   var box=document.getElementById('os-hist');if(!box)return;
   if(!OS_HIST.length){
@@ -17423,7 +17399,6 @@ function osRenderHist(){
     html+='<div class="os-hb" title="Ver o serviço guardado" onclick="osHistAbrir('+i+')">'
       +'<span class="os-hb-acc" style="background:'+(corGr?corGr.c:'var(--border)')+'"></span>'
       +'<div class="os-hb-data">'+psEsc(osHistEmissao(sv))+'</div>'
-      +osHistAvataresHTML(passam)
       +'<div class="os-hb-tit">'+psEsc(sv.titulo||servs[0]||'(sem nome)')+'</div>'
       +(sv.grupo?'<div class="os-hb-gr" style="color:'+corGr.c+';background:rgba('+corGr.rgb+',.16)">'+psEsc(sv.grupo)+'</div>':'')
       +'<div class="os-hb-v">'+fmtEur(valLinha)+'</div>'
