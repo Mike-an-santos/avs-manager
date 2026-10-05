@@ -1352,6 +1352,13 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
                  font-family:var(--font);letter-spacing:.01em;}
 .os-novo-id{display:flex;gap:12px;}
 .os-novo-id .fi{flex:1;margin-bottom:0;}
+/* B46 (2026-10-05): segunda linha do cabeçalho do serviço — Estatuto e Valor de
+   venda. Usa a MESMA classe `.os-novo-id` (e por isso a mesma regra de quebra
+   em ecrã estreito) + uma folga em cima. */
+.os-novo-id2{margin-top:12px;}
+.os-novo-est{display:flex;gap:6px;align-items:center;}
+.os-novo-est select{flex:1;min-width:0;}
+.os-novo-est .btn-ic{flex:none;width:38px;height:38px;padding:0;font-size:16px;font-weight:700;line-height:1;}
 .os-novo-sep{display:flex;align-items:center;gap:10px;margin:20px 0 10px;}
 .os-novo-sep span{font-size:9.5px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;
                   color:var(--td);font-weight:700;}
@@ -1546,6 +1553,44 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .mtc-med{margin-top:auto;padding-top:11px;}
 .mtc-med-t{height:6px;border-radius:3px;background:var(--wash2);overflow:hidden;}
 .mtc-med-f{height:100%;border-radius:3px;background:var(--mk);}
+
+/* B47 (2026-10-05, pedido do Mike): «O ano» passa a ter SEIS caixotes, todos
+   do mesmo tamanho e na mesma linha («simetricamente do mesmo tamanho»). Seis
+   colunas fixas de largura igual (minmax(0,1fr) — o conteúdo nunca alarga uma
+   coluna), a linha estica todos os cartões à mesma altura, e o número grande
+   encolhe com a largura do próprio cartão (cqw) em vez de partir ou ser
+   cortado. Abaixo de 1180px de ecrã passam a 3 por linha — duas linhas
+   iguais, nunca um cartão sozinho a sobrar. */
+.an-cartoes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:20px;}
+.an-cartoes .mtc{container-type:inline-size;min-width:0;}
+.an-cartoes .mtc-mv{font-size:clamp(18px,15cqw,30px);}
+.an-cartoes .mtc-abrir{margin-top:auto;padding-top:7px;}
+@media(max-width:1180px){.an-cartoes{grid-template-columns:repeat(3,minmax(0,1fr));}}
+/* A mini-tabela do cartão «Outros»: duas linhas (Equipa / Fornec.) por três
+   colunas (Custo / Venda / Markup), nos números que o painel mostra por
+   extenso. Tem de repor o que a folha de estilo geral põe em th/td. */
+.ou-mini{width:100%;border-collapse:collapse;table-layout:fixed;font-family:var(--mono);}
+.ou-mini th,.ou-mini td{padding:0;border:0;background:none;white-space:nowrap;}
+.ou-mini thead th{font-size:8px;font-weight:700;color:var(--td);text-align:right;text-transform:uppercase;letter-spacing:.04em;padding-bottom:4px;}
+.ou-mini thead th:first-child{width:30%;}
+.ou-mini tbody th{font-size:9.5px;font-weight:600;color:var(--ts);text-align:left;text-transform:none;letter-spacing:0;padding:2px 0;}
+.ou-mini td{font-size:10.5px;font-weight:700;color:var(--nm);text-align:right;padding:2px 0;}
+.ou-mini td.neg{color:var(--rdf);}
+.ou-mini .ou-n{font-size:8.5px;font-weight:700;color:var(--td);margin-left:2px;}
+/* Painel «Outros» — as linhas de dentro de cada estatuto. */
+.ou-tab{table-layout:fixed;}
+.ou-tab th:nth-child(1){width:44%;}
+.ou-tab th:nth-child(2){width:8%;}
+.ou-tab .ou-g td{font-weight:700;background:rgba(255,255,255,.025);}
+.ou-tab .ou-i td{font-size:12px;color:var(--ts);}
+.ou-tab .ou-i td:first-child{padding-left:26px;}
+.ou-tab .ou-t td{font-weight:700;border-top:2px solid var(--border);}
+.ou-tab .ou-l td{font-size:11.5px;color:var(--td);padding-top:4px;padding-bottom:4px;}
+.ou-tab .ou-l td:first-child{padding-left:46px;}
+.ou-tab .ou-l td b{font-weight:600;color:var(--ts);}
+.ou-tab .ou-rec{color:var(--td);font-family:var(--mono);font-size:10px;}
+.ou-tab .neg{color:var(--rdf);}
+.est.real{color:var(--gnf);}
 
 /* ===== CUSTO POR EVENTO — gráfico mensal ao passar o rato (2026-09-23) ===
    Pedido do Mike: a lista de Cachets/Horas extra/Custo SUD não precisa de
@@ -2940,7 +2985,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div class="st">Plano de semana</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:8px;background:var(--navy3);border:2px solid var(--bl);border-radius:8px;padding:5px 14px;"><label style="font-size:11px;color:var(--ts);font-weight:600;">De</label><input type="date" id="ps-de" onchange="psLoad()" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span style="color:var(--td);">—</span><label style="font-size:11px;color:var(--ts);font-weight:600;">Até</label><input type="date" id="ps-ate" onchange="psLoad()" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"></div>
+        <div style="display:flex;align-items:center;gap:8px;background:var(--navy3);border:2px solid var(--bl);border-radius:8px;padding:5px 14px;"><label style="font-size:11px;color:var(--ts);font-weight:600;">De</label><input type="date" id="ps-de" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span style="color:var(--td);">—</span><label style="font-size:11px;color:var(--ts);font-weight:600;">Até</label><input type="date" id="ps-ate" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span id="ps-sem" title="Semana ISO 8601 (segunda a domingo)" style="font-size:12px;font-weight:700;color:var(--gnf);white-space:nowrap;margin-left:4px;"></span></div>
         <button class="btn-ic" title="Guardar" onclick="psGuardar(this)">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         </button>
@@ -3244,7 +3289,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 <!-- Estatutos dos orçamentos — mesmo molde do painel de grupos acima (m-osgrupo),
      outra lista. Aberto a partir do "+" ao lado do <select> de estatuto no
      editor de orçamentos (2026-09-29). -->
-<div class="mo" id="m-estatutos" onclick="if(event.target===this)cm('m-estatutos')">
+<div class="mo" id="m-estatutos" style="z-index:510;" onclick="if(event.target===this)cm('m-estatutos')">
   <div class="modal" style="width:360px;">
     <div class="mott">Estatutos <button class="btn btn-sm btn-gh" onclick="cm('m-estatutos')" style="padding:3px 8px;">✕</button></div>
     <div class="fi"><label>Nome do estatuto</label><input id="estatuto-novo-nome" placeholder="Ex: Pool, Restaurante…" onkeydown="if(event.key==='Enter')estatutoGuardarNovo()"></div>
@@ -3265,6 +3310,14 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
       <div class="os-novo-id">
         <div class="fi"><label>Grupo</label><input id="os-novo-grupo" list="os-grupos-dl" placeholder="Ex: Restaurante, Pool…" oninput="osNovoCampo('grupo',this.value)"></div>
         <div class="fi"><label>Título</label><input id="os-novo-titulo" placeholder="Ex: Quinzena de Agosto" oninput="osNovoCampo('titulo',this.value)"></div>
+      </div>
+      <!-- B46 (2026-10-05): o estatuto (a MESMA lista dos orçamentos — ESTATUTOS)
+           e o valor de venda do serviço inteiro, sem IVA como no orçamento.
+           Servem o cartão «Diversos» dos Mapas; nenhum deles vai para o PDF do
+           técnico (é informação interna, como o Grupo). -->
+      <div class="os-novo-id os-novo-id2">
+        <div class="fi"><label>Estatuto</label><div class="os-novo-est"><select id="os-novo-estatuto" onchange="osNovoCampo('estatuto',this.value)"></select><button type="button" class="btn-ic" title="Gerir estatutos" onclick="estatutosAbrir()">+</button></div></div>
+        <div class="fi"><label>Valor de venda (s/ IVA)</label><input id="os-novo-venda" type="number" step="0.01" min="0" placeholder="0,00" oninput="osNovoCampo('venda',parseFloat(this.value)||0)"></div>
       </div>
       <div class="os-novo-sep"><span>Técnicos</span><div class="l"></div></div>
       <table class="mapa-table os-table os-novo-tb">
@@ -3898,6 +3951,58 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
   </div>
 </div>
 
+
+<!-- OUTROS — painel do caixote «Outros» de «O ano» (B47, 2026-10-05, pedido do
+     Mike): o MESMO ambiente dos outros painéis (cpd-full, breadcrumb, filtros
+     Ano/Mês/Semana, faixa-resumo), organizado por ESTATUTO. Cada estatuto é um
+     bloco com Equipa técnica (Outros serviços), Fornecedores (orçamentos
+     adjudicados com estatuto) e o Total do estatuto. Só leitura. -->
+<div class="cpd-full" id="ou-full">
+  <div class="cpd-in">
+    <div class="breadcrumb" id="ou-bc"></div>
+
+    <div class="cpd-hdr">
+      <div>
+        <div class="cpd-titulo">Outros — detalhe</div>
+        <div class="cpd-sub" id="ou-sub">—</div>
+      </div>
+      <div class="cpd-filtros-topo">
+        <span class="cpd-lim" id="ou-lim" onclick="ouLimparFiltros()">limpar</span>
+        <select class="year-sel" id="ou-ano" onchange="ouAnoMudou()"></select>
+        <select class="year-sel" id="ou-mes" onchange="ouMesMudou()">
+          <option value="">Meses</option>
+          <option value="0">Jan</option><option value="1">Fev</option><option value="2">Mar</option>
+          <option value="3">Abr</option><option value="4">Mai</option><option value="5">Jun</option>
+          <option value="6">Jul</option><option value="7">Ago</option><option value="8">Set</option>
+          <option value="9">Out</option><option value="10">Nov</option><option value="11">Dez</option>
+        </select>
+        <div class="sem-wrap">
+          <button class="btn btn-sm" id="ou-sem-btn" onclick="toggleSemMenu(event,'ou')">Semana</button>
+          <div class="sem-pop" id="ou-sem-pop">
+            <div class="sem-tit" id="ou-sem-tit">Semana ISO</div>
+            <div class="sem-visor">
+              <div class="sem-faixa"></div>
+              <div class="sem-lista" id="ou-sem-lista"></div>
+              <div class="sem-fade-t"></div>
+              <div class="sem-fade-b"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ou-avisos"></div>
+
+    <div class="cpd-resumo">
+      <div><div class="rl">Estatutos</div><div class="rv" id="ou-r-n">—</div></div>
+      <div class="rc-s"><div class="rl cor-s">Custo SUD</div><div class="rv cor-s" id="ou-r-custo">—</div></div>
+      <div class="rc-c"><div class="rl cor-c">Valor venda</div><div class="rv cor-c" id="ou-r-venda">—</div></div>
+      <div class="rc-h"><div class="rl cor-h">Markup</div><div class="rv cor-h" id="ou-r-markup">—</div></div>
+    </div>
+
+    <div id="ou-corpo"></div>
+  </div>
+</div>
 
 <!-- MODAL FORNECEDOR -->
 <div class="mo" id="m-mapaev" onclick="if(event.target===this)cm('m-mapaev')">
@@ -4645,9 +4750,15 @@ function dashCartao(cfg){
     +'<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">'
     +DASH_ICONES[cfg.icone]+'</svg></span>'
     +'<span class="mtc-ml">'+cfg.etiqueta+'</span></div>';
-  h+='<div class="mtc-linha"><span class="mtc-mv">'+cfg.valor+'</span>'
-    +(cfg.delta?('<span class="mtc-dl '+cfg.delta.cls+'">'+cfg.delta.txt+'</span>'):'')+'</div>';
-  if(cfg.sub) h+='<div class="mtc-ms">'+cfg.sub+'</div>';
+  /* `cfg.corpo` (B47, 2026-10-05) — aditivo: um caixote que precisa de mais
+     do que um número (o «Outros» de «O ano», com uma mini-tabela) passa o seu
+     próprio miolo; quem não o passar desenha o número grande de sempre. */
+  if(cfg.corpo){ h+=cfg.corpo; }
+  else {
+    h+='<div class="mtc-linha"><span class="mtc-mv">'+cfg.valor+'</span>'
+      +(cfg.delta?('<span class="mtc-dl '+cfg.delta.cls+'">'+cfg.delta.txt+'</span>'):'')+'</div>';
+    if(cfg.sub) h+='<div class="mtc-ms">'+cfg.sub+'</div>';
+  }
   if(cfg.drill) h+='<div class="mtc-abrir">↗ Ver detalhe</div>';
   if(cfg.spark) h+=cfg.spark;
   else if(cfg.medidor) h+='<div class="mtc-med"><div class="mtc-med-t">'
@@ -6576,6 +6687,16 @@ var SEM_RODA_CFG={
       eqRender();
     }
   },
+  /* B47 (2026-10-05): o painel «Outros» de «O ano» — a sua própria chave. */
+  ou:{
+    btn:'ou-sem-btn', pop:'ou-sem-pop', tit:'ou-sem-tit', lista:'ou-sem-lista',
+    ano:function(){return OU_STATE.ano;},
+    aplicar:function(ano,n){
+      OU_STATE.mes=''; document.getElementById('ou-mes').value='';
+      OU_STATE.semana=n;
+      ouRender();
+    }
+  },
   /* 2026-09-30, pedido do Mike: Outros Serviços (Recursos humanos) ganha a
      mesma roda. Esta sub-aba não tem NENHUM selector de ano (o "Ano" saiu da
      barra de filtros no mesmo pedido — dossier fechado em pendentes.md) — por
@@ -6633,6 +6754,7 @@ function semRodaConstruir(chave){
   var semanaInicial;
   if(chave==='orc'&&mapaSemFiltro)semanaInicial=Math.min(Math.max(mapaSemFiltro,1),total);
   else if(chave==='cpd'&&CPD_STATE.semana)semanaInicial=Math.min(Math.max(CPD_STATE.semana,1),total);
+  else if(chave==='ou'&&OU_STATE.semana)semanaInicial=Math.min(Math.max(OU_STATE.semana,1),total);
   else if(chave==='vv'&&VV_STATE.semana)semanaInicial=Math.min(Math.max(VV_STATE.semana,1),total);
   else if(chave==='os'&&osFiltro.semana)semanaInicial=Math.min(Math.max(osFiltro.semana,1),total);
   else{
@@ -8824,6 +8946,38 @@ function msInit(){
     ate.value=q.ate;
   }
 }
+/* O Plano de semana e SEMPRE uma semana ISO 8601 (pedido do Mike, 2026-10-05):
+   segunda a domingo. Mexer em qualquer das duas datas escolhe a semana desse dia
+   — «De» passa a ser a segunda e «Ate» o domingo, pelo mesmo semanaParaIntervalo()
+   do resto da app. So mexe nos campos quando o utilizador os altera; o psLoad()
+   continua a aceitar qualquer periodo que la esteja. */
+var PS_SEM_T = null;
+function psSemanaAjustar(inp){
+  /* Espera 0,6 s depois da ultima alteracao: quem escreve a data com o teclado
+     faz o campo mudar a cada digito, e reescreve-lo a meio estraga o que se esta
+     a escrever (escrever 16/09/2026 acabava em 30/11/2026). */
+  clearTimeout(PS_SEM_T);
+  PS_SEM_T=setTimeout(function(){ psSemanaAplicar(inp); },600);
+}
+function psSemanaAplicar(inp){
+  var de=document.getElementById('ps-de'), ate=document.getElementById('ps-ate');
+  var v=inp&&inp.value;
+  if(de&&ate&&v&&+String(v).slice(0,4)>=1900){
+    try{
+      var s=semanaISO(v), iv=semanaParaIntervalo(s.ano,s.semana);
+      de.value=iv.de; ate.value=iv.ate;
+    }catch(e){}
+  }
+  psSemanaEtiqueta();
+  psLoad();
+}
+function psSemanaEtiqueta(){
+  var el=document.getElementById('ps-sem'), de=document.getElementById('ps-de');
+  if(!el) return;
+  var t='';
+  try{ if(de&&de.value){ var s=semanaISO(de.value); if(s&&s.semana) t='Semana '+s.semana; } }catch(e){}
+  el.textContent=t;
+}
 function psInit(){
   // Set default dates to current week
   var now = new Date();
@@ -8837,6 +8991,7 @@ function psInit(){
   var ate = document.getElementById('ps-ate');
   if(de && !de.value) de.value = fmt(mon);
   if(ate && !ate.value) ate.value = fmt(sun);
+  psSemanaEtiqueta();
   psLoad();
   psRenderHist();
 }
@@ -9247,6 +9402,30 @@ function psAddManual(){
 var PS_HIST = [];
 var PS_HID = 1;
 
+/* B44 (2026-10-05, bug do Mike): «no histórico do plano da semana, todas as
+   semanas estão com os mesmos eventos replicados». As semanas tinham os eventos
+   certos — o que estava errado eram os NÚMEROS (id) delas: o contador PS_HID
+   recomeça em 1 de cada vez que a app abre, mesmo com planos já guardados (o
+   histórico volta do browser/da nuvem, o contador não). Todo o plano guardado
+   depois de reabrir a app nascia com id 1, 2, 3… — repetido de planos antigos.
+   E o histórico encontra e abre/remove cada plano PELO id (psHistToggle usa
+   find → o primeiro; psHistRemover usa filter → todos): clicar na semana 38
+   abria a 40, e remover um plano levava o outro atrás.
+   Duas guardas, ambas só sobre o id (nenhum campo novo, nenhum dado mexido):
+   o contador sobe sempre acima do maior id já existente, e um id repetido que
+   já esteja guardado (dados reais do Mike, de antes desta correcção) fica o
+   primeiro com o seu número e os repetidos ganham números novos. */
+function psHistGarantirIds(){
+  var max=0, visto={};
+  PS_HIST.forEach(function(h){ var v=+h.id||0; if(v>max)max=v; });
+  if(PS_HID<=max)PS_HID=max+1;
+  PS_HIST.forEach(function(h){
+    var v=+h.id||0;
+    if(!v||visto[v]){ h.id=PS_HID++; }
+    else{ visto[v]=true; }
+  });
+}
+
 function psSetData(i, val){
   if(!PS_ROWS[i]) return;
   PS_ROWS[i].data = val;
@@ -9281,6 +9460,7 @@ function psGuardar(btn){
   });
   var now=new Date();
   var criado=localDate(now)+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  psHistGarantirIds();   // B44: o contador nunca pode estar abaixo do que já está guardado
   PS_HIST.unshift({id:PS_HID++,de:de,ate:ate,criado:criado,rows:snapshot,aberto:false});
   psRenderHist();
   showToast('Plano guardado no histórico','ok');
@@ -9303,6 +9483,7 @@ function psHistRemover(id){
 function psRenderHist(){
   var el=document.getElementById('ps-hist');
   if(!el) return;
+  psHistGarantirIds();   // B44: repara ids repetidos vindos de dados já guardados
   if(!PS_HIST.length){
     el.innerHTML='<div style="text-align:center;padding:22px;color:var(--td);font-size:12px;">Ainda não há planos guardados. Carrega um período, ajusta as alíneas e carrega em Guardar.</div>';
     return;
@@ -11082,9 +11263,17 @@ function estatutoGuardarNovo(){
 // Actualiza o <select> do editor de orçamentos, se estiver aberto, para o
 // estatuto acabado de criar aparecer sem fechar e reabrir o orçamento.
 function estatutosRenderSelects(){
-  var sel=document.getElementById('oe-estatuto');if(!sel||!orcSel)return;
-  var atual=sel.value||orcEstatuto(orcSel);
-  sel.innerHTML=ESTATUTOS.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===atual?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
+  var sel=document.getElementById('oe-estatuto');
+  if(sel&&orcSel){
+    var atual=sel.value||orcEstatuto(orcSel);
+    sel.innerHTML=ESTATUTOS.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===atual?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
+  }
+  // B46: o painel «Novo serviço» dos Outros serviços tem o seu <select> do
+  // mesmo registo; o «+» ao lado dele abre esta mesma gestão.
+  var so=document.getElementById('os-novo-estatuto');
+  if(so&&typeof osEstatutoOpcoes==='function'&&typeof OUTROS_SERVICOS!=='undefined'){
+    so.innerHTML=osEstatutoOpcoes(so.value||osEstatuto(OUTROS_SERVICOS[0]));
+  }
 }
 
 function abrirEditor(id){
@@ -11561,6 +11750,32 @@ function orcCalc(o){
 function orcEntraNosMapas(o){
   return !!(o && o.estado==='Adjudicado');
 }
+/* B48 (2026-10-05, pedido do Mike) — ORÇAMENTOS COM ESTATUTO FORA DO «ANO».
+   Os orçamentos adjudicados com estatuto diferente de «Normal» (Pool,
+   Restaurante, …) deixam de contar nos números do ano — cartões de «O ano»
+   (Valor venda, Custo SUD material, Resultado SUD, Venda directa, e as séries
+   mensais que alimentam o «destaque»), no painel «Valor venda», no Relatório e
+   no PDF anual. Passam a viver só no caixote «Outros» (ouLinhas), onde aparecem
+   com o seu estatuto, o seu custo, a sua venda e o seu markup.
+   **O INTERRUPTOR.** `ORC_EXTRA_FORA_DO_ANO` é o único sítio que decide isto.
+   Pôr `false` devolve o comportamento anterior, de uma vez, em todos os
+   ecrãs (os orçamentos com estatuto voltam a somar-se ao ano, e as caixas
+   «Por estatuto» do painel, do Relatório e do PDF voltam a aparecer quando há
+   mais de um estatuto). Foi pedido que a função ficasse guardada «para
+   se precisarmos no futuro». O caixote «Outros» continua a mostrá-los, com o
+   interruptor ligado ou desligado.
+   Três funções, para ninguém voltar a escrever isto à mão:
+     · orcEhExtra(o)       — é um orçamento com estatuto ≠ «Normal»?
+     · orcNoUniversoAno(o) — pertence ao universo do ano (conta para a taxa de
+       adjudicação, para o nº de orçamentos)? Só o interruptor ligado o tira.
+     · orcEntraNoAno(o)    — adjudicado E no universo do ano (regra F + isto).
+   O Mapa de orçamentos (rMapa), o Tracking, o avsCompute («custo por
+   diária», que já só lê «Normal» desde o passo 4 dos estatutos) e as ligações
+   evento↔orçamento NÃO passam por aqui: não são o «ano». */
+var ORC_EXTRA_FORA_DO_ANO=true;
+function orcEhExtra(o){ return orcEstatuto(o)!=='Normal'; }
+function orcNoUniversoAno(o){ return !(ORC_EXTRA_FORA_DO_ANO && orcEhExtra(o)); }
+function orcEntraNoAno(o){ return orcEntraNosMapas(o) && orcNoUniversoAno(o); }
 /* O SUD e uma entidade com o mesmo estatuto de um fornecedor (regra do Mike):
    material proprio e artigos do Precario SUD sao atribuidos a ela, nao ficam sem
    dono. Nao tem ficha em DB_FORN, por isso usa um id proprio. */
@@ -12782,8 +12997,8 @@ document.addEventListener('keydown',function(e){
 
 // DRILL: RECEITA
 function drillReceita(){
-  var orcs=D.getOrcs();var adj=orcs.filter(function(o){return o.estado==='Adjudicado';});
-  var prev=D.compare?D.getPrevOrcs().filter(function(o){return o.estado==='Adjudicado';}):[];
+  var orcs=D.getOrcs();var adj=orcs.filter(orcEntraNoAno);   // B48: sem os orçamentos com estatuto
+  var prev=D.compare?D.getPrevOrcs().filter(orcEntraNoAno):[];
   var venda=adj.reduce(function(s,o){return s+orcVenda(o);},0);
   var mkTot=adj.reduce(function(s,o){return s+orcMarkup(o);},0);
   var prevVenda=prev.reduce(function(s,o){return s+orcVenda(o);},0);
@@ -12816,7 +13031,7 @@ function drillReceita(){
     +'<div class="bar-wrap" id="dr-bar"></div><div style="display:flex;gap:4px;margin-top:6px;" id="dr-bar-lbl"></div>';
   ct.appendChild(bc);
   var byM=MES.map(function(m,i){
-    var mo=DB_ORC.filter(function(o){return o.estado==='Adjudicado'&&parseInt(o.data.split('-')[0])===D.year&&parseInt(o.data.split('-')[1])-1===i;});
+    var mo=DB_ORC.filter(function(o){return orcEntraNoAno(o)&&parseInt(o.data.split('-')[0])===D.year&&parseInt(o.data.split('-')[1])-1===i;});
     var v=mo.reduce(function(s,o){return s+orcVenda(o);},0);
     return{label:m,val:v,short:fmtEurK(v)};
   });
@@ -13586,7 +13801,7 @@ function anCaixotesMensal(ano){
   var sudmat=MZ(), vendadir=MZ(), resultado=MZ(), receitaSUD=MZ();
   var equipa=MZ(), eqCachets=MZ(), eqHoras=MZ();
   var orcsAno=(typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
-    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&o.estado==='Adjudicado';});
+    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&orcEntraNoAno(o);});
   orcsAno.forEach(function(o){
     var m=parseInt((o.data||'').split('-')[1],10)-1; if(m<0||m>11)return;
     var vTotal=orcVenda(o), vd=orcVendaDirecta(o), mk=orcMarkup(o);
@@ -13805,6 +14020,8 @@ function anDestaqueClick(){
      um painel dedicado em vez do vv-full partilhado (o conteúdo não é uma
      tabela por orçamento, é uma lista por técnico). */
   if(AN_CHAVE_ACTUAL==='equipa'){ eqAbrir(AN_ANO_ACTUAL); return; }
+  /* B49: «Outros» abre o mesmo painel que o seu cartão pequeno. */
+  if(AN_CHAVE_ACTUAL==='outros'){ ouAbrir(AN_ANO_ACTUAL); return; }
   D.year=AN_ANO_ACTUAL; D.open(c.tipo,c.label,c.fn,c.opts);
 }
 
@@ -14295,7 +14512,7 @@ function vvOrdenar(campo){
    período. */
 function vvOrcamentosDoPeriodo(){
   return (typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
-    if(!orcEntraNosMapas(o)) return false;
+    if(!orcEntraNoAno(o)) return false;   // B48: sem os orçamentos com estatuto (ficam no «Outros»)
     if(!o.data||parseInt(o.data.split('-')[0],10)!==VV_STATE.ano) return false;
     if(VV_STATE.semana && (typeof semanaISO==='function') && semanaISO(o.data).semana!==VV_STATE.semana) return false;
     if(VV_STATE.mes!=='' && (parseInt(o.data.slice(5,7),10)-1)!==parseInt(VV_STATE.mes,10)) return false;
@@ -14818,7 +15035,9 @@ function rAnalise(){
   // ---- DADOS BASE ----
   var orcs=DB_ORC.filter(function(o){return o.data&&parseInt(o.data.split('-')[0])===ano;});
   var servs=DB_SERVICOS.filter(function(s){return s.data&&parseInt(s.data.split('-')[0])===ano;});
-  var adj=orcs.filter(function(o){return o.estado==='Adjudicado';});
+  // B48: só os adjudicados do «universo do ano» — os com estatuto vivem no «Outros»
+  var adj=orcs.filter(orcEntraNoAno);
+  var _nFora=orcs.filter(function(o){return orcEntraNosMapas(o)&&!orcNoUniversoAno(o);}).length;
 
   // Valor venda = so as linhas facturaveis, SEM markup (regra do Mike,
   // 2026-09-10). O markup e estimativa e vive num numero proprio.
@@ -14842,10 +15061,11 @@ function rAnalise(){
   h+=anCustoPorEvento(ano);
 
   // SECÇÃO 1: KPIs financeiros
-  h+='<div style="font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--copper);font-family:var(--mono);margin:4px 0 14px;">Visão financeira — '+ano+'</div>';
+  h+='<div style="font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--copper);font-family:var(--mono);margin:4px 0 14px;">Visão financeira — '+ano
+    +(_nFora?' · sem '+_nFora+(_nFora===1?' orçamento':' orçamentos')+' com estatuto (ver «Outros»)':'')+'</div>';
   /* 170px chegavam para uma caixa com um numero. Um `.mtc` tem icone, etiqueta
      de duas linhas e legenda — abaixo de 210px a etiqueta parte-se. */
-  h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:20px;">';
+  h+='<div class="an-cartoes" id="an-cartoes">';
   /* UM NOME POR NÚMERO (2026-09-03).
      "Receita adjudicada" aqui e "Receita s/IVA" nos Orçamentos eram o MESMO
      número com dois nomes — obrigavam a parar a pensar se eram a mesma coisa.
@@ -14946,7 +15166,12 @@ function rAnalise(){
      rato por Cachets/Horas extra troca o gráfico. Cores idênticas às do
      próprio "Custo por evento" (CPE_CORES.cachets/hextra) — é a MESMA
      distinção (base vs. horas extra), por isso leva a MESMA cor. */
-  anDestaqueRegistar('equipa',{mk:'#c0392b',nm:'#e07a6a',wash:'rgba(192,57,43,.13)',wash2:'rgba(192,57,43,.2)',
+  /* B47 (2026-10-05, pedido do Mike): «varia mais as cores. Uma diferente por
+     caixote.» O «Custo da equipa» deixa o vermelho (que era o do «Custo SUD
+     material») e passa a roxo, o do --puf da paleta. Revoga o raciocínio de
+     2026-09-21 acima («a cor de um custo é a cor dos custos»): o que distingue
+     os caixotes passa a ser TAMBÉM a cor, não só a etiqueta e o ícone. */
+  anDestaqueRegistar('equipa',{mk:'#9b7fe8',nm:'#b8a3f0',wash:'rgba(155,127,232,.13)',wash2:'rgba(155,127,232,.2)',
     icone:'gente',titulo:'Custo da equipa',valorTxt:fe(custoEquipaAno),
     subTxt:_tecCount+' técnicos · com horas extra',
     serie:_mensalCx.equipa, tipo:'equipa',label:'Custo da equipa',fn:null,opts:{},
@@ -14954,7 +15179,7 @@ function rAnalise(){
       {campo:'cachets',rot:'Cachets',cor:'#52c47a',serie:_mensalCx.eqCachets},
       {campo:'hextra',rot:'Horas extra',cor:'#d4902a',serie:_mensalCx.eqHoras}
     ]});
-  h+=dashCartao({marca:'#c0392b',numero:'#e07a6a',rgb:'192,57,43',icone:'gente',
+  h+=dashCartao({marca:'#9b7fe8',numero:'#b8a3f0',rgb:'155,127,232',icone:'gente',
     etiqueta:'Custo da<br>equipa', valor:fe(custoEquipaAno),
     drill:'eqAbrir('+ano+')',
     onEnter:"anDestaqueEntrar('equipa')", onLeave:'anDestaqueAgendarReverter()',
@@ -15022,6 +15247,29 @@ function rAnalise(){
        drill:'vvAbrir('+ano+',\'resultado\')',
        onEnter:"anDestaqueEntrar('resultado')", onLeave:'anDestaqueAgendarReverter()',
        sub:'markup − custo SUD'});
+  /* B47 (2026-10-05, pedido do Mike): o sexto caixote, «Outros» — o que não
+     entra nos eventos gerais: a Equipa técnica dos Outros serviços e os
+     Fornecedores (orçamentos adjudicados com estatuto). Mesmo tamanho e mesma
+     linha dos outros; a conta vem de `ouTotais()`, a mesma do painel. */
+  var _ouL=ouLinhas({ano:ano,mes:'',semana:null});
+  var _ouT=ouTotais(_ouL), _ouM=ouMensal(_ouL);
+  /* B49 (2026-10-05, pedido do Mike): «quando passo com o rato em cima do
+     caixote outros, deverá entrar em destaque tal como os outros». O número
+     grande é o Valor venda do caixote; as duas partes (Equipa técnica e
+     Fornecedores) trocam o gráfico, e custo e markup vão na legenda. */
+  anDestaqueRegistar('outros',{mk:'#40c8b8',nm:'#64dccd',wash:'rgba(64,200,184,.13)',wash2:'rgba(64,200,184,.2)',
+    icone:'etiq',titulo:'Outros · valor venda',valorTxt:fe(_ouT.tot.venda),
+    subTxt:'custo '+fe(_ouT.tot.custo)+' · markup '+fe(_ouT.tot.markup),
+    serie:_ouM.venda, tipo:'outros',label:'Outros',fn:null,opts:{},
+    partes:[
+      {campo:'vendaEq',rot:'Equipa técnica',cor:'#9b7fe8',serie:_ouM.vendaEq},
+      {campo:'vendaForn',rot:'Fornecedores',cor:'#bd7448',serie:_ouM.vendaForn}
+    ]});
+  h+=dashCartao({marca:'#40c8b8',numero:'#64dccd',rgb:'64,200,184',icone:'etiq',
+    etiqueta:'Outros<br>fora dos eventos',
+    corpo:ouCartaoCorpo(_ouT),
+    drill:'ouAbrir('+ano+')',
+    onEnter:"anDestaqueEntrar('outros')", onLeave:'anDestaqueAgendarReverter()'});
   h+='</div>';
 
   var body=document.getElementById('an-body');
@@ -15367,6 +15615,302 @@ function eqBreadcrumb(){
   bc.innerHTML='<span class="bc-item" onclick="eqFechar()">Custo da equipa</span>';
 }
 
+/* ===== OUTROS — o sexto caixote de «O ano» (B47, 2026-10-05) =====
+   Pedido do Mike: um caixote «Outros» com o que não entra nos eventos gerais.
+   Dois grupos, cada um com Custo SUD, Venda e Markup:
+     · Equipa técnica — os serviços dos Outros serviços (Recursos humanos). Custo
+       = a soma dos cachets (osValorServico); Venda = o valor de venda do
+       serviço (osVenda, B46, s/ IVA); Markup = Venda − Custo, REAL (os dois
+       números são factos).
+     · Fornecedores — os orçamentos ADJUDICADOS com estatuto diferente de
+       «Normal». Custo SUD, Venda e Markup são os de sempre (orcCustoSUDReal,
+       orcVenda, orcMarkup); o markup continua a ser ESTIMATIVA (escalões), e
+       fica etiquetado «est.» ao lado do «real» da equipa (REGRA E: o markup
+       nunca sai da ferramenta).
+   O estatuto organiza o painel. Um serviço dos Outros serviços pertence ao
+   período da sua PRIMEIRA data (custo e venda juntos, para a conta fechar):
+   a venda é do serviço inteiro, não se reparte por linhas. */
+var OU_STATE={ano:null, mes:'', semana:null};
+function ouNoPeriodo(dataStr, st){
+  st=st||OU_STATE;
+  if(!dataStr) return false;
+  if(dataStr.slice(0,4)!==String(st.ano)) return false;
+  if(st.semana && (typeof semanaISO==='function') && semanaISO(dataStr).semana!==st.semana) return false;
+  if(st.mes!=='' && (parseInt(dataStr.slice(5,7),10)-1)!==parseInt(st.mes,10)) return false;
+  return true;
+}
+function ouDataServico(sv){
+  var ds=((sv&&sv.linhas)||[]).map(function(l){return l.data||'';}).filter(Boolean).sort();
+  return ds[0]||'';
+}
+/* As linhas do caixote para um período — cada uma já com custo, venda e
+   markup. B50 (2026-10-05, «já tenho um estatuto Restaurante e não entra»):
+   o serviço que está em edição no painel (OUTROS_SERVICOS) também conta, desde
+   que não esteja em branco (osServicoVazio) — fica marcado `porGuardar` e o
+   painel diz-o. Antes só contava o histórico, e um serviço com estatuto ainda
+   por guardar parecia «não entrar». */
+function ouLinhas(st){
+  var out=[];
+  var _hist=(typeof OS_HIST!=='undefined'?OS_HIST:[]);
+  var _ids={}; _hist.forEach(function(sv){ if(sv) _ids[sv.id]=1; });
+  var _edicao=(typeof OUTROS_SERVICOS!=='undefined'?OUTROS_SERVICOS:[]).filter(function(sv){
+    return sv && !_ids[sv.id] && !(typeof osServicoVazio==='function' && osServicoVazio(sv));
+  });
+  _hist.concat(_edicao).forEach(function(sv){
+    var d=ouDataServico(sv);
+    if(!ouNoPeriodo(d,st)) return;
+    var custo=osValorServico(sv), venda=osVenda(sv), tecs={};
+    (sv.linhas||[]).forEach(function(l){ if(l.tecNome) tecs[l.tecNome]=1; });
+    /* B49: as linhas por técnico do serviço (data, técnico, serviço, recibo,
+       cachet) — a mesma fonte de `custo` (osValorServico soma estes mesmos
+       `valor`), só mostrada em vez de resumida. */
+    var tl=(sv.linhas||[]).map(function(l){
+      return {data:l.data||'', tec:l.tecNome||'', servico:l.servico||'', recibo:l.recibo||'', valor:+l.valor||0};
+    }).sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;});
+    out.push({tipo:'eq', id:sv.id, estatuto:osEstatuto(sv), data:d,
+      nome:[sv.grupo,sv.titulo].filter(Boolean).join(' · ')||'(sem título)',
+      nTecs:Object.keys(tecs).length, tecLinhas:tl, custo:custo, venda:venda, markup:venda-custo, semVenda:!venda,
+      porGuardar:_edicao.indexOf(sv)>=0});
+  });
+  (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
+    if(!orcEntraNosMapas(o) || !orcEhExtra(o)) return;   // com o interruptor ligado ou desligado
+    if(!ouNoPeriodo(o.data,st)) return;
+    out.push({tipo:'forn', id:o.id, estatuto:orcEstatuto(o), data:o.data,
+      nome:o.evento||o.cliente||'—', num:o.num||'',
+      custo:orcCustoSUDReal(o), venda:orcVenda(o), markup:orcMarkup(o)});
+  });
+  return out;
+}
+/* B49: as séries mensais do caixote em destaque — a MESMA lista de linhas do
+   cartão e do painel (`ouLinhas`), só repartida pelo mês da data de cada uma
+   (a data do serviço = a da sua primeira linha, como no painel). */
+function ouMensal(linhas){
+  var MZ=function(){return [0,0,0,0,0,0,0,0,0,0,0,0];};
+  var o={venda:MZ(),vendaEq:MZ(),vendaForn:MZ()};
+  linhas.forEach(function(r){
+    var m=parseInt((r.data||'').slice(5,7),10)-1; if(m<0||m>11) return;
+    o.venda[m]+=r.venda;
+    if(r.tipo==='eq') o.vendaEq[m]+=r.venda; else o.vendaForn[m]+=r.venda;
+  });
+  return o;
+}
+/* B51 (2026-10-05, «não aparece»): o que fica de FORA do caixote, e porquê. Um
+   serviço dos Outros serviços só entra pela data da sua primeira linha, no ano
+   (e mês/semana) escolhidos; sem esta conta, um serviço que «não aparece» não
+   dizia porquê. Devolve {total, contados, semData, anos:{ano:n}, foraFiltro}.
+   Só lê. A lista de serviços é a mesma de `ouLinhas` (histórico + o que está
+   por guardar e não está em branco). */
+function ouDiagnostico(st){
+  st=st||OU_STATE;
+  var d={total:0,contados:0,semData:0,anos:{},foraFiltro:0};
+  var hist=(typeof OS_HIST!=='undefined'?OS_HIST:[]), ids={};
+  hist.forEach(function(sv){ if(sv) ids[sv.id]=1; });
+  var ed=(typeof OUTROS_SERVICOS!=='undefined'?OUTROS_SERVICOS:[]).filter(function(sv){
+    return sv && !ids[sv.id] && !(typeof osServicoVazio==='function' && osServicoVazio(sv));
+  });
+  hist.concat(ed).forEach(function(sv){
+    if(!sv) return;
+    d.total++;
+    var dt=ouDataServico(sv);
+    if(ouNoPeriodo(dt,st)){ d.contados++; return; }
+    if(!dt){ d.semData++; return; }
+    var a=dt.slice(0,4);
+    if(a!==String(st.ano)) d.anos[a]=(d.anos[a]||0)+1; else d.foraFiltro++;
+  });
+  return d;
+}
+function ouBolsa(){ return {n:0,custo:0,venda:0,markup:0}; }
+function ouSomar(b,r){ b.n++; b.custo+=r.custo; b.venda+=r.venda; b.markup+=r.markup; }
+/* Os totais do caixote: Equipa técnica, Fornecedores e o conjunto. */
+function ouTotais(linhas){
+  var t={eq:ouBolsa(), forn:ouBolsa(), tot:ouBolsa()};
+  linhas.forEach(function(r){ ouSomar(t[r.tipo],r); ouSomar(t.tot,r); });
+  return t;
+}
+/* O mesmo, repartido por estatuto — a ordem segue o registo ESTATUTOS (Normal
+   primeiro); um estatuto eliminado do registo mas ainda escrito em orçamentos
+   ou serviços antigos entra no fim, nunca desaparece. */
+function ouPorEstatuto(linhas){
+  var mapa={};
+  linhas.forEach(function(r){
+    var e=mapa[r.estatuto]||(mapa[r.estatuto]={nome:r.estatuto,eq:ouBolsa(),forn:ouBolsa(),tot:ouBolsa(),itens:{eq:[],forn:[]}});
+    ouSomar(e[r.tipo],r); ouSomar(e.tot,r); e.itens[r.tipo].push(r);
+  });
+  var ordem=(typeof ESTATUTOS!=='undefined'?ESTATUTOS:['Normal']).slice();
+  Object.keys(mapa).forEach(function(nome){ if(ordem.indexOf(nome)<0) ordem.push(nome); });
+  return ordem.map(function(nome){return mapa[nome];}).filter(Boolean);
+}
+/* Euros arredondados, para caber numa mini-tabela de cartão: «1820», «12,3k».
+   Os números por extenso (com cêntimos) estão no painel. */
+function ouCurto(v){
+  v=+v||0;
+  var neg=v<0, a=Math.abs(v);
+  var t=a>=10000 ? (a/1000).toFixed(1).replace('.',',').replace(/,0$/,'')+'k' : String(Math.round(a));
+  return (neg?'−':'')+t;
+}
+function ouCartaoCorpo(t){
+  function lin(rot,tit,b){
+    return '<tr><th title="'+tit+'">'+rot+(b.n?' <span class="ou-n">'+b.n+'</span>':'')+'</th>'
+      +'<td title="'+fmtEur(b.custo)+'">'+ouCurto(b.custo)+'</td>'
+      +'<td title="'+fmtEur(b.venda)+'">'+ouCurto(b.venda)+'</td>'
+      +'<td class="'+(b.markup<0?'neg':'')+'" title="'+fmtEur(b.markup)+'">'+ouCurto(b.markup)+'</td></tr>';
+  }
+  return '<table class="ou-mini"><thead><tr><th></th><th>Custo</th><th>Venda</th><th>Markup</th></tr></thead><tbody>'
+    +lin('Equipa','Equipa técnica (Outros serviços) · '+t.eq.n+(t.eq.n===1?' serviço':' serviços'),t.eq)
+    +lin('Fornec.','Fornecedores (orçamentos com estatuto) · '+t.forn.n+(t.forn.n===1?' orçamento':' orçamentos'),t.forn)
+    +'</tbody></table>';
+}
+function ouAbrir(ano){
+  OU_STATE.ano=ano||(new Date()).getFullYear();
+  OU_STATE.mes=''; OU_STATE.semana=null;
+  var sel=document.getElementById('ou-ano');
+  if(sel){
+    var anosSet={};
+    (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){if(o.data)anosSet[o.data.split('-')[0]]=1;});
+    (typeof OS_HIST!=='undefined'?OS_HIST:[]).forEach(function(sv){var d=ouDataServico(sv); if(d)anosSet[d.slice(0,4)]=1;});
+    anosSet[new Date().getFullYear()]=1; anosSet[OU_STATE.ano]=1;
+    var anos=Object.keys(anosSet).sort(function(a,b){return b-a;});
+    sel.innerHTML=anos.map(function(y){return '<option'+(String(y)===String(OU_STATE.ano)?' selected':'')+'>'+y+'</option>';}).join('');
+  }
+  var mesSel=document.getElementById('ou-mes'); if(mesSel) mesSel.value='';
+  document.getElementById('ou-full').classList.add('open');
+  document.body.style.overflow='hidden';
+  ouRender();
+  window.scrollTo(0,0);
+}
+function ouFechar(){
+  document.getElementById('ou-full').classList.remove('open');
+  document.body.style.overflow='';
+  var pop=document.getElementById('ou-sem-pop'), btn=document.getElementById('ou-sem-btn');
+  if(pop)pop.classList.remove('on'); if(btn)btn.classList.remove('on');
+}
+document.addEventListener('keydown',function(e){
+  var ov=document.getElementById('ou-full');
+  if(e.key==='Escape' && ov && ov.classList.contains('open')) ouFechar();
+});
+function ouAnoMudou(){
+  OU_STATE.ano=parseInt(document.getElementById('ou-ano').value,10);
+  OU_STATE.mes=''; document.getElementById('ou-mes').value='';
+  OU_STATE.semana=null;
+  var pop=document.getElementById('ou-sem-pop'); if(pop)pop.classList.remove('on');
+  ouRender();
+}
+function ouMesMudou(){
+  OU_STATE.mes=document.getElementById('ou-mes').value;
+  OU_STATE.semana=null;
+  ouRender();
+}
+function ouLimparFiltros(){
+  OU_STATE.mes=''; document.getElementById('ou-mes').value='';
+  OU_STATE.semana=null;
+  ouRender();
+}
+function ouBreadcrumb(){
+  var bc=document.getElementById('ou-bc'); if(!bc) return;
+  bc.innerHTML='<span class="bc-item" onclick="ouFechar()">Outros</span>';
+}
+function ouNum(v){ return '<span'+(v<0?' class="neg"':'')+'>'+fmtEur(v)+'</span>'; }
+function ouDataTxt(d){
+  var m=parseInt((d||'').slice(5,7),10)-1;
+  return (d||'').slice(8,10)+' '+(CPE_MESES[m]||'');
+}
+function ouLinhaGrupo(rot,b,marca){
+  return '<tr class="ou-g"><td style="text-align:left;">'+rot+'</td><td class="ar">'+b.n+'</td>'
+    +'<td class="ar cor-s">'+fmtEur(b.custo)+'</td><td class="ar cor-c">'+fmtEur(b.venda)+'</td>'
+    +'<td class="ar cor-h">'+ouNum(b.markup)+' '+marca+'</td></tr>';
+}
+function ouRender(){
+  var linhas=ouLinhas(OU_STATE);
+  var blocos=ouPorEstatuto(linhas), tot=ouTotais(linhas);
+  document.getElementById('ou-r-n').textContent=blocos.length;
+  document.getElementById('ou-r-custo').textContent=fmtEur(tot.tot.custo);
+  document.getElementById('ou-r-venda').textContent=fmtEur(tot.tot.venda);
+  var rM=document.getElementById('ou-r-markup');
+  rM.textContent=fmtEur(tot.tot.markup);
+  rM.style.color=tot.tot.markup<0?'var(--rdf)':'';
+
+  var semVenda=linhas.filter(function(r){return r.tipo==='eq' && r.semVenda;});
+  var av='';
+  if(semVenda.length){
+    av='<div class="aviso-linha"><b>Sem valor de venda:</b> '+semVenda.length
+      +(semVenda.length===1?' serviço dos Outros serviços não tem':' serviços dos Outros serviços não têm')
+      +' valor de venda preenchido — o markup deles aparece como menos os cachets ('
+      +fmtEur(-semVenda.reduce(function(a,r){return a+r.custo;},0))+').</div>';
+  }
+  var porGuardar=linhas.filter(function(r){return r.tipo==='eq' && r.porGuardar;});
+  if(porGuardar.length){
+    av+='<div class="aviso-linha"><b>Por guardar:</b> '+porGuardar.length
+      +(porGuardar.length===1?' serviço ainda está':' serviços ainda estão')
+      +' no painel «Novo serviço» (Recursos humanos → Outros serviços) e já conta aqui. Guarda-o para ficar no histórico.</div>';
+  }
+  var dg=ouDiagnostico(OU_STATE), nFora=dg.total-dg.contados;
+  if(nFora>0){
+    var motivos=[];
+    Object.keys(dg.anos).sort().forEach(function(a){ motivos.push(dg.anos[a]+' de '+a); });
+    if(dg.foraFiltro) motivos.push(dg.foraFiltro+' fora do mês/semana escolhido');
+    if(dg.semData) motivos.push(dg.semData+' sem data');
+    av+='<div class="aviso-linha"><b>Outros serviços que não entram aqui:</b> '+nFora+' ('+motivos.join(', ')
+      +'). Um serviço conta no ano e no mês da sua primeira data.</div>';
+  } else if(!dg.total){
+    av+='<div class="aviso-linha"><b>Ainda não há serviços</b> nos Outros serviços (nem guardados, nem em preenchimento). Os orçamentos com estatuto aparecem à parte.</div>';
+  }
+  document.getElementById('ou-avisos').innerHTML=av;
+
+  var corpo=document.getElementById('ou-corpo');
+  if(!blocos.length){
+    corpo.innerHTML='<div class="cpd-sem-linhas">Nenhum serviço nem orçamento com estatuto neste período.</div>';
+  } else {
+    corpo.innerHTML=blocos.map(function(e){
+      var h='<div class="ce-bloco"><div class="ce-tit">'+_esc(e.nome)+'</div>'
+        +'<table class="ou-tab"><thead><tr><th style="text-align:left;"></th><th class="ar">Nº</th>'
+        +'<th class="ar cor-s">Custo SUD</th><th class="ar cor-c">Valor venda</th><th class="ar cor-h">Markup</th></tr></thead><tbody>';
+      h+=ouLinhaGrupo('Equipa técnica',e.eq,'<span class="est real">real</span>');
+      e.itens.eq.slice().sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;}).forEach(function(r){
+        h+='<tr class="ou-i"><td style="text-align:left;">'+ouDataTxt(r.data)+' · '+_esc(r.nome)
+          +' <span style="color:var(--td);">('+r.nTecs+(r.nTecs===1?' técnico':' técnicos')+')</span>'
+          +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')+'</td><td class="ar"></td>'
+          +'<td class="ar">'+fmtEur(r.custo)+'</td><td class="ar">'+(r.semVenda?'—':fmtEur(r.venda))+'</td><td class="ar">'+ouNum(r.markup)+'</td></tr>';
+        /* B49 (2026-10-05, pergunta do Mike): «porquê que não aparecem os dados
+           dos técnicos?» — o painel só mostrava UMA linha por serviço, com o
+           número de técnicos. Agora cada serviço mostra por baixo uma linha por
+           técnico (data · técnico · serviço · recibo · cachet); a soma dos
+           cachets é o Custo SUD do serviço, por isso nada se soma duas vezes. */
+        (r.tecLinhas||[]).forEach(function(t){
+          h+='<tr class="ou-l"><td style="text-align:left;">'+(t.data?ouDataTxt(t.data):'—')+' · <b>'+(t.tec?_esc(t.tec):'(sem técnico)')+'</b>'
+            +(t.servico?' · '+_esc(t.servico):'')
+            +(t.recibo?' <span class="ou-rec">rec. '+_esc(t.recibo)+'</span>':'')
+            +'</td><td class="ar"></td><td class="ar">'+fmtEur(t.valor)+'</td><td class="ar"></td><td class="ar"></td></tr>';
+        });
+      });
+      h+=ouLinhaGrupo('Fornecedores',e.forn,'<span class="est">est.</span>');
+      e.itens.forn.slice().sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;}).forEach(function(r){
+        h+='<tr class="ou-i"><td style="text-align:left;">'+ouDataTxt(r.data)+' · '+_esc(r.nome)
+          +' <span style="color:var(--td);">('+_esc(r.num)+')</span></td><td class="ar"></td>'
+          +'<td class="ar">'+fmtEur(r.custo)+'</td><td class="ar">'+fmtEur(r.venda)+'</td><td class="ar">'+ouNum(r.markup)+'</td></tr>';
+      });
+      h+='<tr class="ou-t"><td style="text-align:left;">Total do estatuto</td><td class="ar">'+e.tot.n+'</td>'
+        +'<td class="ar cor-s">'+fmtEur(e.tot.custo)+'</td><td class="ar cor-c">'+fmtEur(e.tot.venda)+'</td>'
+        +'<td class="ar cor-h">'+ouNum(e.tot.markup)+'</td></tr>';
+      return h+'</tbody></table></div>';
+    }).join('');
+  }
+
+  var subExtra='';
+  if(OU_STATE.semana) subExtra=' · Semana '+OU_STATE.semana;
+  else if(OU_STATE.mes!=='') subExtra=' · '+CPE_MESES[parseInt(OU_STATE.mes,10)];
+  document.getElementById('ou-sub').textContent=tot.eq.n+(tot.eq.n===1?' serviço':' serviços')+' · '
+    +tot.forn.n+(tot.forn.n===1?' orçamento com estatuto':' orçamentos com estatuto')+' em '+OU_STATE.ano+subExtra;
+
+  var semBtn=document.getElementById('ou-sem-btn');
+  if(semBtn){
+    if(OU_STATE.semana){ semBtn.textContent='Sem. '+OU_STATE.semana; semBtn.classList.add('on'); }
+    else { semBtn.textContent='Semana'; semBtn.classList.remove('on'); }
+  }
+  var lim=document.getElementById('ou-lim');
+  if(lim) lim.classList.toggle('on', !!(OU_STATE.mes!=='' || OU_STATE.semana));
+  ouBreadcrumb();
+}
+
 /* ===== A CONTA DOS FORNECEDORES, NUM SITIO SO (2026-09-15) =====
    O Custo SUD de um ano reparte-se por ENTIDADES que forneceram material. A
    SUD e uma delas — tem equipamento proprio e tambem o aluga (decisao do Mike).
@@ -15377,7 +15921,7 @@ function eqBreadcrumb(){
    Quem quiser este numero chama esta funcao. Nao se volta a somar a mao. */
 function fornContas(ano){
   var orcs=(typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
-    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&orcEntraNosMapas(o);});
+    return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&orcEntraNoAno(o);});
   /* o custoEntries e derivado no orcApply; garantir que esta em dia antes de somar */
   orcs.forEach(function(o){try{orcApply(o);}catch(e){}});
 
@@ -15524,8 +16068,13 @@ function orcVendaDirecta(o){
 function relContas(ano,ateHoje){
   ano=parseInt(ano,10)||CUR_Y;
   var hoje=localDate(new Date());
-  var todos=(typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
+  var todosBrutos=(typeof DB_ORC!=='undefined'?DB_ORC:[]).filter(function(o){
     return o&&o.data&&parseInt(o.data.split('-')[0],10)===ano&&(!ateHoje||o.data<=hoje);});
+  /* B48: o «universo do ano» — sem os orçamentos com estatuto quando o
+     interruptor está ligado. A taxa de adjudicação (adjudicados ÷ todos) tem de
+     medir o MESMO universo nos dois lados, senão sai torta. */
+  var todos=todosBrutos.filter(orcNoUniversoAno);
+  var nFora=todosBrutos.filter(function(o){return orcEntraNosMapas(o)&&!orcNoUniversoAno(o);}).length;
   var adj=todos.filter(function(o){return orcEntraNosMapas(o);});   // regra F, via orcEntraNosMapas (2026-09-29)
   adj.forEach(function(o){try{orcApply(o);}catch(e){}});
   var servs=(typeof DB_SERVICOS!=='undefined'?DB_SERVICOS:[]).filter(function(x){
@@ -15613,7 +16162,7 @@ function relContas(ano,ateHoje){
     resultado:receitaSUD-custoSUD,
     resultadoTec:receitaSUD-custoSUD-custoTec,
     eventos:eventos, diarias:diarias,
-    nOrc:todos.length, nAdj:adj.length,
+    nOrc:todos.length, nAdj:adj.length, nFora:nFora,
     taxa:todos.length?Math.round(adj.length/todos.length*100):0,
     byM:byM, clientes:clientes, porEstatuto:porEstatuto, adj:adj, servs:servs};
 }
@@ -15713,6 +16262,11 @@ function rRel(){
     +'<div style="text-align:right;font-size:12px;color:var(--ts);">Período: Janeiro–Dezembro '+ano+'</div>'
     +'</div></div>';
 
+  if(c.nFora){
+    h+='<div class="aviso-linha"><b>Fora destes números:</b> '+c.nFora
+      +(c.nFora===1?' orçamento adjudicado com estatuto':' orçamentos adjudicados com estatuto')
+      +' (Pool, Restaurante, …) — estão em Mapas › O ano › Outros.</div>';
+  }
   if(!c.nOrc&&!c.servs.length){
     h+='<div style="color:var(--td);font-size:13px;padding:24px 4px;">Sem orçamentos nem serviços registados em '+ano+'.</div>';
     el.innerHTML=h;
@@ -16037,7 +16591,7 @@ function exportRelatorioPDF(ano){
   // ---- dados ----
   var orcs=DB_ORC.filter(function(o){return o.data&&parseInt(o.data.split('-')[0])===ano;});
   var servs=DB_SERVICOS.filter(function(s){return s.data&&parseInt(s.data.split('-')[0])===ano;});
-  var adj=orcs.filter(function(o){return o.estado==='Adjudicado';});
+  var adj=orcs.filter(orcEntraNoAno);   // B48: sem os orçamentos com estatuto (a mesma lista do relContas)
   // Valor venda = so as linhas facturaveis, SEM markup (regra do Mike,
   // 2026-09-10). O markup e estimativa e tem coluna propria.
   /* UMA conta, a mesma do ecra e do arquivo (2026-09-15). Ate aqui esta funcao
@@ -16867,9 +17421,18 @@ function osAcharLinha(sv,lid){return ((sv&&sv.linhas)||[]).find(function(l){retu
 function osValorServico(sv){
   var t=0;((sv&&sv.linhas)||[]).forEach(function(l){t+=(+l.valor||0);});return t;
 }
+/* B46 (2026-10-05, pedido do Mike): um serviço dos Outros serviços tem também
+   um ESTATUTO (a mesma lista dos orçamentos) e um VALOR DE VENDA (o do serviço
+   inteiro, sem IVA). Lêem-se SEMPRE por aqui, nunca `sv.estatuto`/`sv.venda` em
+   bruto: os serviços gravados antes de existirem estes campos não os têm, e
+   contam como «Normal» e sem venda — tal como um orçamento sem estatuto
+   (orcEstatuto). Nada se migra: o que não está escrito lê-se pelo valor por
+   omissão. */
+function osEstatuto(sv){return (sv&&sv.estatuto)||'Normal';}
+function osVenda(sv){return +(sv&&sv.venda)||0;}
 // Servico novo, em branco, com uma linha ja pronta a preencher.
 function osNovoServico(silencioso){
-  var sv={id:nid++,grupo:'',titulo:'',obs:'',linhas:[{id:nid++,data:localDate(new Date()),servico:'',tecId:null,tecNome:'',recibo:'',valor:0}]};
+  var sv={id:nid++,grupo:'',titulo:'',obs:'',estatuto:'Normal',venda:0,linhas:[{id:nid++,data:localDate(new Date()),servico:'',tecId:null,tecNome:'',recibo:'',valor:0}]};
   OUTROS_SERVICOS.push(sv);
   if(!silencioso){osRenderTabela();osRenderFiltros();osGuardarAuto();}
   return sv;
@@ -17278,6 +17841,7 @@ function osRenderTabela(){
 function osServicoVazio(sv){
   if(!sv)return true;
   if((sv.grupo||'').trim()||(sv.titulo||'').trim())return false;
+  if(osEstatuto(sv)!=='Normal'||osVenda(sv))return false;   // B46: estatuto ou venda também são «escrever»
   return !((sv.linhas)||[]).some(function(l){return l.tecNome||(l.servico||'').trim()||(l.recibo||'').trim()||(+l.valor||0);});
 }
 function osGuardar(){
@@ -17307,12 +17871,26 @@ function osGuardar(){
 // O servico em edicao continua a ser o OUTROS_SERVICOS[0], como sempre: o painel
 // so mudou de sitio. Por isso estas funcoes sao finas — abrem, pintam e fecham;
 // quem guarda os dados continua a ser o osUpServico/osUpLinha de sempre.
+// As <option> do estatuto de um serviço: a lista dos estatutos que existem, e,
+// se o serviço traz um que já foi eliminado da lista, esse também (eliminar um
+// estatuto nunca reescreve o que já o usa — ver estatutoEliminar).
+function osEstatutoOpcoes(atual){
+  var lista=(typeof ESTATUTOS!=='undefined'&&ESTATUTOS.length)?ESTATUTOS.slice():['Normal'];
+  if(atual&&lista.indexOf(atual)<0)lista.push(atual);
+  return lista.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===atual?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
+}
 function osNovoPintar(){
   var sv=OUTROS_SERVICOS[0];
   var g=document.getElementById('os-novo-grupo');
   var t=document.getElementById('os-novo-titulo');
   if(g)g.value=(sv&&sv.grupo)||'';
   if(t)t.value=(sv&&sv.titulo)||'';
+  // B46: estatuto (select, com o que o serviço já tiver mesmo que o estatuto
+  // entretanto tenha sido eliminado da lista) e valor de venda.
+  var se=document.getElementById('os-novo-estatuto');
+  if(se)se.innerHTML=osEstatutoOpcoes(osEstatuto(sv));
+  var vv=document.getElementById('os-novo-venda');
+  if(vv)vv.value=osVenda(sv)?osVenda(sv):'';
   var tt=document.getElementById('os-novo-tt');
   if(tt)tt.textContent=(sv&&!osServicoVazio(sv))?'Serviço por guardar':'Novo serviço';
 }
@@ -17426,6 +18004,8 @@ function osHistAbrir(i){
     h+='<div class="os-det-l"><span class="k">Data de emissão</span><span class="v">'+psEsc(osHistEmissao(sv))+'</span></div>';
     h+='<div class="os-det-l"><span class="k">Título</span><span class="v">'+psEsc(sv.titulo||'—')+'</span></div>';
     h+='<div class="os-det-l"><span class="k">Grupo</span><span class="v">'+psEsc(sv.grupo||'—')+'</span></div>';
+    h+='<div class="os-det-l"><span class="k">Estatuto</span><span class="v">'+psEsc(osEstatuto(sv))+'</span></div>';
+    h+='<div class="os-det-l"><span class="k">Valor de venda</span><span class="v">'+(osVenda(sv)?fmtEur(osVenda(sv)):'—')+'</span></div>';
     h+='<table class="os-det-tb" style="margin-top:16px;"><thead><tr><th>Data</th><th>Técnico</th><th>Recibo</th><th>Serviço</th><th>€</th></tr></thead><tbody>';
     if(!linhas.length){
       h+='<tr><td colspan="5" style="color:var(--td);font-style:italic;">Sem barras.</td></tr>';
