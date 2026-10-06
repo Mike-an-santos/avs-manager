@@ -17593,9 +17593,30 @@ function osValorServico(sv){
    inteiro, sem IVA). Lêem-se SEMPRE por aqui, nunca `sv.estatuto`/`sv.venda` em
    bruto: os serviços gravados antes de existirem estes campos não os têm, e
    contam como «Normal» e sem venda — tal como um orçamento sem estatuto
-   (orcEstatuto). Nada se migra: o que não está escrito lê-se pelo valor por
-   omissão. */
-function osEstatuto(sv){return (sv&&sv.estatuto)||'Normal';}
+   (orcEstatuto).
+
+   B56 (2026-10-06, pedido do Mike, visto ao vivo no ecrã dele): o campo Grupo
+   e o campo Estatuto têm os MESMOS exemplos no sítio onde se escrevem («Ex:
+   Pool, Restaurante…» — um acaso de copiar o texto de um para o outro), e o
+   Mike regista o estatuto pelo Grupo («RESTAURANTE», «POOL»…) sem saber que
+   há um segundo campo, à parte, para escolher o mesmo nome — ficando sempre
+   em «Normal». Por isso, sem um Estatuto escolhido de propósito (ainda em
+   «Normal», o valor por omissão), lê-se o Grupo: se o texto do Grupo bater,
+   sem distinguir maiúsculas, com um estatuto já existente («restaurante» com
+   «Restaurante»), é esse que conta — em TODO o lado que leia por aqui (o
+   caixote Outros, a ficha, o select), sem reescrever nada e sem precisar de
+   nenhum clique extra. Um Estatuto escolhido de propósito (diferente de
+   «Normal») continua a ganhar sempre ao Grupo. */
+function osEstatuto(sv){
+  if(!sv)return 'Normal';
+  if(sv.estatuto&&sv.estatuto!=='Normal')return sv.estatuto;
+  var g=(sv.grupo||'').trim().toLowerCase();
+  if(g&&typeof ESTATUTOS!=='undefined'){
+    var bate=ESTATUTOS.filter(function(e){return e.toLowerCase()===g;})[0];
+    if(bate)return bate;
+  }
+  return 'Normal';
+}
 function osVenda(sv){return +(sv&&sv.venda)||0;}
 // Servico novo, em branco, com uma linha ja pronta a preencher.
 function osNovoServico(silencioso){
