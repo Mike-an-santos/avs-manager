@@ -3340,7 +3340,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
            Servem o cartão «Diversos» dos Mapas; nenhum deles vai para o PDF do
            técnico (é informação interna, como o Grupo). -->
       <div class="os-novo-id os-novo-id2">
-        <div class="fi"><label>Estatuto</label><div class="os-novo-est"><select id="os-novo-estatuto" onchange="osNovoCampo('estatuto',this.value)"></select><button type="button" class="btn-ic" title="Gerir estatutos" onclick="estatutosAbrir()">+</button></div></div>
+        <div class="fi"><label>Estatuto</label><div class="os-novo-est"><select id="os-novo-estatuto" onchange="osNovoCampo('estatuto',this.value)"></select><button type="button" class="btn-ic" title="Gerir estatutos" onclick="estatutosAbrir('os')">+</button></div></div>
         <div class="fi"><label>Valor de venda (s/ IVA)</label><input id="os-novo-venda" type="number" step="0.01" min="0" placeholder="0,00" oninput="osNovoCampo('venda',parseFloat(this.value)||0)"></div>
       </div>
       <div class="os-novo-sep"><span>Técnicos</span><div class="l"></div></div>
@@ -11264,7 +11264,26 @@ function orcEstatuto(o){return (o&&o.estatuto)||'Normal';}
 function estatutosGuardarAuto(){
   if(typeof autosaveLigado==='function'&&autosaveLigado()&&typeof autosaveGuardar==='function'){try{autosaveGuardar();}catch(e){}}
 }
-function estatutosAbrir(){
+// B53 (2026-10-06, apanhado pelo Mike: «existe um estatuto atribuído chamado
+// Restaurante» e o serviço aparecia como Normal): criar um estatuto no «+» só o
+// punha na lista — não o escolhia no serviço/orçamento que se estava a editar.
+// Agora o «+» diz de onde veio ('os' = Novo serviço, 'oe' = editor de orçamento)
+// e o estatuto acabado de criar (ou já existente) fica logo escolhido aí.
+var ESTATUTO_ORIGEM=null;
+function estatutoEscolher(nome){
+  if(ESTATUTO_ORIGEM==='os'&&typeof OUTROS_SERVICOS!=='undefined'&&OUTROS_SERVICOS[0]){
+    osNovoCampo('estatuto',nome);
+    var so=document.getElementById('os-novo-estatuto');
+    if(so)so.innerHTML=osEstatutoOpcoes(nome);
+  } else if(ESTATUTO_ORIGEM==='oe'){
+    var sel=document.getElementById('oe-estatuto');
+    if(sel&&orcSel){
+      sel.innerHTML=ESTATUTOS.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===nome?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
+    }
+  }
+}
+function estatutosAbrir(origem){
+  ESTATUTO_ORIGEM=origem||null;
   var inp=document.getElementById('estatuto-novo-nome');if(inp)inp.value='';
   estatutosRenderLista();
   om('m-estatutos');
@@ -11301,13 +11320,17 @@ function estatutoGuardarNovo(){
   var inp=document.getElementById('estatuto-novo-nome');
   var v=(inp?inp.value:'').trim();
   if(!v)return;
-  var existe=ESTATUTOS.some(function(e){return e.toLowerCase()===v.toLowerCase();});
-  if(!existe)ESTATUTOS.push(v);
+  var igual=ESTATUTOS.filter(function(e){return e.toLowerCase()===v.toLowerCase();})[0];
+  var existe=!!igual;
+  if(existe)v=igual; // nome canónico: «restaurante» escolhe o «Restaurante» que já existe
+  else ESTATUTOS.push(v);
   if(inp)inp.value='';
   estatutosRenderLista();
   estatutosRenderSelects();
+  var escolhido=!!ESTATUTO_ORIGEM;
+  if(escolhido){estatutoEscolher(v);cm('m-estatutos');}
   estatutosGuardarAuto();
-  showToast(existe?'Esse estatuto já existia.':'Estatuto "'+v+'" criado.','ok');
+  showToast((existe?'Esse estatuto já existia':'Estatuto "'+v+'" criado')+(escolhido?' e escolhido.':'.'),'ok');
 }
 // Actualiza o <select> do editor de orçamentos, se estiver aberto, para o
 // estatuto acabado de criar aparecer sem fechar e reabrir o orçamento.
@@ -11509,7 +11532,7 @@ function renderEditor(){
         <div><label class="oe-lbl">Estatuto</label>
           <div style="display:flex;gap:6px;">
             <select id="oe-estatuto" class="oe-f" style="flex:1;min-width:0;">${ESTATUTOS.map(e=>`<option value="${e}"${e===orcEstatuto(orcSel)?' selected':''}>${e}</option>`).join('')}</select>
-            <button type="button" class="btn-ic" title="Gerir estatutos" onclick="estatutosAbrir()" style="width:38px;flex-shrink:0;padding:0;font-size:16px;font-weight:700;line-height:1;">+</button>
+            <button type="button" class="btn-ic" title="Gerir estatutos" onclick="estatutosAbrir('oe')" style="width:38px;flex-shrink:0;padding:0;font-size:16px;font-weight:700;line-height:1;">+</button>
           </div>
         </div>
       </div>
@@ -18109,8 +18132,10 @@ function osHistAbrir(i){
     h+='<div class="os-det-l"><span class="k">Data de emissão</span><span class="v">'+psEsc(osHistEmissao(sv))+'</span></div>';
     h+='<div class="os-det-l"><span class="k">Título</span><span class="v">'+psEsc(sv.titulo||'—')+'</span></div>';
     h+='<div class="os-det-l"><span class="k">Grupo</span><span class="v">'+psEsc(sv.grupo||'—')+'</span></div>';
-    h+='<div class="os-det-l"><span class="k">Estatuto</span><span class="v">'+psEsc(osEstatuto(sv))+'</span></div>';
-    h+='<div class="os-det-l"><span class="k">Valor de venda</span><span class="v">'+(osVenda(sv)?fmtEur(osVenda(sv)):'—')+'</span></div>';
+    // B53: estatuto e valor de venda editáveis também depois de guardado —
+    // antes só se liam, e um serviço guardado como «Normal» ficava para sempre.
+    h+='<div class="os-det-l"><span class="k">Estatuto</span><span class="v"><select id="os-det-estatuto" onchange="osHistCampo(\'estatuto\',this.value)" style="background:var(--navy3);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:4px 8px;font-size:12px;">'+osEstatutoOpcoes(osEstatuto(sv))+'</select></span></div>';
+    h+='<div class="os-det-l"><span class="k">Valor de venda (s/ IVA)</span><span class="v"><input id="os-det-venda" type="number" step="0.01" min="0" placeholder="0,00" value="'+(osVenda(sv)||'')+'" onchange="osHistCampo(\'venda\',parseFloat(this.value)||0)" style="background:var(--navy3);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:4px 8px;font-size:12px;width:110px;text-align:right;"></span></div>';
     h+='<table class="os-det-tb" style="margin-top:16px;"><thead><tr><th>Data</th><th>Técnico</th><th>Recibo</th><th>Serviço</th><th>€</th></tr></thead><tbody>';
     if(!linhas.length){
       h+='<tr><td colspan="5" style="color:var(--td);font-style:italic;">Sem barras.</td></tr>';
@@ -18128,6 +18153,14 @@ function osHistAbrir(i){
     box.innerHTML=h;
   }
   om('m-oshist');
+}
+function osHistCampo(campo,val){
+  var sv=osHistAberto();if(!sv)return;
+  if(campo!=='estatuto'&&campo!=='venda')return;
+  sv[campo]=(campo==='estatuto')?(val||'Normal'):(+val||0);
+  osGuardarAuto();
+  if(typeof osRenderHist==='function'){try{osRenderHist();}catch(e){}}
+  showToast('Serviço actualizado','ok');
 }
 function osHistApagar(i){
   showConfirm('Apagar do histórico','Este serviço sai do histórico e não pode ser recuperado. Continuar?',function(){
