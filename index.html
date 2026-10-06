@@ -1607,6 +1607,8 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 #ou-full .ou-g-fo .ce-tit{color:#5ba3d9;}
 #ou-full .ou-g-eq .ce-dot{background:#9b7fe8;}
 #ou-full .ou-g-fo .ce-dot{background:#4a90c8;}
+#ou-full a.ou-ed{color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
+#ou-full a.ou-ed:hover{color:#9b7fe8;}
 #ou-full .ou-g-eq tbody tr.ou-i:hover td{background:rgba(155,127,232,.05);}
 #ou-full tr.ou-l td{font-size:11.5px;color:var(--td);padding-top:3px;padding-bottom:3px;background:rgba(155,127,232,.06);}
 #ou-full tr.ou-l td:first-child{padding-left:34px;}
@@ -15896,6 +15898,10 @@ function ouAbrirEstatuto(i){
   ouRender();
   window.scrollTo(0,0);
 }
+function ouEditarServico(id){
+  var i=OS_HIST.findIndex(function(x){return x.id===id;});
+  if(i>=0) osHistAbrir(i);
+}
 function ouVoltarLista(){
   OU_STATE.estatuto=null;
   ouRender();
@@ -15978,7 +15984,9 @@ function ouRenderDetalhe(e){
     +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th></tr></thead><tbody>';
   if(!e.itens.eq.length) h+='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum serviço dos Outros serviços com este estatuto neste período.</td></tr>';
   e.itens.eq.slice().sort(ord).forEach(function(r){
-    h+='<tr class="ou-i"><td>'+_esc(r.nome)
+    /* B54: o nome do serviço abre a ficha (já guardada) onde se muda o estatuto
+       e o valor de venda — resolve aqui, no sítio onde se vê o engano. */
+    h+='<tr class="ou-i"><td>'+(r.porGuardar?_esc(r.nome):'<a class="ou-ed" href="javascript:void(0)" title="Abrir o serviço para mudar o estatuto ou o valor de venda" onclick="ouEditarServico('+r.id+')">'+_esc(r.nome)+'</a>')
       +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')
       +'</td><td>'+ouDataTxt(r.data)+'</td><td>'+r.nTecs+'</td>'
       +'<td class="cor-s">'+fmtEur(r.custo)+'</td><td class="cor-c">'+(r.semVenda?'<span class="ou-sem">—</span>':fmtEur(r.venda))+'</td>'
@@ -18160,6 +18168,10 @@ function osHistCampo(campo,val){
   sv[campo]=(campo==='estatuto')?(val||'Normal'):(+val||0);
   osGuardarAuto();
   if(typeof osRenderHist==='function'){try{osRenderHist();}catch(e){}}
+  // B54: se o painel «Outros» está aberto por baixo, refaz-se já (o serviço pode
+  // ter mudado de estatuto, e portanto de bloco).
+  var ouP=document.getElementById('ou-full');
+  if(ouP&&ouP.classList.contains('open')&&typeof ouRender==='function'){try{ouRender();}catch(e){}}
   showToast('Serviço actualizado','ok');
 }
 function osHistApagar(i){
