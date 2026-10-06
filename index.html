@@ -3336,15 +3336,17 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
     <div class="mott"><span id="os-novo-tt">Novo serviço</span> <button class="btn btn-sm btn-gh" onclick="osNovoFechar()" style="padding:3px 8px;">✕</button></div>
     <div id="os-novo-corpo" style="max-height:62vh;overflow-y:auto;overflow-x:auto;">
       <div class="os-novo-id">
-        <div class="fi"><label>Grupo</label><input id="os-novo-grupo" list="os-grupos-dl" placeholder="Ex: Restaurante, Pool…" oninput="osNovoCampo('grupo',this.value)"></div>
+        <div class="fi"><label>Grupo</label><input id="os-novo-grupo" list="os-grupos-dl" placeholder="Ex: Restaurante, Pool…" oninput="osNovoCampo('grupo',this.value)"><div id="os-novo-est-hint" style="margin-top:4px;font-size:11px;color:var(--td);min-height:14px;"></div></div>
         <div class="fi"><label>Título</label><input id="os-novo-titulo" placeholder="Ex: Quinzena de Agosto" oninput="osNovoCampo('titulo',this.value)"></div>
       </div>
-      <!-- B46 (2026-10-05): o estatuto (a MESMA lista dos orçamentos — ESTATUTOS)
-           e o valor de venda do serviço inteiro, sem IVA como no orçamento.
-           Servem o cartão «Diversos» dos Mapas; nenhum deles vai para o PDF do
-           técnico (é informação interna, como o Grupo). -->
+      <!-- B57 (2026-10-06, pedido do Mike: «grupo e estatuto são a mesma coisa,
+           troca estatuto por grupo»): o Outros deixou de ter um campo Estatuto
+           à parte — o Grupo é que decide (ver osEstatuto). O «Ex: Pool,
+           Restaurante…» do Grupo, aqui em cima, é precisamente esse exemplo;
+           o aviso por baixo do Grupo confirma logo em que bloco do Outros o
+           serviço vai cair. O valor de venda continua à parte (nada a ver com
+           isto). -->
       <div class="os-novo-id os-novo-id2">
-        <div class="fi"><label>Estatuto</label><div class="os-novo-est"><select id="os-novo-estatuto" onchange="osNovoCampo('estatuto',this.value)"></select><button type="button" class="btn-ic" title="Gerir estatutos" onclick="estatutosAbrir('os')">+</button></div></div>
         <div class="fi"><label>Valor de venda (s/ IVA)</label><input id="os-novo-venda" type="number" step="0.01" min="0" placeholder="0,00" oninput="osNovoCampo('venda',parseFloat(this.value)||0)"></div>
       </div>
       <div class="os-novo-sep"><span>Técnicos</span><div class="l"></div></div>
@@ -11275,11 +11277,7 @@ function estatutosGuardarAuto(){
 // e o estatuto acabado de criar (ou já existente) fica logo escolhido aí.
 var ESTATUTO_ORIGEM=null;
 function estatutoEscolher(nome){
-  if(ESTATUTO_ORIGEM==='os'&&typeof OUTROS_SERVICOS!=='undefined'&&OUTROS_SERVICOS[0]){
-    osNovoCampo('estatuto',nome);
-    var so=document.getElementById('os-novo-estatuto');
-    if(so)so.innerHTML=osEstatutoOpcoes(nome);
-  } else if(ESTATUTO_ORIGEM==='oe'){
+  if(ESTATUTO_ORIGEM==='oe'){
     var sel=document.getElementById('oe-estatuto');
     if(sel&&orcSel){
       sel.innerHTML=ESTATUTOS.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===nome?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
@@ -11343,12 +11341,6 @@ function estatutosRenderSelects(){
   if(sel&&orcSel){
     var atual=sel.value||orcEstatuto(orcSel);
     sel.innerHTML=ESTATUTOS.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===atual?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
-  }
-  // B46: o painel «Novo serviço» dos Outros serviços tem o seu <select> do
-  // mesmo registo; o «+» ao lado dele abre esta mesma gestão.
-  var so=document.getElementById('os-novo-estatuto');
-  if(so&&typeof osEstatutoOpcoes==='function'&&typeof OUTROS_SERVICOS!=='undefined'){
-    so.innerHTML=osEstatutoOpcoes(so.value||osEstatuto(OUTROS_SERVICOS[0]));
   }
 }
 
@@ -15911,7 +15903,10 @@ function ouMoverServicos(){
   if(!ids.length) return;
   showConfirm('Mudar o estatuto','Passar '+ids.length+(ids.length===1?' serviço':' serviços')+' de «'+de+'» para «'+para+'»?',function(){
     var n=0;
-    OS_HIST.forEach(function(sv){ if(ids.indexOf(sv.id)>=0){ sv.estatuto=para; n++; } });
+    // B57: já não há um Estatuto à parte — mudar de bloco é mudar o Grupo
+    // (osEstatuto só lê sv.grupo); escrever em sv.estatuto não tinha mais
+    // nenhum efeito.
+    OS_HIST.forEach(function(sv){ if(ids.indexOf(sv.id)>=0){ sv.grupo=para; n++; } });
     osGuardarAuto();
     OU_STATE.estatuto=null;
     ouRender();
@@ -16015,9 +16010,10 @@ function ouRenderDetalhe(e){
     +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th></tr></thead><tbody>';
   if(!e.itens.eq.length) h+='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum serviço dos Outros serviços com este estatuto neste período.</td></tr>';
   e.itens.eq.slice().sort(ord).forEach(function(r){
-    /* B54: o nome do serviço abre a ficha (já guardada) onde se muda o estatuto
-       e o valor de venda — resolve aqui, no sítio onde se vê o engano. */
-    h+='<tr class="ou-i"><td>'+(r.porGuardar?_esc(r.nome):'<a class="ou-ed" href="javascript:void(0)" title="Abrir o serviço para mudar o estatuto ou o valor de venda" onclick="ouEditarServico('+r.id+')">'+_esc(r.nome)+'</a>')
+    /* B54: o nome do serviço abre a ficha (já guardada) onde se muda o Grupo
+       (B57: é o que diz o bloco) e o valor de venda — resolve aqui, no sítio
+       onde se vê o engano. */
+    h+='<tr class="ou-i"><td>'+(r.porGuardar?_esc(r.nome):'<a class="ou-ed" href="javascript:void(0)" title="Abrir o serviço para mudar o grupo ou o valor de venda" onclick="ouEditarServico('+r.id+')">'+_esc(r.nome)+'</a>')
       +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')
       +'</td><td>'+ouDataTxt(r.data)+'</td><td>'+r.nTecs+'</td>'
       +'<td class="cor-s">'+fmtEur(r.custo)+'</td><td class="cor-c">'+(r.semVenda?'<span class="ou-sem">—</span>':fmtEur(r.venda))+'</td>'
@@ -17589,33 +17585,34 @@ function osValorServico(sv){
   var t=0;((sv&&sv.linhas)||[]).forEach(function(l){t+=(+l.valor||0);});return t;
 }
 /* B46 (2026-10-05, pedido do Mike): um serviço dos Outros serviços tem também
-   um ESTATUTO (a mesma lista dos orçamentos) e um VALOR DE VENDA (o do serviço
-   inteiro, sem IVA). Lêem-se SEMPRE por aqui, nunca `sv.estatuto`/`sv.venda` em
-   bruto: os serviços gravados antes de existirem estes campos não os têm, e
-   contam como «Normal» e sem venda — tal como um orçamento sem estatuto
+   um VALOR DE VENDA (o do serviço inteiro, sem IVA). Lê-se SEMPRE por aqui,
+   nunca `sv.venda` em bruto: os serviços gravados antes de existir este campo
+   não o têm, e contam como sem venda — tal como um orçamento sem estatuto
    (orcEstatuto).
 
-   B56 (2026-10-06, pedido do Mike, visto ao vivo no ecrã dele): o campo Grupo
-   e o campo Estatuto têm os MESMOS exemplos no sítio onde se escrevem («Ex:
-   Pool, Restaurante…» — um acaso de copiar o texto de um para o outro), e o
-   Mike regista o estatuto pelo Grupo («RESTAURANTE», «POOL»…) sem saber que
-   há um segundo campo, à parte, para escolher o mesmo nome — ficando sempre
-   em «Normal». Por isso, sem um Estatuto escolhido de propósito (ainda em
-   «Normal», o valor por omissão), lê-se o Grupo: se o texto do Grupo bater,
-   sem distinguir maiúsculas, com um estatuto já existente («restaurante» com
-   «Restaurante»), é esse que conta — em TODO o lado que leia por aqui (o
-   caixote Outros, a ficha, o select), sem reescrever nada e sem precisar de
-   nenhum clique extra. Um Estatuto escolhido de propósito (diferente de
-   «Normal») continua a ganhar sempre ao Grupo. */
+   B46 tinha trazido, a par da venda, um ESTATUTO a part — um segundo campo, só
+   para os Outros serviços, com um <select> próprio e a mesma lista dos
+   orçamentos (ESTATUTOS). B56 (2026-10-06) foi a primeira tentativa de corrigir
+   o que isso criou: o Grupo e esse Estatuto têm os MESMOS exemplos no sítio
+   onde se escrevem («Ex: Pool, Restaurante…»), e o Mike regista sempre pelo
+   Grupo, sem saber que havia um segundo campo à parte — ficava sempre em
+   «Normal». B57 (2026-10-06, pedido do Mike: «grupo e estatuto são a mesma
+   coisa, troca estatuto por grupo») tira de vez esse segundo campo: um
+   serviço dos Outros serviços já não tem Estatuto nenhum — o GRUPO é que diz
+   em que bloco do caixote Outros ele entra. Sem Grupo nenhum, é «Normal»; com
+   Grupo, bate-se (sem distinguir maiúsculas) com um estatuto já existente
+   (dos orçamentos, por exemplo «Restaurante») para ficar no MESMO bloco que
+   eles; sem bater com nenhum, o bloco chama-se como o Grupo foi escrito. Nada
+   se lê de `sv.estatuto` — um valor antigo, de antes da B57, fica só por lá,
+   sem efeito nenhum. */
 function osEstatuto(sv){
-  if(!sv)return 'Normal';
-  if(sv.estatuto&&sv.estatuto!=='Normal')return sv.estatuto;
-  var g=(sv.grupo||'').trim().toLowerCase();
-  if(g&&typeof ESTATUTOS!=='undefined'){
-    var bate=ESTATUTOS.filter(function(e){return e.toLowerCase()===g;})[0];
+  var g=(sv&&sv.grupo||'').trim();
+  if(!g)return 'Normal';
+  if(typeof ESTATUTOS!=='undefined'){
+    var bate=ESTATUTOS.filter(function(e){return e.toLowerCase()===g.toLowerCase();})[0];
     if(bate)return bate;
   }
-  return 'Normal';
+  return g;
 }
 function osVenda(sv){return +(sv&&sv.venda)||0;}
 // Servico novo, em branco, com uma linha ja pronta a preencher.
@@ -18059,13 +18056,13 @@ function osGuardar(){
 // O servico em edicao continua a ser o OUTROS_SERVICOS[0], como sempre: o painel
 // so mudou de sitio. Por isso estas funcoes sao finas — abrem, pintam e fecham;
 // quem guarda os dados continua a ser o osUpServico/osUpLinha de sempre.
-// As <option> do estatuto de um serviço: a lista dos estatutos que existem, e,
-// se o serviço traz um que já foi eliminado da lista, esse também (eliminar um
-// estatuto nunca reescreve o que já o usa — ver estatutoEliminar).
-function osEstatutoOpcoes(atual){
-  var lista=(typeof ESTATUTOS!=='undefined'&&ESTATUTOS.length)?ESTATUTOS.slice():['Normal'];
-  if(atual&&lista.indexOf(atual)<0)lista.push(atual);
-  return lista.map(function(e){return '<option value="'+psEsc(e)+'"'+(e===atual?' selected':'')+'>'+psEsc(e)+'</option>';}).join('');
+// B57: a linha por baixo do Grupo que confirma, logo ali, em que bloco do
+// caixote Outros o serviço vai cair — para nunca mais haver uma surpresa como
+// a do Mike (escrever «Restaurante» no Grupo e o Outros mostrar «Normal»).
+function osEstHintTexto(sv){
+  var g=(sv&&sv.grupo||'').trim();
+  if(!g)return '';
+  return 'Entra no Outros como «'+osEstatuto(sv)+'».';
 }
 function osNovoPintar(){
   var sv=OUTROS_SERVICOS[0];
@@ -18073,10 +18070,8 @@ function osNovoPintar(){
   var t=document.getElementById('os-novo-titulo');
   if(g)g.value=(sv&&sv.grupo)||'';
   if(t)t.value=(sv&&sv.titulo)||'';
-  // B46: estatuto (select, com o que o serviço já tiver mesmo que o estatuto
-  // entretanto tenha sido eliminado da lista) e valor de venda.
-  var se=document.getElementById('os-novo-estatuto');
-  if(se)se.innerHTML=osEstatutoOpcoes(osEstatuto(sv));
+  var hint=document.getElementById('os-novo-est-hint');
+  if(hint)hint.textContent=osEstHintTexto(sv);
   var vv=document.getElementById('os-novo-venda');
   if(vv)vv.value=osVenda(sv)?osVenda(sv):'';
   var tt=document.getElementById('os-novo-tt');
@@ -18094,6 +18089,10 @@ function osNovoAbrir(){
 function osNovoCampo(campo,val){
   var sv=OUTROS_SERVICOS[0];if(!sv)return;
   osUpServico(sv.id,campo,val);
+  if(campo==='grupo'){
+    var hint=document.getElementById('os-novo-est-hint');
+    if(hint)hint.textContent=osEstHintTexto(sv);
+  }
 }
 function osNovoAddLinha(){
   var sv=OUTROS_SERVICOS[0];if(!sv)return;
@@ -18191,10 +18190,14 @@ function osHistAbrir(i){
     var h='';
     h+='<div class="os-det-l"><span class="k">Data de emissão</span><span class="v">'+psEsc(osHistEmissao(sv))+'</span></div>';
     h+='<div class="os-det-l"><span class="k">Título</span><span class="v">'+psEsc(sv.titulo||'—')+'</span></div>';
-    h+='<div class="os-det-l"><span class="k">Grupo</span><span class="v">'+psEsc(sv.grupo||'—')+'</span></div>';
-    // B53: estatuto e valor de venda editáveis também depois de guardado —
-    // antes só se liam, e um serviço guardado como «Normal» ficava para sempre.
-    h+='<div class="os-det-l"><span class="k">Estatuto</span><span class="v"><select id="os-det-estatuto" onchange="osHistCampo(\'estatuto\',this.value)" style="background:var(--navy3);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:4px 8px;font-size:12px;">'+osEstatutoOpcoes(osEstatuto(sv))+'</select></span></div>';
+    // B53: Grupo e valor de venda editáveis também depois de guardado — antes
+    // só se liam, e um serviço guardado sem o Grupo certo ficava para sempre.
+    // B57 (pedido do Mike: «grupo e estatuto são a mesma coisa, troca estatuto
+    // por grupo»): já não há um Estatuto à parte — o Grupo é que diz em que
+    // bloco do caixote Outros o serviço entra (ver osEstatuto); o aviso por
+    // baixo confirma qual, sem ires ao Outros confirmar.
+    h+='<div class="os-det-l"><span class="k">Grupo</span><span class="v"><input id="os-det-grupo" list="os-grupos-dl" value="'+psEsc(sv.grupo||'')+'" onchange="osHistCampo(\'grupo\',this.value)" style="background:var(--navy3);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:4px 8px;font-size:12px;"></span></div>';
+    h+='<div class="os-det-l"><span class="k"></span><span class="v" id="os-det-est-hint" style="font-weight:400;color:var(--td);font-size:11px;">'+psEsc(osEstHintTexto(sv))+'</span></div>';
     h+='<div class="os-det-l"><span class="k">Valor de venda (s/ IVA)</span><span class="v"><input id="os-det-venda" type="number" step="0.01" min="0" placeholder="0,00" value="'+(osVenda(sv)||'')+'" onchange="osHistCampo(\'venda\',parseFloat(this.value)||0)" style="background:var(--navy3);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:4px 8px;font-size:12px;width:110px;text-align:right;"></span></div>';
     h+='<table class="os-det-tb" style="margin-top:16px;"><thead><tr><th>Data</th><th>Técnico</th><th>Recibo</th><th>Serviço</th><th>€</th></tr></thead><tbody>';
     if(!linhas.length){
@@ -18216,10 +18219,14 @@ function osHistAbrir(i){
 }
 function osHistCampo(campo,val){
   var sv=osHistAberto();if(!sv)return;
-  if(campo!=='estatuto'&&campo!=='venda')return;
-  sv[campo]=(campo==='estatuto')?(val||'Normal'):(+val||0);
+  if(campo!=='grupo'&&campo!=='venda')return;
+  sv[campo]=(campo==='grupo')?(val||''):(+val||0);
   osGuardarAuto();
   if(typeof osRenderHist==='function'){try{osRenderHist();}catch(e){}}
+  // B57: o aviso por baixo do Grupo mostra sempre o bloco do Outros em que o
+  // serviço vai cair, assim que o Grupo muda — sem reabrir a ficha.
+  var hint=document.getElementById('os-det-est-hint');
+  if(hint)hint.textContent=osEstHintTexto(sv);
   // B54: se o painel «Outros» está aberto por baixo, refaz-se já (o serviço pode
   // ter mudado de estatuto, e portanto de bloco).
   var ouP=document.getElementById('ou-full');
