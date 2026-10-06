@@ -1575,21 +1575,45 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .ou-mini thead th:first-child{width:30%;}
 .ou-mini tbody th{font-size:9.5px;font-weight:600;color:var(--ts);text-align:left;text-transform:none;letter-spacing:0;padding:2px 0;}
 .ou-mini td{font-size:10.5px;font-weight:700;color:var(--nm);text-align:right;padding:2px 0;}
-.ou-mini td.neg{color:var(--rdf);}
+.ou-mini td:nth-child(2){color:#e07a6a;}
+.ou-mini td:nth-child(3){color:#d4956e;}
+.ou-mini td:nth-child(4){color:#52c47a;}
+.ou-mini thead th:nth-child(2){color:#e07a6a;}
+.ou-mini thead th:nth-child(3){color:#d4956e;}
+.ou-mini thead th:nth-child(4){color:#52c47a;}
+.ou-mini td.neg{color:#e07a6a;}
 .ou-mini .ou-n{font-size:8.5px;font-weight:700;color:var(--td);margin-left:2px;}
-/* Painel «Outros» — as linhas de dentro de cada estatuto. */
-.ou-tab{table-layout:fixed;}
-.ou-tab th:nth-child(1){width:44%;}
-.ou-tab th:nth-child(2){width:8%;}
-.ou-tab .ou-g td{font-weight:700;background:rgba(255,255,255,.025);}
-.ou-tab .ou-i td{font-size:12px;color:var(--ts);}
-.ou-tab .ou-i td:first-child{padding-left:26px;}
-.ou-tab .ou-t td{font-weight:700;border-top:2px solid var(--border);}
-.ou-tab .ou-l td{font-size:11.5px;color:var(--td);padding-top:4px;padding-bottom:4px;}
-.ou-tab .ou-l td:first-child{padding-left:46px;}
-.ou-tab .ou-l td b{font-weight:600;color:var(--ts);}
-.ou-tab .ou-rec{color:var(--td);font-family:var(--mono);font-size:10px;}
-.ou-tab .neg{color:var(--rdf);}
+/* Painel «Outros» (B52) — a estrutura do «Valor venda» (lista + detalhe) com a
+   LÓGICA DAS CORES dos cartões do ano, que é a do Mike: Custo SUD VERMELHO,
+   Valor venda BRONZE, Markup VERDE (negativo: vermelho, com sinal «−»), Equipa
+   técnica ROXO, Fornecedores AZUL (só a marca do grupo). Escopado a #ou-full:
+   o resto da app (painel «Valor venda», «Custo por evento») não muda. */
+#ou-full .cor-s{color:#e07a6a;}
+#ou-full .cor-c{color:#d4956e;}
+#ou-full .cor-h{color:#52c47a;}
+#ou-full .cpd-resumo>div.rc-s{border-left-color:#c0392b;background:linear-gradient(90deg,rgba(192,57,43,.13),transparent 70%);}
+#ou-full .cpd-resumo>div.rc-c{border-left-color:#bd7448;background:linear-gradient(90deg,rgba(189,116,72,.13),transparent 70%);}
+#ou-full .cpd-resumo>div.rc-h{border-left-color:#3fae66;background:linear-gradient(90deg,rgba(63,174,102,.12),transparent 70%);}
+#ou-full .neg{color:#e07a6a;}
+#ou-full .ou-sem{color:var(--td);}
+#ou-full table th:first-child,#ou-full table td:first-child{text-align:left;}
+#tb-ou-body tr{cursor:pointer;}
+#tb-ou-body td:first-child{font-weight:700;color:#64dccd;}
+#tb-ou tfoot td,#ou-full .ou-tot td{font-weight:700;border-top:2px solid var(--border);}
+#ou-full .ou-g-eq{--g:#9b7fe8;}
+#ou-full .ou-g-fo{--g:#4a90c8;}
+#ou-full .ce-bloco.ou-g-eq,#ou-full .ce-bloco.ou-g-fo{border-left:3px solid var(--g);}
+#ou-full .ou-g-eq .ce-tit{color:#b8a3f0;}
+#ou-full .ou-g-fo .ce-tit{color:#5ba3d9;}
+#ou-full .ou-g-eq .ce-dot{background:#9b7fe8;}
+#ou-full .ou-g-fo .ce-dot{background:#4a90c8;}
+#ou-full .ou-g-eq tbody tr.ou-i:hover td{background:rgba(155,127,232,.05);}
+#ou-full tr.ou-l td{font-size:11.5px;color:var(--td);padding-top:3px;padding-bottom:3px;background:rgba(155,127,232,.06);}
+#ou-full tr.ou-l td:first-child{padding-left:34px;}
+#ou-full tr.ou-l b{font-weight:600;color:#b8a3f0;}
+#ou-full .ou-rec{color:var(--td);font-family:var(--mono);font-size:10px;}
+#ou-full .est{font-family:var(--mono);font-size:8.5px;font-weight:700;border:1px solid var(--amf);color:var(--amf);border-radius:3px;padding:1px 5px;margin-left:6px;letter-spacing:.05em;}
+#ou-full .est.real{border-color:var(--gnf);color:var(--gnf);}
 .est.real{color:var(--gnf);}
 
 /* ===== CUSTO POR EVENTO — gráfico mensal ao passar o rato (2026-09-23) ===
@@ -3963,7 +3987,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 
     <div class="cpd-hdr">
       <div>
-        <div class="cpd-titulo">Outros — detalhe</div>
+        <div class="cpd-titulo" id="ou-titulo">Outros</div>
         <div class="cpd-sub" id="ou-sub">—</div>
       </div>
       <div class="cpd-filtros-topo">
@@ -3993,14 +4017,39 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 
     <div id="ou-avisos"></div>
 
-    <div class="cpd-resumo">
-      <div><div class="rl">Estatutos</div><div class="rv" id="ou-r-n">—</div></div>
-      <div class="rc-s"><div class="rl cor-s">Custo SUD</div><div class="rv cor-s" id="ou-r-custo">—</div></div>
-      <div class="rc-c"><div class="rl cor-c">Valor venda</div><div class="rv cor-c" id="ou-r-venda">—</div></div>
-      <div class="rc-h"><div class="rl cor-h">Markup</div><div class="rv cor-h" id="ou-r-markup">—</div></div>
+    <!-- B52 (2026-10-05, «baseia-te na estrutura dos outros caixotes»): a mesma
+         estrutura do «Valor venda» — LISTA (uma linha por estatuto, já com os
+         totais) e, ao clicar numa linha, o DETALHE desse estatuto (breadcrumb
+         com a seta de voltar), tal como vv-lista / vv-detalhe. -->
+    <div id="ou-lista">
+      <div class="cpd-resumo">
+        <div><div class="rl">Estatutos</div><div class="rv" id="ou-r-n">—</div></div>
+        <div class="rc-s"><div class="rl cor-s">Custo SUD</div><div class="rv cor-s" id="ou-r-custo">—</div></div>
+        <div class="rc-c"><div class="rl cor-c">Valor venda</div><div class="rv cor-c" id="ou-r-venda">—</div></div>
+        <div class="rc-h"><div class="rl cor-h">Markup</div><div class="rv cor-h" id="ou-r-markup">—</div></div>
+      </div>
+      <table id="tb-ou">
+        <thead><tr>
+          <th>Estatuto</th><th>Serviços</th><th>Orçamentos</th>
+          <th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th>
+        </tr></thead>
+        <tbody id="tb-ou-body"></tbody>
+        <tfoot><tr>
+          <td>Total</td><td id="ou-tf-eq"></td><td id="ou-tf-forn"></td>
+          <td class="cor-s" id="ou-tf-custo"></td><td class="cor-c" id="ou-tf-venda"></td><td class="cor-h" id="ou-tf-markup"></td>
+        </tr></tfoot>
+      </table>
     </div>
 
-    <div id="ou-corpo"></div>
+    <div id="ou-detalhe" style="display:none;">
+      <div class="cpd-resumo">
+        <div><div class="rl">Itens</div><div class="rv" id="ou-d-n">—</div></div>
+        <div class="rc-s"><div class="rl cor-s">Custo SUD</div><div class="rv cor-s" id="ou-d-custo">—</div></div>
+        <div class="rc-c"><div class="rl cor-c">Valor venda</div><div class="rv cor-c" id="ou-d-venda">—</div></div>
+        <div class="rc-h"><div class="rl cor-h">Markup</div><div class="rv cor-h" id="ou-d-markup">—</div></div>
+      </div>
+      <div id="ou-d-corpo"></div>
+    </div>
   </div>
 </div>
 
@@ -15263,7 +15312,7 @@ function rAnalise(){
     serie:_ouM.venda, tipo:'outros',label:'Outros',fn:null,opts:{},
     partes:[
       {campo:'vendaEq',rot:'Equipa técnica',cor:'#9b7fe8',serie:_ouM.vendaEq},
-      {campo:'vendaForn',rot:'Fornecedores',cor:'#bd7448',serie:_ouM.vendaForn}
+      {campo:'vendaForn',rot:'Fornecedores',cor:'#4a90c8',serie:_ouM.vendaForn}
     ]});
   h+=dashCartao({marca:'#40c8b8',numero:'#64dccd',rgb:'64,200,184',icone:'etiq',
     etiqueta:'Outros<br>fora dos eventos',
@@ -15621,7 +15670,9 @@ function eqBreadcrumb(){
      · Equipa técnica — os serviços dos Outros serviços (Recursos humanos). Custo
        = a soma dos cachets (osValorServico); Venda = o valor de venda do
        serviço (osVenda, B46, s/ IVA); Markup = Venda − Custo, REAL (os dois
-       números são factos).
+       números são factos). B52: um serviço SEM valor de venda não tem markup
+       (aparece «—» e não conta): antes valia menos os cachets, o mesmo número
+       do Custo SUD com sinal trocado, e parecia um erro (aviso do Mike).
      · Fornecedores — os orçamentos ADJUDICADOS com estatuto diferente de
        «Normal». Custo SUD, Venda e Markup são os de sempre (orcCustoSUDReal,
        orcVenda, orcMarkup); o markup continua a ser ESTIMATIVA (escalões), e
@@ -15630,7 +15681,8 @@ function eqBreadcrumb(){
    O estatuto organiza o painel. Um serviço dos Outros serviços pertence ao
    período da sua PRIMEIRA data (custo e venda juntos, para a conta fechar):
    a venda é do serviço inteiro, não se reparte por linhas. */
-var OU_STATE={ano:null, mes:'', semana:null};
+var OU_STATE={ano:null, mes:'', semana:null, estatuto:null};
+var OU_NOMES=[];   // os estatutos da lista, pela ordem em que estão desenhados (o clique usa o índice)
 function ouNoPeriodo(dataStr, st){
   st=st||OU_STATE;
   if(!dataStr) return false;
@@ -15669,7 +15721,7 @@ function ouLinhas(st){
     }).sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;});
     out.push({tipo:'eq', id:sv.id, estatuto:osEstatuto(sv), data:d,
       nome:[sv.grupo,sv.titulo].filter(Boolean).join(' · ')||'(sem título)',
-      nTecs:Object.keys(tecs).length, tecLinhas:tl, custo:custo, venda:venda, markup:venda-custo, semVenda:!venda,
+      nTecs:Object.keys(tecs).length, tecLinhas:tl, custo:custo, venda:venda, markup:(venda?venda-custo:0), semVenda:!venda,
       porGuardar:_edicao.indexOf(sv)>=0});
   });
   (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
@@ -15762,7 +15814,7 @@ function ouCartaoCorpo(t){
 }
 function ouAbrir(ano){
   OU_STATE.ano=ano||(new Date()).getFullYear();
-  OU_STATE.mes=''; OU_STATE.semana=null;
+  OU_STATE.mes=''; OU_STATE.semana=null; OU_STATE.estatuto=null;
   var sel=document.getElementById('ou-ano');
   if(sel){
     var anosSet={};
@@ -15805,39 +15857,51 @@ function ouLimparFiltros(){
   OU_STATE.semana=null;
   ouRender();
 }
+/* O breadcrumb tem os mesmos dois destinos do «Valor venda» (vvBreadcrumb):
+   fechar tudo, ou — dentro de um estatuto — voltar à lista (a seta ‹). */
 function ouBreadcrumb(){
   var bc=document.getElementById('ou-bc'); if(!bc) return;
-  bc.innerHTML='<span class="bc-item" onclick="ouFechar()">Outros</span>';
+  var est=OU_STATE.estatuto;
+  var html=(est!==null)?'<span class="bc-voltar" onclick="ouVoltarLista()" title="Voltar à lista">‹</span>':'';
+  html+='<span class="bc-item" onclick="ouFechar()">Outros</span>';
+  if(est!==null) html+='<span class="bc-sep">›</span><span class="bc-active">'+_esc(est)+'</span>';
+  bc.innerHTML=html;
+}
+function ouAbrirEstatuto(i){
+  var nome=OU_NOMES[i]; if(nome===undefined) return;
+  OU_STATE.estatuto=nome;
+  ouRender();
+  window.scrollTo(0,0);
+}
+function ouVoltarLista(){
+  OU_STATE.estatuto=null;
+  ouRender();
+  window.scrollTo(0,0);
 }
 function ouNum(v){ return '<span'+(v<0?' class="neg"':'')+'>'+fmtEur(v)+'</span>'; }
+/* O markup de um serviço sem valor de venda não existe: «—». */
+function ouMk(r){ return r.tipo==='eq' && r.semVenda ? '<span class="ou-sem" title="Sem valor de venda">—</span>' : ouNum(r.markup); }
 function ouDataTxt(d){
   var m=parseInt((d||'').slice(5,7),10)-1;
   return (d||'').slice(8,10)+' '+(CPE_MESES[m]||'');
 }
-function ouLinhaGrupo(rot,b,marca){
-  return '<tr class="ou-g"><td style="text-align:left;">'+rot+'</td><td class="ar">'+b.n+'</td>'
-    +'<td class="ar cor-s">'+fmtEur(b.custo)+'</td><td class="ar cor-c">'+fmtEur(b.venda)+'</td>'
-    +'<td class="ar cor-h">'+ouNum(b.markup)+' '+marca+'</td></tr>';
+function ouSetNum(id,v,comSinal){
+  var el=document.getElementById(id); if(!el) return;
+  el.textContent=fmtEur(v);
+  if(comSinal) el.classList.toggle('neg',v<0);
 }
-function ouRender(){
-  var linhas=ouLinhas(OU_STATE);
-  var blocos=ouPorEstatuto(linhas), tot=ouTotais(linhas);
-  document.getElementById('ou-r-n').textContent=blocos.length;
-  document.getElementById('ou-r-custo').textContent=fmtEur(tot.tot.custo);
-  document.getElementById('ou-r-venda').textContent=fmtEur(tot.tot.venda);
-  var rM=document.getElementById('ou-r-markup');
-  rM.textContent=fmtEur(tot.tot.markup);
-  rM.style.color=tot.tot.markup<0?'var(--rdf)':'';
-
-  var semVenda=linhas.filter(function(r){return r.tipo==='eq' && r.semVenda;});
+/* Os avisos (o que fica de fora, o que está por guardar, o que não tem venda)
+   — sempre sobre o que se está a ver: a lista inteira, ou só o estatuto aberto. */
+function ouAvisos(visao){
   var av='';
+  var semVenda=visao.filter(function(r){return r.tipo==='eq' && r.semVenda;});
   if(semVenda.length){
-    av='<div class="aviso-linha"><b>Sem valor de venda:</b> '+semVenda.length
+    av+='<div class="aviso-linha"><b>Sem valor de venda:</b> '+semVenda.length
       +(semVenda.length===1?' serviço dos Outros serviços não tem':' serviços dos Outros serviços não têm')
-      +' valor de venda preenchido — o markup deles aparece como menos os cachets ('
-      +fmtEur(-semVenda.reduce(function(a,r){return a+r.custo;},0))+').</div>';
+      +' valor de venda preenchido — o markup deles aparece «—» e não conta nos totais (os cachets, '
+      +fmtEur(semVenda.reduce(function(a,r){return a+r.custo;},0))+', contam no Custo SUD).</div>';
   }
-  var porGuardar=linhas.filter(function(r){return r.tipo==='eq' && r.porGuardar;});
+  var porGuardar=visao.filter(function(r){return r.tipo==='eq' && r.porGuardar;});
   if(porGuardar.length){
     av+='<div class="aviso-linha"><b>Por guardar:</b> '+porGuardar.length
       +(porGuardar.length===1?' serviço ainda está':' serviços ainda estão')
@@ -15855,51 +15919,92 @@ function ouRender(){
     av+='<div class="aviso-linha"><b>Ainda não há serviços</b> nos Outros serviços (nem guardados, nem em preenchimento). Os orçamentos com estatuto aparecem à parte.</div>';
   }
   document.getElementById('ou-avisos').innerHTML=av;
-
-  var corpo=document.getElementById('ou-corpo');
+}
+/* LISTA: uma linha por estatuto, já com os totais. */
+function ouRenderLista(blocos,tot){
+  document.getElementById('ou-r-n').textContent=blocos.length;
+  ouSetNum('ou-r-custo',tot.tot.custo);
+  ouSetNum('ou-r-venda',tot.tot.venda);
+  ouSetNum('ou-r-markup',tot.tot.markup,true);
+  var body=document.getElementById('tb-ou-body');
   if(!blocos.length){
-    corpo.innerHTML='<div class="cpd-sem-linhas">Nenhum serviço nem orçamento com estatuto neste período.</div>';
+    body.innerHTML='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum serviço nem orçamento com estatuto neste período.</td></tr>';
   } else {
-    corpo.innerHTML=blocos.map(function(e){
-      var h='<div class="ce-bloco"><div class="ce-tit">'+_esc(e.nome)+'</div>'
-        +'<table class="ou-tab"><thead><tr><th style="text-align:left;"></th><th class="ar">Nº</th>'
-        +'<th class="ar cor-s">Custo SUD</th><th class="ar cor-c">Valor venda</th><th class="ar cor-h">Markup</th></tr></thead><tbody>';
-      h+=ouLinhaGrupo('Equipa técnica',e.eq,'<span class="est real">real</span>');
-      e.itens.eq.slice().sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;}).forEach(function(r){
-        h+='<tr class="ou-i"><td style="text-align:left;">'+ouDataTxt(r.data)+' · '+_esc(r.nome)
-          +' <span style="color:var(--td);">('+r.nTecs+(r.nTecs===1?' técnico':' técnicos')+')</span>'
-          +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')+'</td><td class="ar"></td>'
-          +'<td class="ar">'+fmtEur(r.custo)+'</td><td class="ar">'+(r.semVenda?'—':fmtEur(r.venda))+'</td><td class="ar">'+ouNum(r.markup)+'</td></tr>';
-        /* B49 (2026-10-05, pergunta do Mike): «porquê que não aparecem os dados
-           dos técnicos?» — o painel só mostrava UMA linha por serviço, com o
-           número de técnicos. Agora cada serviço mostra por baixo uma linha por
-           técnico (data · técnico · serviço · recibo · cachet); a soma dos
-           cachets é o Custo SUD do serviço, por isso nada se soma duas vezes. */
-        (r.tecLinhas||[]).forEach(function(t){
-          h+='<tr class="ou-l"><td style="text-align:left;">'+(t.data?ouDataTxt(t.data):'—')+' · <b>'+(t.tec?_esc(t.tec):'(sem técnico)')+'</b>'
-            +(t.servico?' · '+_esc(t.servico):'')
-            +(t.recibo?' <span class="ou-rec">rec. '+_esc(t.recibo)+'</span>':'')
-            +'</td><td class="ar"></td><td class="ar">'+fmtEur(t.valor)+'</td><td class="ar"></td><td class="ar"></td></tr>';
-        });
-      });
-      h+=ouLinhaGrupo('Fornecedores',e.forn,'<span class="est">est.</span>');
-      e.itens.forn.slice().sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;}).forEach(function(r){
-        h+='<tr class="ou-i"><td style="text-align:left;">'+ouDataTxt(r.data)+' · '+_esc(r.nome)
-          +' <span style="color:var(--td);">('+_esc(r.num)+')</span></td><td class="ar"></td>'
-          +'<td class="ar">'+fmtEur(r.custo)+'</td><td class="ar">'+fmtEur(r.venda)+'</td><td class="ar">'+ouNum(r.markup)+'</td></tr>';
-      });
-      h+='<tr class="ou-t"><td style="text-align:left;">Total do estatuto</td><td class="ar">'+e.tot.n+'</td>'
-        +'<td class="ar cor-s">'+fmtEur(e.tot.custo)+'</td><td class="ar cor-c">'+fmtEur(e.tot.venda)+'</td>'
-        +'<td class="ar cor-h">'+ouNum(e.tot.markup)+'</td></tr>';
-      return h+'</tbody></table></div>';
+    body.innerHTML=blocos.map(function(e,i){
+      return '<tr onclick="ouAbrirEstatuto('+i+')" title="Ver a lista deste estatuto">'
+        +'<td>'+_esc(e.nome)+'</td><td>'+e.eq.n+'</td><td>'+e.forn.n+'</td>'
+        +'<td class="cor-s">'+fmtEur(e.tot.custo)+'</td><td class="cor-c">'+fmtEur(e.tot.venda)+'</td>'
+        +'<td class="cor-h">'+ouNum(e.tot.markup)+'</td></tr>';
     }).join('');
   }
+  document.getElementById('ou-tf-eq').textContent=tot.eq.n;
+  document.getElementById('ou-tf-forn').textContent=tot.forn.n;
+  ouSetNum('ou-tf-custo',tot.tot.custo);
+  ouSetNum('ou-tf-venda',tot.tot.venda);
+  ouSetNum('ou-tf-markup',tot.tot.markup,true);
+}
+/* DETALHE de um estatuto: as duas listas, cada uma com o seu total. */
+function ouRenderDetalhe(e){
+  document.getElementById('ou-d-n').textContent=e.tot.n;
+  ouSetNum('ou-d-custo',e.tot.custo);
+  ouSetNum('ou-d-venda',e.tot.venda);
+  ouSetNum('ou-d-markup',e.tot.markup,true);
+  function ord(a,b){return a.data<b.data?-1:a.data>b.data?1:0;}
+  var h='<div class="ce-bloco ou-g-eq"><div class="ce-tit"><span class="ce-dot"></span>Equipa técnica<span class="est real">real</span></div>'
+    +'<table><thead><tr><th>Serviço</th><th>Data</th><th>Técnicos</th>'
+    +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th></tr></thead><tbody>';
+  if(!e.itens.eq.length) h+='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum serviço dos Outros serviços com este estatuto neste período.</td></tr>';
+  e.itens.eq.slice().sort(ord).forEach(function(r){
+    h+='<tr class="ou-i"><td>'+_esc(r.nome)
+      +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')
+      +'</td><td>'+ouDataTxt(r.data)+'</td><td>'+r.nTecs+'</td>'
+      +'<td class="cor-s">'+fmtEur(r.custo)+'</td><td class="cor-c">'+(r.semVenda?'<span class="ou-sem">—</span>':fmtEur(r.venda))+'</td>'
+      +'<td class="cor-h">'+ouMk(r)+'</td></tr>';
+    /* B49: uma linha por técnico (data · técnico · serviço · recibo · cachet);
+       a soma dos cachets é o Custo SUD do serviço — nada se soma duas vezes. */
+    (r.tecLinhas||[]).forEach(function(t){
+      h+='<tr class="ou-l"><td>'+(t.data?ouDataTxt(t.data):'—')+' · <b>'+(t.tec?_esc(t.tec):'(sem técnico)')+'</b>'
+        +(t.servico?' · '+_esc(t.servico):'')
+        +(t.recibo?' <span class="ou-rec">rec. '+_esc(t.recibo)+'</span>':'')
+        +'</td><td></td><td></td><td class="cor-s">'+fmtEur(t.valor)+'</td><td></td><td></td></tr>';
+    });
+  });
+  h+='<tr class="ou-tot"><td>Total da equipa técnica</td><td></td><td></td><td class="cor-s">'+fmtEur(e.eq.custo)+'</td>'
+    +'<td class="cor-c">'+fmtEur(e.eq.venda)+'</td><td class="cor-h">'+ouNum(e.eq.markup)+'</td></tr></tbody></table></div>';
+
+  h+='<div class="ce-bloco ou-g-fo"><div class="ce-tit"><span class="ce-dot"></span>Fornecedores<span class="est">est.</span></div>'
+    +'<table><thead><tr><th>Orçamento</th><th>Data</th><th>Nº</th>'
+    +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup (est.)</th></tr></thead><tbody>';
+  if(!e.itens.forn.length) h+='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum orçamento adjudicado com este estatuto neste período.</td></tr>';
+  e.itens.forn.slice().sort(ord).forEach(function(r){
+    h+='<tr class="ou-i"><td>'+_esc(r.nome)+'</td><td>'+ouDataTxt(r.data)+'</td><td>'+_esc(r.num)+'</td>'
+      +'<td class="cor-s">'+fmtEur(r.custo)+'</td><td class="cor-c">'+fmtEur(r.venda)+'</td><td class="cor-h">'+ouNum(r.markup)+'</td></tr>';
+  });
+  h+='<tr class="ou-tot"><td>Total dos fornecedores</td><td></td><td></td><td class="cor-s">'+fmtEur(e.forn.custo)+'</td>'
+    +'<td class="cor-c">'+fmtEur(e.forn.venda)+'</td><td class="cor-h">'+ouNum(e.forn.markup)+'</td></tr></tbody></table></div>';
+  document.getElementById('ou-d-corpo').innerHTML=h;
+}
+function ouRender(){
+  var linhas=ouLinhas(OU_STATE);
+  var blocos=ouPorEstatuto(linhas), tot=ouTotais(linhas);
+  OU_NOMES=blocos.map(function(b){return b.nome;});
+  var est=OU_STATE.estatuto, det=null;
+  if(est!==null){
+    det=blocos.filter(function(b){return b.nome===est;})[0]
+      ||{nome:est,eq:ouBolsa(),forn:ouBolsa(),tot:ouBolsa(),itens:{eq:[],forn:[]}};
+  }
+  document.getElementById('ou-lista').style.display=est===null?'block':'none';
+  document.getElementById('ou-detalhe').style.display=est===null?'none':'block';
+  document.getElementById('ou-titulo').textContent=est===null?'Outros':est;
+  ouAvisos(est===null?linhas:linhas.filter(function(r){return r.estatuto===est;}));
+  if(est===null) ouRenderLista(blocos,tot); else ouRenderDetalhe(det);
 
   var subExtra='';
   if(OU_STATE.semana) subExtra=' · Semana '+OU_STATE.semana;
   else if(OU_STATE.mes!=='') subExtra=' · '+CPE_MESES[parseInt(OU_STATE.mes,10)];
-  document.getElementById('ou-sub').textContent=tot.eq.n+(tot.eq.n===1?' serviço':' serviços')+' · '
-    +tot.forn.n+(tot.forn.n===1?' orçamento com estatuto':' orçamentos com estatuto')+' em '+OU_STATE.ano+subExtra;
+  var t=(det||{tot:tot.tot,eq:tot.eq,forn:tot.forn});
+  document.getElementById('ou-sub').textContent=t.eq.n+(t.eq.n===1?' serviço':' serviços')+' · '
+    +t.forn.n+(t.forn.n===1?' orçamento com estatuto':' orçamentos com estatuto')+' em '+OU_STATE.ano+subExtra;
 
   var semBtn=document.getElementById('ou-sem-btn');
   if(semBtn){
