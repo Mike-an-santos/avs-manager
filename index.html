@@ -1607,6 +1607,8 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 #ou-full .ou-g-fo .ce-tit{color:#5ba3d9;}
 #ou-full .ou-g-eq .ce-dot{background:#9b7fe8;}
 #ou-full .ou-g-fo .ce-dot{background:#4a90c8;}
+#ou-full .ou-mover{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--navy3);border:1px solid var(--bl);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--ts);}
+#ou-full .ou-mover select{background:var(--navy);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:5px 8px;font-size:12px;}
 #ou-full a.ou-ed{color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
 #ou-full a.ou-ed:hover{color:#9b7fe8;}
 #ou-full .ou-g-eq tbody tr.ou-i:hover td{background:rgba(155,127,232,.05);}
@@ -15898,6 +15900,24 @@ function ouAbrirEstatuto(i){
   ouRender();
   window.scrollTo(0,0);
 }
+/* B55: muda o estatuto de TODOS os serviços guardados do estatuto aberto, no
+   período em vista (ano/mês/semana). Pede confirmação; não toca nos serviços
+   por guardar nem nos orçamentos. */
+function ouMoverServicos(){
+  var de=OU_STATE.estatuto, sel=document.getElementById('ou-mover-sel');
+  if(de===null||!sel||!sel.value) return;
+  var para=sel.value;
+  var ids=ouLinhas(OU_STATE).filter(function(r){return r.tipo==='eq'&&r.estatuto===de&&!r.porGuardar;}).map(function(r){return r.id;});
+  if(!ids.length) return;
+  showConfirm('Mudar o estatuto','Passar '+ids.length+(ids.length===1?' serviço':' serviços')+' de «'+de+'» para «'+para+'»?',function(){
+    var n=0;
+    OS_HIST.forEach(function(sv){ if(ids.indexOf(sv.id)>=0){ sv.estatuto=para; n++; } });
+    osGuardarAuto();
+    OU_STATE.estatuto=null;
+    ouRender();
+    showToast(n+(n===1?' serviço passou':' serviços passaram')+' para «'+para+'».','ok');
+  });
+}
 function ouEditarServico(id){
   var i=OS_HIST.findIndex(function(x){return x.id===id;});
   if(i>=0) osHistAbrir(i);
@@ -15979,7 +15999,18 @@ function ouRenderDetalhe(e){
   ouSetNum('ou-d-venda',e.tot.venda);
   ouSetNum('ou-d-markup',e.tot.markup,true);
   function ord(a,b){return a.data<b.data?-1:a.data>b.data?1:0;}
-  var h='<div class="ce-bloco ou-g-eq"><div class="ce-tit"><span class="ce-dot"></span>Equipa técnica<span class="est real">real</span></div>'
+  /* B55 (2026-10-06, foto do Mike: 17 serviços todos «Normal»; para ele são
+     «Restaurante»): passar de uma vez todos os serviços guardados deste estatuto
+     (neste período) para outro, em vez de abrir um a um. */
+  var guardados=e.itens.eq.filter(function(r){return !r.porGuardar;});
+  var destinos=(typeof ESTATUTOS!=='undefined'?ESTATUTOS:[]).filter(function(x){return x!==e.nome;});
+  var h='';
+  if(guardados.length&&destinos.length){
+    h+='<div class="ou-mover"><span>Passar '+(guardados.length===1?'o serviço':'os '+guardados.length+' serviços')+' guardado'+(guardados.length===1?'':'s')+' de «'+_esc(e.nome)+'» para o estatuto</span>'
+      +'<select id="ou-mover-sel">'+destinos.map(function(x){return '<option value="'+_esc(x)+'">'+_esc(x)+'</option>';}).join('')+'</select>'
+      +'<button type="button" class="btn btn-sm btn-cu" onclick="ouMoverServicos()">Aplicar</button></div>';
+  }
+  h+='<div class="ce-bloco ou-g-eq"><div class="ce-tit"><span class="ce-dot"></span>Equipa técnica<span class="est real">real</span></div>'
     +'<table><thead><tr><th>Serviço</th><th>Data</th><th>Técnicos</th>'
     +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th></tr></thead><tbody>';
   if(!e.itens.eq.length) h+='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum serviço dos Outros serviços com este estatuto neste período.</td></tr>';
