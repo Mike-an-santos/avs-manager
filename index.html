@@ -1607,8 +1607,6 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 #ou-full .ou-g-fo .ce-tit{color:#5ba3d9;}
 #ou-full .ou-g-eq .ce-dot{background:#9b7fe8;}
 #ou-full .ou-g-fo .ce-dot{background:#4a90c8;}
-#ou-full .ou-mover{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--navy3);border:1px solid var(--bl);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--ts);}
-#ou-full .ou-mover select{background:var(--navy);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:5px 8px;font-size:12px;}
 #ou-full a.ou-ed{color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
 #ou-full a.ou-ed:hover{color:#9b7fe8;}
 #ou-full .ou-g-eq tbody tr.ou-i:hover td{background:rgba(155,127,232,.05);}
@@ -4006,18 +4004,6 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
           <option value="6">Jul</option><option value="7">Ago</option><option value="8">Set</option>
           <option value="9">Out</option><option value="10">Nov</option><option value="11">Dez</option>
         </select>
-        <div class="sem-wrap">
-          <button class="btn btn-sm" id="ou-sem-btn" onclick="toggleSemMenu(event,'ou')">Semana</button>
-          <div class="sem-pop" id="ou-sem-pop">
-            <div class="sem-tit" id="ou-sem-tit">Semana ISO</div>
-            <div class="sem-visor">
-              <div class="sem-faixa"></div>
-              <div class="sem-lista" id="ou-sem-lista"></div>
-              <div class="sem-fade-t"></div>
-              <div class="sem-fade-b"></div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -6742,16 +6728,6 @@ var SEM_RODA_CFG={
       eqRender();
     }
   },
-  /* B47 (2026-10-05): o painel «Outros» de «O ano» — a sua própria chave. */
-  ou:{
-    btn:'ou-sem-btn', pop:'ou-sem-pop', tit:'ou-sem-tit', lista:'ou-sem-lista',
-    ano:function(){return OU_STATE.ano;},
-    aplicar:function(ano,n){
-      OU_STATE.mes=''; document.getElementById('ou-mes').value='';
-      OU_STATE.semana=n;
-      ouRender();
-    }
-  },
   /* 2026-09-30, pedido do Mike: Outros Serviços (Recursos humanos) ganha a
      mesma roda. Esta sub-aba não tem NENHUM selector de ano (o "Ano" saiu da
      barra de filtros no mesmo pedido — dossier fechado em pendentes.md) — por
@@ -6809,7 +6785,6 @@ function semRodaConstruir(chave){
   var semanaInicial;
   if(chave==='orc'&&mapaSemFiltro)semanaInicial=Math.min(Math.max(mapaSemFiltro,1),total);
   else if(chave==='cpd'&&CPD_STATE.semana)semanaInicial=Math.min(Math.max(CPD_STATE.semana,1),total);
-  else if(chave==='ou'&&OU_STATE.semana)semanaInicial=Math.min(Math.max(OU_STATE.semana,1),total);
   else if(chave==='vv'&&VV_STATE.semana)semanaInicial=Math.min(Math.max(VV_STATE.semana,1),total);
   else if(chave==='os'&&osFiltro.semana)semanaInicial=Math.min(Math.max(osFiltro.semana,1),total);
   else{
@@ -15700,13 +15675,12 @@ function eqBreadcrumb(){
    O estatuto organiza o painel. Um serviço dos Outros serviços pertence ao
    período da sua PRIMEIRA data (custo e venda juntos, para a conta fechar):
    a venda é do serviço inteiro, não se reparte por linhas. */
-var OU_STATE={ano:null, mes:'', semana:null, estatuto:null};
+var OU_STATE={ano:null, mes:'', estatuto:null};
 var OU_NOMES=[];   // os estatutos da lista, pela ordem em que estão desenhados (o clique usa o índice)
 function ouNoPeriodo(dataStr, st){
   st=st||OU_STATE;
   if(!dataStr) return false;
   if(dataStr.slice(0,4)!==String(st.ano)) return false;
-  if(st.semana && (typeof semanaISO==='function') && semanaISO(dataStr).semana!==st.semana) return false;
   if(st.mes!=='' && (parseInt(dataStr.slice(5,7),10)-1)!==parseInt(st.mes,10)) return false;
   return true;
 }
@@ -15833,7 +15807,7 @@ function ouCartaoCorpo(t){
 }
 function ouAbrir(ano){
   OU_STATE.ano=ano||(new Date()).getFullYear();
-  OU_STATE.mes=''; OU_STATE.semana=null; OU_STATE.estatuto=null;
+  OU_STATE.mes=''; OU_STATE.estatuto=null;
   var sel=document.getElementById('ou-ano');
   if(sel){
     var anosSet={};
@@ -15852,8 +15826,6 @@ function ouAbrir(ano){
 function ouFechar(){
   document.getElementById('ou-full').classList.remove('open');
   document.body.style.overflow='';
-  var pop=document.getElementById('ou-sem-pop'), btn=document.getElementById('ou-sem-btn');
-  if(pop)pop.classList.remove('on'); if(btn)btn.classList.remove('on');
 }
 document.addEventListener('keydown',function(e){
   var ov=document.getElementById('ou-full');
@@ -15862,18 +15834,14 @@ document.addEventListener('keydown',function(e){
 function ouAnoMudou(){
   OU_STATE.ano=parseInt(document.getElementById('ou-ano').value,10);
   OU_STATE.mes=''; document.getElementById('ou-mes').value='';
-  OU_STATE.semana=null;
-  var pop=document.getElementById('ou-sem-pop'); if(pop)pop.classList.remove('on');
   ouRender();
 }
 function ouMesMudou(){
   OU_STATE.mes=document.getElementById('ou-mes').value;
-  OU_STATE.semana=null;
   ouRender();
 }
 function ouLimparFiltros(){
   OU_STATE.mes=''; document.getElementById('ou-mes').value='';
-  OU_STATE.semana=null;
   ouRender();
 }
 /* O breadcrumb tem os mesmos dois destinos do «Valor venda» (vvBreadcrumb):
@@ -15891,27 +15859,6 @@ function ouAbrirEstatuto(i){
   OU_STATE.estatuto=nome;
   ouRender();
   window.scrollTo(0,0);
-}
-/* B55: muda o estatuto de TODOS os serviços guardados do estatuto aberto, no
-   período em vista (ano/mês/semana). Pede confirmação; não toca nos serviços
-   por guardar nem nos orçamentos. */
-function ouMoverServicos(){
-  var de=OU_STATE.estatuto, sel=document.getElementById('ou-mover-sel');
-  if(de===null||!sel||!sel.value) return;
-  var para=sel.value;
-  var ids=ouLinhas(OU_STATE).filter(function(r){return r.tipo==='eq'&&r.estatuto===de&&!r.porGuardar;}).map(function(r){return r.id;});
-  if(!ids.length) return;
-  showConfirm('Mudar o estatuto','Passar '+ids.length+(ids.length===1?' serviço':' serviços')+' de «'+de+'» para «'+para+'»?',function(){
-    var n=0;
-    // B57: já não há um Estatuto à parte — mudar de bloco é mudar o Grupo
-    // (osEstatuto só lê sv.grupo); escrever em sv.estatuto não tinha mais
-    // nenhum efeito.
-    OS_HIST.forEach(function(sv){ if(ids.indexOf(sv.id)>=0){ sv.grupo=para; n++; } });
-    osGuardarAuto();
-    OU_STATE.estatuto=null;
-    ouRender();
-    showToast(n+(n===1?' serviço passou':' serviços passaram')+' para «'+para+'».','ok');
-  });
 }
 function ouEditarServico(id){
   var i=OS_HIST.findIndex(function(x){return x.id===id;});
@@ -15934,32 +15881,23 @@ function ouSetNum(id,v,comSinal){
   el.textContent=fmtEur(v);
   if(comSinal) el.classList.toggle('neg',v<0);
 }
-/* Os avisos (o que fica de fora, o que está por guardar, o que não tem venda)
-   — sempre sobre o que se está a ver: a lista inteira, ou só o estatuto aberto. */
+/* Os avisos (o que está por guardar, ou se ainda não há nada) — sempre sobre
+   o que se está a ver: a lista inteira, ou só o estatuto aberto.
+   B58 (2026-10-06, pedido do Mike): saíram os dois avisos de diagnóstico
+   «Sem valor de venda» e «Outros serviços que não entram aqui» — o markup
+   «—» na própria linha (ouMk) e o filtro de ano/mês já dizem o que é preciso,
+   sem duplicar a informação numa barra à parte. `ouDiagnostico()` fica, só
+   lida aqui para saber se já há algum serviço (dg.total). */
 function ouAvisos(visao){
   var av='';
-  var semVenda=visao.filter(function(r){return r.tipo==='eq' && r.semVenda;});
-  if(semVenda.length){
-    av+='<div class="aviso-linha"><b>Sem valor de venda:</b> '+semVenda.length
-      +(semVenda.length===1?' serviço dos Outros serviços não tem':' serviços dos Outros serviços não têm')
-      +' valor de venda preenchido — o markup deles aparece «—» e não conta nos totais (os cachets, '
-      +fmtEur(semVenda.reduce(function(a,r){return a+r.custo;},0))+', contam no Custo SUD).</div>';
-  }
   var porGuardar=visao.filter(function(r){return r.tipo==='eq' && r.porGuardar;});
   if(porGuardar.length){
     av+='<div class="aviso-linha"><b>Por guardar:</b> '+porGuardar.length
       +(porGuardar.length===1?' serviço ainda está':' serviços ainda estão')
       +' no painel «Novo serviço» (Recursos humanos → Outros serviços) e já conta aqui. Guarda-o para ficar no histórico.</div>';
   }
-  var dg=ouDiagnostico(OU_STATE), nFora=dg.total-dg.contados;
-  if(nFora>0){
-    var motivos=[];
-    Object.keys(dg.anos).sort().forEach(function(a){ motivos.push(dg.anos[a]+' de '+a); });
-    if(dg.foraFiltro) motivos.push(dg.foraFiltro+' fora do mês/semana escolhido');
-    if(dg.semData) motivos.push(dg.semData+' sem data');
-    av+='<div class="aviso-linha"><b>Outros serviços que não entram aqui:</b> '+nFora+' ('+motivos.join(', ')
-      +'). Um serviço conta no ano e no mês da sua primeira data.</div>';
-  } else if(!dg.total){
+  var dg=ouDiagnostico(OU_STATE);
+  if(!dg.total){
     av+='<div class="aviso-linha"><b>Ainda não há serviços</b> nos Outros serviços (nem guardados, nem em preenchimento). Os orçamentos com estatuto aparecem à parte.</div>';
   }
   document.getElementById('ou-avisos').innerHTML=av;
@@ -15994,17 +15932,9 @@ function ouRenderDetalhe(e){
   ouSetNum('ou-d-venda',e.tot.venda);
   ouSetNum('ou-d-markup',e.tot.markup,true);
   function ord(a,b){return a.data<b.data?-1:a.data>b.data?1:0;}
-  /* B55 (2026-10-06, foto do Mike: 17 serviços todos «Normal»; para ele são
-     «Restaurante»): passar de uma vez todos os serviços guardados deste estatuto
-     (neste período) para outro, em vez de abrir um a um. */
-  var guardados=e.itens.eq.filter(function(r){return !r.porGuardar;});
-  var destinos=(typeof ESTATUTOS!=='undefined'?ESTATUTOS:[]).filter(function(x){return x!==e.nome;});
+  // B58 (2026-10-06, pedido do Mike): saiu a barra «Passar … para o estatuto
+  // … Aplicar» (B55) — ver ouMoverServicos() em versoes.md, removida com ela.
   var h='';
-  if(guardados.length&&destinos.length){
-    h+='<div class="ou-mover"><span>Passar '+(guardados.length===1?'o serviço':'os '+guardados.length+' serviços')+' guardado'+(guardados.length===1?'':'s')+' de «'+_esc(e.nome)+'» para o estatuto</span>'
-      +'<select id="ou-mover-sel">'+destinos.map(function(x){return '<option value="'+_esc(x)+'">'+_esc(x)+'</option>';}).join('')+'</select>'
-      +'<button type="button" class="btn btn-sm btn-cu" onclick="ouMoverServicos()">Aplicar</button></div>';
-  }
   h+='<div class="ce-bloco ou-g-eq"><div class="ce-tit"><span class="ce-dot"></span>Equipa técnica<span class="est real">real</span></div>'
     +'<table><thead><tr><th>Serviço</th><th>Data</th><th>Técnicos</th>'
     +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th></tr></thead><tbody>';
@@ -16058,19 +15988,13 @@ function ouRender(){
   if(est===null) ouRenderLista(blocos,tot); else ouRenderDetalhe(det);
 
   var subExtra='';
-  if(OU_STATE.semana) subExtra=' · Semana '+OU_STATE.semana;
-  else if(OU_STATE.mes!=='') subExtra=' · '+CPE_MESES[parseInt(OU_STATE.mes,10)];
+  if(OU_STATE.mes!=='') subExtra=' · '+CPE_MESES[parseInt(OU_STATE.mes,10)];
   var t=(det||{tot:tot.tot,eq:tot.eq,forn:tot.forn});
   document.getElementById('ou-sub').textContent=t.eq.n+(t.eq.n===1?' serviço':' serviços')+' · '
     +t.forn.n+(t.forn.n===1?' orçamento com estatuto':' orçamentos com estatuto')+' em '+OU_STATE.ano+subExtra;
 
-  var semBtn=document.getElementById('ou-sem-btn');
-  if(semBtn){
-    if(OU_STATE.semana){ semBtn.textContent='Sem. '+OU_STATE.semana; semBtn.classList.add('on'); }
-    else { semBtn.textContent='Semana'; semBtn.classList.remove('on'); }
-  }
   var lim=document.getElementById('ou-lim');
-  if(lim) lim.classList.toggle('on', !!(OU_STATE.mes!=='' || OU_STATE.semana));
+  if(lim) lim.classList.toggle('on', OU_STATE.mes!=='');
   ouBreadcrumb();
 }
 
