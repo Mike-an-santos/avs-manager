@@ -393,30 +393,18 @@ tbody tr:hover td{background:var(--navy3);}
    substituidos pelos botoes redondos. O desenho deles ficou aqui quinze regras,
    e o codigo que os movia ficou no ficheiro, a procurar elementos que ja nao
    existiam. Saiu tudo a 2026-09-13. */
-/* Painel de resultados — B40 (2026-09-30, pedido do Mike): deixou de ser UM
-   cartao com moldura propria (fundo, borda, cantos) empilhando Total, depois
-   Por tecnico numa grelha larga, depois Por grupo/Por servico lado a lado.
-   Passa a QUATRO blocos iguais, lado a lado, a largura toda do painel — sem
-   caixa a volta de cada um ("sem caixotes"): so uma barra colorida no topo,
-   um icone e o numero dao a identidade de cada bloco. As cores (--mk tom
-   escuro para a marca, --nm tom claro para o numero, --wash2 para o fundo
-   ligeiro do icone) sao definidas inline por bloco, a partir de
-   OS_RES_CORES — as mesmas quatro cores ja validadas no Dashboard/«O ano»,
-   nenhuma nova. Cada bloco de reparticao mostra so os 4 maiores por valor;
-   o resto fica atras de um "+N mais…" que abre a lista completa numa janela
-   flutuante ancorada ao proprio bloco (osResPopToggle) — a mesma mecanica
-   que a roda da Semana (SEM_RODA_CFG) ja usa nesta sub-aba. */
-.os-res{display:flex;align-items:stretch;width:100%;}
-.os-res-bloco{position:relative;flex:1;min-width:0;padding:12px 20px 14px;border-top:3px solid var(--mk);}
-.os-res-bloco+.os-res-bloco{border-left:1px solid var(--border);}
-.os-res-bloco-vazio{display:flex;align-items:center;justify-content:center;border-top-color:var(--border);}
-.os-res-top{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-.os-res-ic{flex:none;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;
-  background:var(--wash2);color:var(--mk);}
-.os-res-ic svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
-.os-res-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--td);}
-.os-res-tot{font-family:var(--mono);font-size:19px;font-weight:700;color:var(--nm);line-height:1;}
-.os-res-sub{font-size:10px;color:var(--td);margin-top:3px;}
+/* Painel de resultados — B59 (2026-10-07, pedido do Mike, "mesmos critérios"
+   das outras renovações de design): os quatro cálculos (Total gasto, Por
+   técnico, Por grupo, Por serviço) passam a caixotes `.mtc` — a mesma pele
+   já usada no Dashboard/«O ano» (fundo, borda fina, barra de cor à esquerda)
+   — em vez de blocos sem caixa própria com um traço no topo. Por dentro,
+   cada bloco de repartição continua igual (osResBloco): só os 4 maiores por
+   valor, o resto atrás de um "+N mais…" que abre a lista completa numa
+   janela flutuante ancorada ao próprio caixote (osResPopToggle) — a mesma
+   mecânica que a roda da Semana (SEM_RODA_CFG) já usa nesta sub-aba. As
+   cores (--mk tom escuro para a marca, --nm tom claro para o número, --wash2
+   para o fundo do ícone) continuam a vir, inline, de OS_RES_CORES — as
+   mesmas quatro já validadas no Dashboard/«O ano», nenhuma nova. */
 .os-res-items{display:flex;flex-direction:column;gap:6px;}
 .os-res-l{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:11px;}
 .os-res-n{color:var(--tp);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
@@ -429,7 +417,7 @@ tbody tr:hover td{background:var(--navy3);}
 .os-res-mais:hover{color:var(--nm);}
 .os-res-mais svg{width:8px;height:8px;stroke:currentColor;fill:none;stroke-width:2;transition:transform .15s;}
 .os-res-mais.aberto svg{transform:rotate(180deg);}
-.os-res-pop{position:absolute;top:100%;left:20px;right:20px;margin-top:6px;background:var(--navy3);
+.os-res-pop{position:absolute;top:100%;left:16px;right:16px;margin-top:6px;background:var(--navy3);
   border:1px solid var(--border);border-top:3px solid var(--mk);border-radius:8px;padding:10px 14px 12px;
   box-shadow:0 14px 34px rgba(0,0,0,.5);z-index:30;max-height:230px;overflow-y:auto;display:none;}
 .os-res-pop.on{display:block;}
@@ -437,33 +425,27 @@ tbody tr:hover td{background:var(--navy3);}
   font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--td);margin-bottom:8px;}
 .os-res-pop-x{cursor:pointer;color:var(--td);font-size:13px;line-height:1;}
 .os-res-pop-x:hover{color:var(--tp);}
-@media(max-width:900px){
-  .os-res{flex-wrap:wrap;}
-  .os-res-bloco{flex:1 1 45%;}
-  .os-res-bloco+.os-res-bloco{border-left:none;}
-}
-/* B42 (2026-10-01, "Opção A" das três maquetes que o Mike escolheu): o
-   resumo deixa de estar sempre aberto. Fica reduzido a uma linha — o total
-   e uns pontinhos de cor (os grupos com mais peso) — que se expande ao
-   clicar, revelando os MESMOS três blocos (Por técnico/grupo/serviço) de
-   sempre; nada nesses blocos mudou. O bloco "Total gasto" (que era um
-   quarto cartão) passou a viver só aqui no cabeçalho. */
-.os-res-cab{display:flex;align-items:center;justify-content:space-between;gap:14px;cursor:pointer;}
-.os-res-cab:hover .os-res-seta{color:var(--tp);}
-.os-res-cab-esq{display:flex;align-items:baseline;gap:14px;}
-.os-res-cab .os-res-tot{font-size:20px;}
-.os-res-dots{display:flex;align-items:center;gap:5px;}
-.os-res-dot{width:7px;height:7px;border-radius:50%;flex:none;}
-.os-res-seta{flex:none;color:var(--td);font-size:16px;transition:transform .15s;}
-.os-res-seta.aberto{transform:rotate(180deg);}
-.os-res-det{max-height:0;overflow:hidden;transition:max-height .22s ease;}
-.os-res-det.aberto{max-height:220px;}
-.os-res-det .os-res{padding-top:14px;}
-/* A busca por texto (título ou técnico) vive AO LADO do resumo, não dentro
-   dele — é um <input> estático (nunca reescrito por innerHTML), para nunca
-   repetir o tipo de falha da B41 (um campo vivo apagado a meio da escrita). */
-.osz-resumo-linha{display:flex;align-items:flex-start;gap:14px;width:100%;}
-.osz-resumo-linha #os-hist-res{flex:1;min-width:0;}
+/* O ícone de cada caixote (OS_RES_ICONES) vive dentro do `.mtc-ic` global
+   (26px), que não define o tamanho do próprio desenho lá dentro — só esta
+   sub-aba precisa disso, por isso fica escopado a ela. */
+#tab-rh-os .mtc-ic svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+/* B59 (2026-10-07, pedido do Mike): o botão para expandir/colapsar o resumo
+   (B42) saiu — "não faz sentido o botão para expandir e mostrar os cálculos
+   gerais, devem estar logo à mostra". O resumo passa a ser SEMPRE quatro
+   caixotes à vista (a mesma pele `.mtc` já usada no Dashboard/«O ano»),
+   nunca escondidos atrás de um clique. `.os-res-cab`/`.os-res-det`/
+   `.os-res-seta`/`.os-res-dots` (o cabeçalho clicável, o corpo colapsável, a
+   seta, os pontinhos de cor) deixam de ter uso — saem. Os três blocos
+   Por técnico/Por grupo/Por serviço continuam exactamente iguais por
+   dentro (osResBloco), só o invólucro muda de `.os-res-bloco` (sem caixa
+   própria, só um traço de cor no topo) para `.mtc` (caixote com fundo,
+   borda e canto, igual aos outros cartões da app). */
+.rs-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+@media(max-width:900px){.rs-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+/* A busca por texto (título ou técnico) vive ao lado dos filtros — é um
+   <input> estático (nunca reescrito por innerHTML), para nunca repetir o
+   tipo de falha da B41 (um campo vivo apagado a meio da escrita). */
+.osz-resumo-linha{display:flex;align-items:center;gap:14px;width:100%;}
 .osz-busca{flex:none;width:210px;max-width:40%;display:flex;align-items:center;gap:6px;
   background:var(--navy3);border:1px solid var(--border);border-radius:20px;padding:6px 12px;}
 .osz-busca svg{flex:none;width:12px;height:12px;stroke:var(--td);fill:none;stroke-width:2;}
@@ -1282,8 +1264,11 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
    (o topo do painel e o fundo da lista) ganham o arredondamento sozinhos,
    mais abaixo (`.osz-lista`) — e nenhum deles tem nada que precise de
    escapar para fora de si próprio. */
-.osz-reg{display:flex;flex-direction:column;background:var(--navy2);border:1px solid var(--border);
-  border-radius:11px;}
+/* B59 (2026-10-07, pedido do Mike: "keep it simple", menos contornos): a
+   carcaça com moldura (fundo navy2, borda, cantos) sai — o fundo da própria
+   página já é contorno suficiente. `.osz-reg` passa de cartão a simples
+   empilhamento vertical dos três blocos (resumo, busca+filtros, lista). */
+.osz-reg{display:flex;flex-direction:column;gap:18px;}
 /* B40 (2026-09-30, pedido do Mike): o layout de DUAS COLUNAS (B39: esquerda
    com filtros+lista, direita fixa a 340px com o resumo) deixava um vão morto
    na coluna esquerda — a barra de filtros só precisa de ~800px numa linha,
@@ -1308,9 +1293,10 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
    uma letra. Com `stretch`, `#os-hist-res` ocupa sempre a largura toda do
    `.osz-topo`, tal como `.osz-bar` (que já tinha `width:100%` explícito e
    por isso nunca mostrou o problema). */
-.osz-topo{padding:16px 20px 16px;border-bottom:1px solid var(--border);
-  display:flex;flex-direction:column;align-items:stretch;gap:16px;}
-.osz-bar{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;width:100%;}
+/* B59: sem fundo próprio nem traço a separar da lista — só espaço (o `gap`
+   do `.osz-reg` acima já separa este bloco do seguinte). */
+.osz-topo{display:flex;flex-direction:column;align-items:stretch;gap:16px;}
+.osz-bar{display:flex;align-items:center;justify-content:center;gap:7px;flex-wrap:wrap;flex:1;min-width:0;}
 .osz-chip{font-size:11px;font-family:var(--mono);padding:4px 10px;border-radius:20px;cursor:pointer;
   background:var(--navy3);border:1px solid var(--border);color:var(--ts);
   transition:border-color .14s,color .14s;position:relative;}
@@ -2866,34 +2852,38 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
         <div class="osz-t"><span class="osz-t-n">Registados</span>
           <span class="l"></span><span class="osz-t-c" id="os-z2-c"></span></div>
         <div class="osz-reg">
+          <!-- B59 (2026-10-07, pedido do Mike): o resumo (osRenderResumo) já não
+               vive dentro de uma linha dividida com a busca — passa a ocupar a
+               largura toda, sempre à vista (sem botão para expandir), em cima de
+               tudo. A busca e os filtros, que antes eram duas linhas (B42: busca
+               em cima, filtros em baixo), juntam-se numa só — menos carcaça, a
+               mesma lógica de "uma linha por pergunta" que o editor de orçamento
+               já segue. O campo de busca continua estático — nunca é reescrito
+               por osRenderResumo()/osRenderHist() — para nunca repetir o tipo de
+               falha da B41 (um campo vivo apagado a meio da escrita por um
+               innerHTML que o redesenha). -->
           <div class="osz-topo">
-            <!-- B42 (2026-10-01, "Opção A" das três maquetes): o resumo e a busca
-                 sobem para a primeira linha (o que se quer ver OU procurar de
-                 imediato); os filtros descem para a segunda. O campo de busca é
-                 estático — nunca é reescrito por osRenderResumo()/osRenderHist() —
-                 para nunca repetir o tipo de falha da B41 (um campo vivo apagado a
-                 meio da escrita por um innerHTML que o redesenha). -->
+            <div id="os-hist-res"></div>
             <div class="osz-resumo-linha">
-              <span id="os-hist-res" style="flex:1;min-width:0;"></span>
               <span class="osz-busca">
                 <svg viewBox="0 0 16 16"><circle cx="7" cy="7" r="5"/><line x1="11" y1="11" x2="14.5" y2="14.5"/></svg>
                 <input id="os-busca" placeholder="Procurar título ou técnico…" oninput="osBuscaMudou(this.value)">
               </span>
-            </div>
-            <div class="osz-bar">
-              <span id="os-filtros" style="display:contents;"></span>
-              <span class="sem-wrap">
-                <button class="osz-chip" id="os-sem-btn" onclick="toggleSemMenu(event,'os')">Semana</button>
-                <div id="os-sem-pop" class="sem-pop">
-                  <div class="sem-tit" id="os-sem-tit">Semana ISO</div>
-                  <div class="sem-visor">
-                    <div class="sem-faixa"></div>
-                    <div class="sem-lista" id="os-sem-lista"></div>
-                    <div class="sem-fade-t"></div>
-                    <div class="sem-fade-b"></div>
+              <div class="osz-bar">
+                <span id="os-filtros" style="display:contents;"></span>
+                <span class="sem-wrap">
+                  <button class="osz-chip" id="os-sem-btn" onclick="toggleSemMenu(event,'os')">Semana</button>
+                  <div id="os-sem-pop" class="sem-pop">
+                    <div class="sem-tit" id="os-sem-tit">Semana ISO</div>
+                    <div class="sem-visor">
+                      <div class="sem-faixa"></div>
+                      <div class="sem-lista" id="os-sem-lista"></div>
+                      <div class="sem-fade-t"></div>
+                      <div class="sem-fade-b"></div>
+                    </div>
                   </div>
-                </div>
-              </span>
+                </span>
+              </div>
             </div>
           </div>
           <div class="osz-lista" id="os-hist"></div>
@@ -17823,9 +17813,13 @@ function osResItemHTML(k,v,total){
 // Semana (SEM_RODA_CFG) ja usa nesta sub-aba.
 function osResBloco(chave,titulo,mapa,total){
   var c=OS_RES_CORES[chave];
-  var style='--mk:'+c.mk+';--nm:'+c.nm+';--wash2:rgba('+c.rgb+',.18);';
-  var h='<div class="os-res-bloco" style="'+style+'"><div class="os-res-top">'
-    +'<div class="os-res-ic">'+OS_RES_ICONES[chave]+'</div><div class="os-res-lbl">'+titulo+'</div></div>';
+  // B59: o invólucro passa de `.os-res-bloco` (sem caixa própria, só um
+  // traço de cor no topo) para `.mtc` — o caixote global do Dashboard/«O
+  // ano» — por isso ganha também `--wash`, que o `.mtc::after` usa para o
+  // brilho ligeiro do fundo (os outros caixotes da app já o têm).
+  var style='--mk:'+c.mk+';--nm:'+c.nm+';--wash2:rgba('+c.rgb+',.18);--wash:rgba('+c.rgb+',.13);';
+  var h='<div class="mtc" style="'+style+'"><div class="mtc-top">'
+    +'<div class="mtc-ic">'+OS_RES_ICONES[chave]+'</div><div class="mtc-ml">'+titulo+'</div></div>';
   var chaves=Object.keys(mapa);
   if(!chaves.length)return h+'<div class="os-res-vazio">Nada a repartir.</div></div>';
   chaves.sort(function(a,b){return mapa[b]-mapa[a];});
@@ -17864,47 +17858,30 @@ if(document.addEventListener)document.addEventListener('click',function(e){
   document.querySelectorAll('.os-res-pop.on').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.os-res-mais.aberto').forEach(function(b){b.classList.remove('aberto');});
 });
-// B42: o resumo nasce sempre FECHADO — é um relance (total + pontinhos), não
-// uma parede de números. Guarda-se um único estado porque só existe um
-// resumo no ecrã (tal como SEM_RODA_CFG só precisa de um popover aberto de
-// cada vez). Abrir/fechar é só CSS (max-height) — não torna a desenhar nada,
-// por isso nunca perde o estado de um popover "+N mais" que esteja aberto.
-var OS_RES_ABERTO=false;
-function osResToggle(){
-  OS_RES_ABERTO=!OS_RES_ABERTO;
-  var det=document.getElementById('os-res-det'),seta=document.getElementById('os-res-seta');
-  if(det)det.classList.toggle('aberto',OS_RES_ABERTO);
-  if(seta)seta.classList.toggle('aberto',OS_RES_ABERTO);
-}
+// B59 (2026-10-07, pedido do Mike: "não faz sentido o botão para expandir e
+// mostrar os cálculos gerais, devem estar logo à mostra"): o resumo deixa de
+// nascer fechado — os quatro caixotes (Total gasto, Por técnico, Por grupo,
+// Por serviço) aparecem sempre, sem clique nenhum. OS_RES_ABERTO/
+// osResToggle() saíram com o cabeçalho clicável que os geria.
 function osRenderResumo(){
   var box=document.getElementById('os-hist-res');if(!box)return;
   if(!OS_HIST.length){box.innerHTML='';return;}
   var d=osResDados();
   var ct=OS_RES_CORES.total;
-  // Os pontinhos do cabeçalho: até três grupos, os de maior peso — a mesma
-  // cor (osCorDe) que a risca de cada ficha na lista vai usar, para o
-  // resumo e a lista lerem-se como a mesma linguagem visual.
-  var gruposOrd=Object.keys(d.porGrupo).sort(function(a,b){return d.porGrupo[b]-d.porGrupo[a];});
-  var dots=gruposOrd.slice(0,3).map(function(g){
-    return '<span class="os-res-dot" style="background:'+osCorDe(g).c+'" title="'+psEsc(g)+'"></span>';
-  }).join('');
-  var h='<div class="os-res-cab" style="--nm:'+ct.nm+';" onclick="osResToggle()">'
-      +'<div class="os-res-cab-esq">'
-        +'<div><div class="os-res-tot">'+fmtEur(d.total)+'</div>'
-        +'<div class="os-res-sub">'+d.servicos+(d.servicos===1?' serviço':' serviços')+' no período</div></div>'
-        +'<div class="os-res-dots">'+dots+'</div>'
-      +'</div>'
-      +'<span class="os-res-seta'+(OS_RES_ABERTO?' aberto':'')+'" id="os-res-seta">▾</span>'
-    +'</div>'
-    +'<div class="os-res-det'+(OS_RES_ABERTO?' aberto':'')+'" id="os-res-det"><div class="os-res">';
+  var h='<div class="rs-grid">'
+      +'<div class="mtc" style="--mk:'+ct.mk+';--nm:'+ct.nm+';--wash2:rgba('+ct.rgb+',.18);--wash:rgba('+ct.rgb+',.13);">'
+        +'<div class="mtc-top"><div class="mtc-ic">'+OS_RES_ICONES.total+'</div><div class="mtc-ml">Total gasto</div></div>'
+        +'<div class="mtc-mv">'+fmtEur(d.total)+'</div>'
+        +'<div class="mtc-ms">'+d.servicos+(d.servicos===1?' serviço':' serviços')+' no período</div>'
+      +'</div>';
   if(!d.servicos){
-    h+='<div class="os-res-bloco os-res-bloco-vazio"><div class="os-res-vazio">Nada a repartir com estes filtros.</div></div>';
+    h+='<div class="mtc" style="grid-column:span 3;display:flex;align-items:center;justify-content:center;"><div class="os-res-vazio">Nada a repartir com estes filtros.</div></div>';
   } else {
     h+=osResBloco('tecnico','Por técnico',d.porTec,d.total)
      +osResBloco('grupo','Por grupo',d.porGrupo,d.total)
      +osResBloco('servico','Por serviço',d.porServico,d.total);
   }
-  h+='</div></div>';
+  h+='</div>';
   box.innerHTML=h;
 }
 // Uma <tr> por tecnico: Data, Tecnico, Servico, Recibo, Cachet e o x. O Grupo e
