@@ -1342,6 +1342,27 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
    venda. Usa a MESMA classe `.os-novo-id` (e por isso a mesma regra de quebra
    em ecrã estreito) + uma folga em cima. */
 .os-novo-id2{margin-top:12px;}
+/* B60 (2026-10-07, pedido do Mike): interruptor «Custo SUD ⇄ Venda» — um por
+   serviço inteiro (nunca por linha de técnico). Desligado (por omissão) é o
+   comportamento de sempre: só custo SUD, o Valor de venda em cima fica como
+   está. Ligado, o Valor de venda CONTINUA a escrever-se à mão — o interruptor
+   não o calcula nem o bloqueia, só sugere o total do serviço quando está vazio
+   — e aparece, só de leitura, uma estimativa de markup pelos MESMOS escalões
+   dos orçamentos (getMarkupPct). Essa estimativa não soma a nada: não entra no
+   valor de venda, no orçamento nem em documento nenhum — mesma regra D/E das
+   regras de ouro. */
+.cv-linha{display:flex;align-items:center;justify-content:space-between;gap:14px;
+  background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-top:12px;}
+.cv-linha .cv-tx{display:flex;flex-direction:column;gap:2px;min-width:0;}
+.cv-linha .cv-tt{font-size:12.5px;font-weight:600;color:var(--tp);}
+.cv-linha .cv-ss{font-size:11px;color:var(--td);}
+.cv-btn{display:flex;align-items:center;gap:9px;cursor:pointer;flex:none;}
+.cv-btn .cv-estado{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.cv-btn .cv-estado.custo{color:var(--amf);}
+.cv-btn .cv-estado.venda{color:var(--td);}
+.cv-btn.on .cv-estado.custo{color:var(--td);}
+.cv-btn.on .cv-estado.venda{color:var(--gnf);}
+.cv-mk-nota{font-size:11px;color:var(--td);line-height:1.5;margin-top:6px;}
 .os-novo-est{display:flex;gap:6px;align-items:center;}
 .os-novo-est select{flex:1;min-width:0;}
 .os-novo-est .btn-ic{flex:none;width:38px;height:38px;padding:0;font-size:16px;font-weight:700;line-height:1;}
@@ -3336,6 +3357,24 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
            isto). -->
       <div class="os-novo-id os-novo-id2">
         <div class="fi"><label>Valor de venda (s/ IVA)</label><input id="os-novo-venda" type="number" step="0.01" min="0" placeholder="0,00" oninput="osNovoCampo('venda',parseFloat(this.value)||0)"></div>
+      </div>
+      <div class="cv-linha">
+        <div class="cv-tx">
+          <div class="cv-tt">Custo SUD ⇄ Venda</div>
+          <div class="cv-ss" id="os-cv-sub">Por omissão: só custo SUD, como sempre.</div>
+        </div>
+        <div class="cv-btn" id="os-cv-btn" onclick="osVendaToggle()">
+          <span class="cv-estado custo">Custo SUD</span>
+          <span class="switch" id="os-cv-sw"></span>
+          <span class="cv-estado venda">Venda</span>
+        </div>
+      </div>
+      <div class="fi" id="os-cv-mk-bloco" style="margin-top:10px;display:none;">
+        <label>Markup (estimativa)<span class="est">est.</span></label>
+        <input id="os-cv-markup" readonly>
+        <div class="cv-mk-nota">Pelos escalões de markup em vigor no ano do serviço — a mesma
+          conta dos fornecedores nos orçamentos. Não entra no valor de venda nem em documento
+          nenhum, é só para teres uma ideia.</div>
       </div>
       <div class="os-novo-sep"><span>Técnicos</span><div class="l"></div></div>
       <table class="mapa-table os-table os-novo-tb">
@@ -17977,6 +18016,59 @@ function osNovoPintar(){
   if(vv)vv.value=osVenda(sv)?osVenda(sv):'';
   var tt=document.getElementById('os-novo-tt');
   if(tt)tt.textContent=(sv&&!osServicoVazio(sv))?'Serviço por guardar':'Novo serviço';
+  osNovoPintarVenda();
+}
+/* B60 (2026-10-07): o ano do serviço, para escolher os escaloes de markup
+   certos (J — iva e escaloes sao por ano). Usa a mesma primeira-data que já
+   organiza o serviço no caixote Outros (ouDataServico) — nunca a data de hoje,
+   senão um serviço de Janeiro lido em Dezembro mudava de escalão sozinho. */
+function osAnoServico(sv){
+  var d=(typeof ouDataServico==='function')?ouDataServico(sv):'';
+  var a=d?parseInt(d.slice(0,4),10):0;
+  return a||new Date().getFullYear();
+}
+// Markup (estimativa) do Valor de venda, pelos MESMOS escaloes dos orcamentos.
+// So' leitura: nunca se grava, nunca entra no valor de venda (regras D/E).
+function osMarkupEstimado(sv){
+  var v=osVenda(sv);
+  if(!v)return {pct:0,val:0};
+  var pct=(typeof getMarkupPct==='function')?getMarkupPct(v,osAnoServico(sv)):0;
+  return {pct:pct,val:v*pct/100};
+}
+// Interruptor "Custo SUD <-> Venda", ao servico inteiro (nunca por linha de
+// tecnico — confirmado pelo Mike). Desligar nao apaga o Valor de venda ja
+// escrito; so deixa de mostrar o markup estimado. Ligar, com o Valor de venda
+// ainda vazio, sugere o total de custo dos tecnicos — mas o campo continua
+// editavel a mao, como sempre (o Mike: "mesmo o valor da venda pode ser
+// preenchido manualmente").
+function osVendaToggle(){
+  var sv=OUTROS_SERVICOS[0];if(!sv)return;
+  var ligar=!sv.vendaOn;
+  osNovoCampo('vendaOn',ligar);
+  if(ligar&&!osVenda(sv)){
+    var sugestao=osValorServico(sv);
+    if(sugestao)osNovoCampo('venda',sugestao);
+  }
+  osNovoPintar();
+}
+function osNovoPintarVenda(){
+  var sv=OUTROS_SERVICOS[0];
+  var btn=document.getElementById('os-cv-btn');
+  var sw=document.getElementById('os-cv-sw');
+  var sub=document.getElementById('os-cv-sub');
+  var bloco=document.getElementById('os-cv-mk-bloco');
+  var mk=document.getElementById('os-cv-markup');
+  var on=!!(sv&&sv.vendaOn);
+  if(btn)btn.classList.toggle('on',on);
+  if(sw)sw.classList.toggle('on',on);
+  if(sub)sub.textContent=on
+    ?'Marcado como venda — o valor de venda continua a escrever-se à mão.'
+    :'Por omissão: só custo SUD, como sempre.';
+  if(bloco)bloco.style.display=on?'block':'none';
+  if(on&&mk){
+    var m=osMarkupEstimado(sv);
+    mk.value=m.val?fmtEur(m.val)+' ('+m.pct+'%)':'—';
+  }
 }
 function osNovoAbrir(){
   if(!OUTROS_SERVICOS.length)osNovoServico(true);
@@ -17994,6 +18086,7 @@ function osNovoCampo(campo,val){
     var hint=document.getElementById('os-novo-est-hint');
     if(hint)hint.textContent=osEstHintTexto(sv);
   }
+  if(campo==='venda')osNovoPintarVenda();
 }
 function osNovoAddLinha(){
   var sv=OUTROS_SERVICOS[0];if(!sv)return;
