@@ -1679,6 +1679,27 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .cpe-val-lbl{font-size:11px;font-family:var(--mono);fill:var(--tp);font-weight:700;}
 .cpe-hint{font-size:9.5px;color:var(--td);margin-top:4px;font-style:italic;}
 
+/* ===== B63 (2026-10-08) — tabela por grupo do destaque «Outros» ===========
+   Variante B da maqueta `claude/maq-destaque-outros-grupos.html` (escolhida
+   pelo Mike): em destaque, o caixote «Outros» já não mostra um número grande
+   com a Equipa técnica/Fornecedores a trocar o gráfico — mostra esta tabela,
+   uma linha por grupo (a mesma repartição que `ouPorEstatuto` já dá ao
+   painel), com uma linha Total no fim. Pele copiada da maqueta, sem alterar
+   nada. */
+.vb-tabela{width:100%;border-collapse:collapse;font-size:12.5px;}
+.vb-tabela th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--td);
+  font-weight:600;padding:0 8px 7px;}
+.vb-tabela th:not(:first-child),.vb-tabela td:not(:first-child){text-align:right;}
+.vb-tabela td{padding:6px 8px;border-top:1px solid var(--border);}
+.vb-tabela tr:hover td{background:rgba(255,255,255,.035);}
+.vb-nome{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--tp);}
+.vb-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto;}
+.vb-venda{color:var(--cl);font-weight:700;font-family:var(--mono);}
+.vb-custo{color:var(--td);font-family:var(--mono);}
+.vb-markup{font-family:var(--mono);color:var(--gnf);}
+.vb-markup.neg{color:var(--rdf);}
+.vb-tabela tr.vb-tot td{border-top:2px solid var(--border);font-weight:700;color:var(--tp);padding-top:8px;}
+
 /* ===== B21 (2026-09-24) — "caixote em destaque" ===========================
    Pedido do Mike: ao passar o rato por um dos seis caixotes financeiros de
    baixo, o caixote grande troca para mostrar aquele número — o mesmo
@@ -13931,6 +13952,16 @@ function anDestaqueCruzar(chave){
 function anDestaqueRenderAlt(chave){
   var c=AN_CAIXOTES[chave]; var camada=document.getElementById('camada-alt');
   if(!c||!camada) return;
+  /* B63 (2026-10-08): um caixote registado com `tabela` (por agora só
+     «Outros») usa um miolo totalmente à parte — sem número grande, sem
+     partes de hover, sem gráfico. _altPartesAtual fica a null de propósito:
+     é o que o anAltMostrar()/resize (mais abaixo) lêem para saber que não há
+     aqui nada para trocar. */
+  if(c.tabela){
+    camada.innerHTML=anDestaqueRenderTabela(c);
+    _altPartesAtual=null; _altSerieTotal=null; _altCorTotal=c.nm; _altCampoAtual='total';
+    return;
+  }
   _altPartesAtual=c.partes||null; _altSerieTotal=c.serie; _altCorTotal=c.nm; _altCampoAtual='total';
   var lista;
   if(c.partes){
@@ -13969,6 +14000,29 @@ function anDestaqueRenderAlt(chave){
     +'</div>'
     +'<div class="mtc-abrir">↗ Ver detalhe</div>';
   anDestaqueDesenharAlt(c.serie,c.nm);
+}
+/* B63 (2026-10-08): o miolo da Variante B — uma linha por grupo (`c.tabela`,
+   já com a cor de `osCorDe`) e uma linha Total (`c.totais`) no fim. Sem
+   gráfico: é por isso que não há `svg`/`an-alt-*` aqui — anDestaqueDesenharAlt
+   não é chamada, de propósito. Pensada para servir qualquer caixote futuro
+   que precise da mesma forma, não só «Outros» — basta registar `tabela`/
+   `totais` em vez de `valorTxt`/`partes`/`serie`. */
+function anDestaqueRenderTabela(c){
+  function linha(nome,cor,r,cls){
+    return '<tr'+(cls?' class="'+cls+'"':'')+'><td><span class="vb-nome">'
+      +(cor?'<span class="vb-dot" style="background:'+cor+';"></span>':'')+_esc(nome)+'</span></td>'
+      +'<td class="vb-venda">'+fmtEur(r.venda)+'</td>'
+      +'<td class="vb-custo">'+fmtEur(r.custo)+'</td>'
+      +'<td class="vb-markup'+(r.markup<0?' neg':'')+'">'+fmtEur(r.markup)+'</td></tr>';
+  }
+  var corpo=(c.tabela||[]).map(function(b){ return linha(b.nome,b.cor,b); }).join('');
+  corpo+=linha('Total do ano',null,c.totais||{venda:0,custo:0,markup:0},'vb-tot');
+  return '<div class="mtc-top" style="margin-bottom:9px;"><span class="mtc-ic" style="width:30px;height:30px;background:'+c.wash2+';color:'+c.mk+';">'
+      +'<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">'+DASH_ICONES[c.icone]+'</svg></span>'
+      +'<span class="mtc-ml" style="font-size:10.5px;">'+c.titulo+'</span></div>'
+    +'<table class="vb-tabela"><thead><tr><th>Grupo</th><th>Venda</th><th>Custo SUD</th><th>Markup</th></tr></thead>'
+    +'<tbody>'+corpo+'</tbody></table>'
+    +'<div class="mtc-abrir">↗ Ver detalhe</div>';
 }
 /* O mesmo padrão do `cpeMostrar()` do "Custo por evento", só que a apontar
    para o estado do caixote em destaque (`_altPartesAtual`/`_altSerieTotal`/
@@ -14049,7 +14103,10 @@ function anDestaqueDesenharAlt(valores,cor){
    (`_cpeCampo`), para o gráfico não "saltar" para o Total só porque a
    janela mudou de tamanho a meio de um hover num campo. */
 window.addEventListener('resize', function(){
-  if(AN_CHAVE_ACTUAL!=='diaria'&&AN_CAIXOTES[AN_CHAVE_ACTUAL]) anAltMostrar(null,_altCampoAtual);
+  // B63: um caixote em tabela (sem gráfico) não tem nada para o anAltMostrar()
+  // redesenhar — chamá-lo à mesma seria só trabalho a mais, sem efeito (o
+  // anDestaqueDesenharAlt() já sai cedo sem o <svg>, mas nem vale a pena chegar lá).
+  if(AN_CHAVE_ACTUAL!=='diaria'&&AN_CAIXOTES[AN_CHAVE_ACTUAL]&&!AN_CAIXOTES[AN_CHAVE_ACTUAL].tabela) anAltMostrar(null,_altCampoAtual);
 });
 
 /* Agendamento — UM SÓ temporizador vivo (AN_TIMER_DESTAQUE): cada pedido
@@ -15324,19 +15381,21 @@ function rAnalise(){
      Fornecedores (orçamentos adjudicados com estatuto). Mesmo tamanho e mesma
      linha dos outros; a conta vem de `ouTotais()`, a mesma do painel. */
   var _ouL=ouLinhas({ano:ano,mes:'',semana:null});
-  var _ouT=ouTotais(_ouL), _ouM=ouMensal(_ouL);
-  /* B49 (2026-10-05, pedido do Mike): «quando passo com o rato em cima do
-     caixote outros, deverá entrar em destaque tal como os outros». O número
-     grande é o Valor venda do caixote; as duas partes (Equipa técnica e
-     Fornecedores) trocam o gráfico, e custo e markup vão na legenda. */
+  var _ouT=ouTotais(_ouL);
+  /* B63 (2026-10-08, pedido do Mike, Variante B da maqueta
+     claude/maq-destaque-outros-grupos.html): em destaque, este caixote já não
+     mostra um número grande (Valor venda) com a Equipa técnica/Fornecedores a
+     trocar o gráfico (B49) — mostra uma TABELA por grupo (Venda, Custo SUD,
+     Markup), a mesma repartição que o painel já usa (`ouPorEstatuto`), com
+     uma linha Total no fim. Sem gráfico mensal — a tabela é todo o conteúdo;
+     por isso `ouMensal()` (só usada aqui) saiu — ver `claude/versoes.md`. */
+  var _ouBlocos=ouPorEstatuto(_ouL);
+  var _ouTabela=_ouBlocos.map(function(b){
+    return {nome:b.nome, cor:osCorDe(b.nome).c, venda:b.tot.venda, custo:b.tot.custo, markup:b.tot.markup};
+  });
   anDestaqueRegistar('outros',{mk:'#40c8b8',nm:'#64dccd',wash:'rgba(64,200,184,.13)',wash2:'rgba(64,200,184,.2)',
-    icone:'etiq',titulo:'Outros · valor venda',valorTxt:fe(_ouT.tot.venda),
-    subTxt:'custo '+fe(_ouT.tot.custo)+' · markup '+fe(_ouT.tot.markup),
-    serie:_ouM.venda, tipo:'outros',label:'Outros',fn:null,opts:{},
-    partes:[
-      {campo:'vendaEq',rot:'Equipa técnica',cor:'#9b7fe8',serie:_ouM.vendaEq},
-      {campo:'vendaForn',rot:'Fornecedores',cor:'#4a90c8',serie:_ouM.vendaForn}
-    ]});
+    icone:'etiq',titulo:'Outros · fora dos eventos',
+    tabela:_ouTabela, totais:_ouT.tot});
   h+=dashCartao({marca:'#40c8b8',numero:'#64dccd',rgb:'64,200,184',icone:'etiq',
     etiqueta:'Outros<br>fora dos eventos',
     corpo:ouCartaoCorpo(_ouT),
@@ -15730,7 +15789,17 @@ function ouLinhas(st){
   var _edicao=(typeof OUTROS_SERVICOS!=='undefined'?OUTROS_SERVICOS:[]).filter(function(sv){
     return sv && !_ids[sv.id] && !(typeof osServicoVazio==='function' && osServicoVazio(sv));
   });
+  /* B62 (2026-10-08, pedido do Mike): «a ideia é sempre ter código para que
+     seja agrupado a uma lógica»; «o caixote Outros não deverá ter nada
+     Normal». Sem Grupo, NÃO CONTA aqui — nem um rascunho por guardar (bastava
+     escrever título/valor para entrar, sem Grupo nenhum, e contar como
+     «Normal»), nem um serviço já no histórico, mesmo antigo, de antes desta
+     regra existir (ficou sem Grupo, mas o Mike decidiu: também não conta —
+     fica à espera de alguém lhe pôr um Grupo). Um orçamento nunca chega aqui
+     sem código (orcEhExtra já exige estatuto≠Normal), por isso só a Equipa
+     técnica precisava deste crivo. */
   _hist.concat(_edicao).forEach(function(sv){
+    if(!(sv.grupo||'').trim()) return;
     var d=ouDataServico(sv);
     if(!ouNoPeriodo(d,st)) return;
     var custoBruto=osValorServico(sv), venda=osVenda(sv), tecs={};
@@ -15772,28 +15841,16 @@ function ouLinhas(st){
   });
   return out;
 }
-/* B49: as séries mensais do caixote em destaque — a MESMA lista de linhas do
-   cartão e do painel (`ouLinhas`), só repartida pelo mês da data de cada uma
-   (a data do serviço = a da sua primeira linha, como no painel). */
-function ouMensal(linhas){
-  var MZ=function(){return [0,0,0,0,0,0,0,0,0,0,0,0];};
-  var o={venda:MZ(),vendaEq:MZ(),vendaForn:MZ()};
-  linhas.forEach(function(r){
-    var m=parseInt((r.data||'').slice(5,7),10)-1; if(m<0||m>11) return;
-    o.venda[m]+=r.venda;
-    if(r.tipo==='eq') o.vendaEq[m]+=r.venda; else o.vendaForn[m]+=r.venda;
-  });
-  return o;
-}
 /* B51 (2026-10-05, «não aparece»): o que fica de FORA do caixote, e porquê. Um
    serviço dos Outros serviços só entra pela data da sua primeira linha, no ano
    (e mês/semana) escolhidos; sem esta conta, um serviço que «não aparece» não
-   dizia porquê. Devolve {total, contados, semData, anos:{ano:n}, foraFiltro}.
-   Só lê. A lista de serviços é a mesma de `ouLinhas` (histórico + o que está
-   por guardar e não está em branco). */
+   dizia porquê. Devolve {total, contados, semGrupo, semData, anos:{ano:n},
+   foraFiltro}. Só lê. A lista de serviços é a mesma de `ouLinhas` (histórico
+   + o que está por guardar e não está em branco) — e segue a MESMA regra de
+   Grupo obrigatório (B62): sem Grupo, nem entra na contagem de «contados». */
 function ouDiagnostico(st){
   st=st||OU_STATE;
-  var d={total:0,contados:0,semData:0,anos:{},foraFiltro:0};
+  var d={total:0,contados:0,semGrupo:0,semData:0,anos:{},foraFiltro:0};
   var hist=(typeof OS_HIST!=='undefined'?OS_HIST:[]), ids={};
   hist.forEach(function(sv){ if(sv) ids[sv.id]=1; });
   var ed=(typeof OUTROS_SERVICOS!=='undefined'?OUTROS_SERVICOS:[]).filter(function(sv){
@@ -15802,6 +15859,11 @@ function ouDiagnostico(st){
   hist.concat(ed).forEach(function(sv){
     if(!sv) return;
     d.total++;
+    // B62 (2026-10-08, pedido do Mike): «o caixote Outros não deverá ter nada
+    // Normal» — sem Grupo não conta, nem histórico antigo nem rascunho (a
+    // MESMA regra de ouLinhas). É o primeiro motivo a verificar: um serviço
+    // sem Grupo nunca chega a perguntar pela data.
+    if(!(sv.grupo||'').trim()){ d.semGrupo++; return; }
     var dt=ouDataServico(sv);
     if(ouNoPeriodo(dt,st)){ d.contados++; return; }
     if(!dt){ d.semData++; return; }
@@ -18009,6 +18071,17 @@ function osGuardar(){
   // Devolve se guardou mesmo: o painel so se fecha quando alguma coisa foi
   // arquivada. Fechar sobre um aviso de erro dava a entender que tinha guardado.
   if(osServicoVazio(sv)){showToast('Não há nada para guardar.','err');return false;}
+  // B62 (2026-10-08, pedido do Mike): «a ideia é sempre ter código para que
+  // seja agrupado a uma lógica: pool, restaurante, etc.» — sem Grupo, um
+  // serviço não se formaliza (não sai do rascunho para o histórico). Ao
+  // contrário do resto da ferramenta (REGRA «avisar, não bloquear»), aqui o
+  // Mike pediu o bloqueio mesmo, de propósito — ver pendentes.md/REGRAS-DE-OURO.
+  var _gReq=(sv.grupo||'').trim();
+  if(!_gReq){
+    showToast('É preciso um Grupo (Pool, Restaurante…) para gravar.','err');
+    var _gi=document.getElementById('os-novo-grupo'); if(_gi)_gi.focus();
+    return false;
+  }
   // So aqui — ao guardar de vez — e que o grupo entra na lista de sugestoes
   // (B41). Nada do que fica por guardar (descartado, ou so a meio da escrita)
   // chega a tocar em OS_GRUPOS.
@@ -18249,6 +18322,14 @@ function osHistAbrir(i){
 function osHistCampo(campo,val){
   var sv=osHistAberto();if(!sv)return;
   if(campo!=='grupo'&&campo!=='venda')return;
+  // B62: um serviço já formalizado também não pode ficar sem Grupo — o
+  // mesmo bloqueio de osGuardar(), aqui para quando se edita depois de
+  // guardado (B53). Repõe o valor que lá estava, não grava a limpeza.
+  if(campo==='grupo'&&!(val||'').trim()){
+    showToast('É preciso um Grupo — não se pode limpar.','err');
+    var _gi=document.getElementById('os-det-grupo'); if(_gi)_gi.value=sv.grupo||'';
+    return;
+  }
   sv[campo]=(campo==='grupo')?(val||''):(+val||0);
   osGuardarAuto();
   if(typeof osRenderHist==='function'){try{osRenderHist();}catch(e){}}
