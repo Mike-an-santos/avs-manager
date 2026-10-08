@@ -15733,17 +15733,34 @@ function ouLinhas(st){
   _hist.concat(_edicao).forEach(function(sv){
     var d=ouDataServico(sv);
     if(!ouNoPeriodo(d,st)) return;
-    var custo=osValorServico(sv), venda=osVenda(sv), tecs={};
+    var custoBruto=osValorServico(sv), venda=osVenda(sv), tecs={};
     (sv.linhas||[]).forEach(function(l){ if(l.tecNome) tecs[l.tecNome]=1; });
+    /* REGRA W (2026-10-08, pedido do Mike: «se é custo SUD não é venda e se é
+       venda não é custo SUD»): este caixote nunca tem alavanca própria — só
+       MIGRA a classificação já feita na ficha do serviço (em Outros serviços).
+       O interruptor «Custo SUD ⇄ Venda» (`sv.vendaOn`) decide tudo aqui: cada
+       serviço conta inteiro para UM dos dois lados, nunca os dois. Desligado
+       (custo SUD, o de sempre): custo = o cachet todo, venda = 0 AQUI — nunca
+       o Valor de venda escrito à mão na ficha, que é um número de outro sítio
+       (a ficha), não deste caixote. Ligado (venda): venda = o Valor de venda,
+       custo = 0, e o markup é só a ESTIMATIVA pelos escalões (osMarkupEstimado,
+       com o selo `est.`) — nunca «venda−custo», que deixaria de fazer sentido
+       com o custo a 0. Sem venda contada, não há markup: cai no mesmo «sem
+       valor de venda» que já existia (semVenda). */
+    var vendaOn=!!sv.vendaOn;
+    var custo=vendaOn?0:custoBruto;
+    var vendaAqui=vendaOn?venda:0;
+    var markup=vendaOn?((typeof osMarkupEstimado==='function')?osMarkupEstimado(sv).val:0):0;
     /* B49: as linhas por técnico do serviço (data, técnico, serviço, recibo,
-       cachet) — a mesma fonte de `custo` (osValorServico soma estes mesmos
-       `valor`), só mostrada em vez de resumida. */
+       cachet) — a mesma fonte de `custoBruto` (osValorServico soma estes
+       mesmos `valor`), só mostrada em vez de resumida. */
     var tl=(sv.linhas||[]).map(function(l){
       return {data:l.data||'', tec:l.tecNome||'', servico:l.servico||'', recibo:l.recibo||'', valor:+l.valor||0};
     }).sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;});
     out.push({tipo:'eq', id:sv.id, estatuto:osEstatuto(sv), data:d,
       nome:[sv.grupo,sv.titulo].filter(Boolean).join(' · ')||'(sem título)',
-      nTecs:Object.keys(tecs).length, tecLinhas:tl, custo:custo, venda:venda, markup:(venda?venda-custo:0), semVenda:!venda,
+      nTecs:Object.keys(tecs).length, tecLinhas:tl, custo:custo, venda:vendaAqui, markup:markup,
+      semVenda:!vendaAqui, semCusto:vendaOn, vendaOn:vendaOn, markupEst:vendaOn,
       porGuardar:_edicao.indexOf(sv)>=0});
   });
   (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
@@ -15900,7 +15917,13 @@ function ouVoltarLista(){
 }
 function ouNum(v){ return '<span'+(v<0?' class="neg"':'')+'>'+fmtEur(v)+'</span>'; }
 /* O markup de um serviço sem valor de venda não existe: «—». */
-function ouMk(r){ return r.tipo==='eq' && r.semVenda ? '<span class="ou-sem" title="Sem valor de venda">—</span>' : ouNum(r.markup); }
+function ouMk(r){
+  if(r.tipo==='eq' && r.semVenda) return '<span class="ou-sem" title="Sem valor de venda">—</span>';
+  // B60: com o interruptor «Custo SUD ⇄ Venda» ligado, este markup é a MESMA
+  // estimativa por escalões do painel «Registar serviço» — leva o mesmo selo,
+  // como o markup dos Fornecedores ao lado (que também é sempre estimativa).
+  return ouNum(r.markup)+(r.markupEst?'<span class="est" title="Estimativa pelos escalões em vigor — não entra no valor de venda">est.</span>':'');
+}
 function ouDataTxt(d){
   var m=parseInt((d||'').slice(5,7),10)-1;
   return (d||'').slice(8,10)+' '+(CPE_MESES[m]||'');
@@ -15964,41 +15987,53 @@ function ouRenderDetalhe(e){
   // B58 (2026-10-06, pedido do Mike): saiu a barra «Passar … para o estatuto
   // … Aplicar» (B55) — ver ouMoverServicos() em versoes.md, removida com ela.
   var h='';
-  h+='<div class="ce-bloco ou-g-eq"><div class="ce-tit"><span class="ce-dot"></span>Equipa técnica<span class="est real">real</span></div>'
-    +'<table><thead><tr><th>Serviço</th><th>Data</th><th>Técnicos</th>'
-    +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th></tr></thead><tbody>';
-  if(!e.itens.eq.length) h+='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum serviço dos Outros serviços com este estatuto neste período.</td></tr>';
-  e.itens.eq.slice().sort(ord).forEach(function(r){
-    /* B54: o nome do serviço abre a ficha (já guardada) onde se muda o Grupo
-       (B57: é o que diz o bloco) e o valor de venda — resolve aqui, no sítio
-       onde se vê o engano. */
-    h+='<tr class="ou-i"><td>'+(r.porGuardar?_esc(r.nome):'<a class="ou-ed" href="javascript:void(0)" title="Abrir o serviço para mudar o grupo ou o valor de venda" onclick="ouEditarServico('+r.id+')">'+_esc(r.nome)+'</a>')
-      +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')
-      +'</td><td>'+ouDataTxt(r.data)+'</td><td>'+r.nTecs+'</td>'
-      +'<td class="cor-s">'+fmtEur(r.custo)+'</td><td class="cor-c">'+(r.semVenda?'<span class="ou-sem">—</span>':fmtEur(r.venda))+'</td>'
-      +'<td class="cor-h">'+ouMk(r)+'</td></tr>';
-    /* B49: uma linha por técnico (data · técnico · serviço · recibo · cachet);
-       a soma dos cachets é o Custo SUD do serviço — nada se soma duas vezes. */
-    (r.tecLinhas||[]).forEach(function(t){
-      h+='<tr class="ou-l"><td>'+(t.data?ouDataTxt(t.data):'—')+' · <b>'+(t.tec?_esc(t.tec):'(sem técnico)')+'</b>'
-        +(t.servico?' · '+_esc(t.servico):'')
-        +(t.recibo?' <span class="ou-rec">rec. '+_esc(t.recibo)+'</span>':'')
-        +'</td><td></td><td></td><td class="cor-s">'+fmtEur(t.valor)+'</td><td></td><td></td></tr>';
+  /* B60 (2026-10-08, pedido do Mike: «a barra de fornecedor em branco é
+     redundante»): um bloco sem nenhum item não se desenha — nem cabeçalho
+     nem tabela vazia. Um estatuto só de Outros serviços já não mostra um
+     "Fornecedores" às moscas, e vice-versa. Nunca os dois de fora: um
+     estatuto só existe aqui (ouPorEstatuto) quando tem pelo menos um item
+     nalgum dos dois. */
+  if(e.itens.eq.length){
+    h+='<div class="ce-bloco ou-g-eq"><div class="ce-tit"><span class="ce-dot"></span>Equipa técnica<span class="est real">real</span></div>'
+      +'<table><thead><tr><th>Serviço</th><th>Data</th><th>Técnicos</th>'
+      +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup</th></tr></thead><tbody>';
+    e.itens.eq.slice().sort(ord).forEach(function(r){
+      /* B54: o nome do serviço abre a ficha (já guardada) onde se muda o Grupo
+         (B57: é o que diz o bloco) e o valor de venda — resolve aqui, no sítio
+         onde se vê o engano. */
+      h+='<tr class="ou-i"><td>'+(r.porGuardar?_esc(r.nome):'<a class="ou-ed" href="javascript:void(0)" title="Abrir o serviço para mudar o grupo ou o valor de venda" onclick="ouEditarServico('+r.id+')">'+_esc(r.nome)+'</a>')
+        +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')
+        +'</td><td>'+ouDataTxt(r.data)+'</td><td>'+r.nTecs+'</td>'
+        /* B60: «se é custo sud não é venda e se é venda não é custo sud» — com
+           o interruptor ligado (semCusto), o cachet dos técnicos já não conta
+           aqui como Custo SUD (passou inteiro para a Venda, ao lado). */
+        +'<td class="cor-s">'+(r.semCusto?'<span class="ou-sem" title="Marcado como venda — já não conta como Custo SUD">—</span>':fmtEur(r.custo))+'</td>'
+        +'<td class="cor-c">'+(r.semVenda?'<span class="ou-sem">—</span>':fmtEur(r.venda))+'</td>'
+        +'<td class="cor-h">'+ouMk(r)+'</td></tr>';
+      /* B49: uma linha por técnico (data · técnico · serviço · recibo · cachet);
+         a soma dos cachets é o Custo SUD do serviço — nada se soma duas vezes. */
+      (r.tecLinhas||[]).forEach(function(t){
+        h+='<tr class="ou-l"><td>'+(t.data?ouDataTxt(t.data):'—')+' · <b>'+(t.tec?_esc(t.tec):'(sem técnico)')+'</b>'
+          +(t.servico?' · '+_esc(t.servico):'')
+          +(t.recibo?' <span class="ou-rec">rec. '+_esc(t.recibo)+'</span>':'')
+          +'</td><td></td><td></td><td class="cor-s">'+fmtEur(t.valor)+'</td><td></td><td></td></tr>';
+      });
     });
-  });
-  h+='<tr class="ou-tot"><td>Total da equipa técnica</td><td></td><td></td><td class="cor-s">'+fmtEur(e.eq.custo)+'</td>'
-    +'<td class="cor-c">'+fmtEur(e.eq.venda)+'</td><td class="cor-h">'+ouNum(e.eq.markup)+'</td></tr></tbody></table></div>';
+    h+='<tr class="ou-tot"><td>Total da equipa técnica</td><td></td><td></td><td class="cor-s">'+fmtEur(e.eq.custo)+'</td>'
+      +'<td class="cor-c">'+fmtEur(e.eq.venda)+'</td><td class="cor-h">'+ouNum(e.eq.markup)+'</td></tr></tbody></table></div>';
+  }
 
-  h+='<div class="ce-bloco ou-g-fo"><div class="ce-tit"><span class="ce-dot"></span>Fornecedores<span class="est">est.</span></div>'
-    +'<table><thead><tr><th>Orçamento</th><th>Data</th><th>Nº</th>'
-    +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup (est.)</th></tr></thead><tbody>';
-  if(!e.itens.forn.length) h+='<tr><td colspan="6" class="cpd-sem-linhas">Nenhum orçamento adjudicado com este estatuto neste período.</td></tr>';
-  e.itens.forn.slice().sort(ord).forEach(function(r){
-    h+='<tr class="ou-i"><td>'+_esc(r.nome)+'</td><td>'+ouDataTxt(r.data)+'</td><td>'+_esc(r.num)+'</td>'
-      +'<td class="cor-s">'+fmtEur(r.custo)+'</td><td class="cor-c">'+fmtEur(r.venda)+'</td><td class="cor-h">'+ouNum(r.markup)+'</td></tr>';
-  });
-  h+='<tr class="ou-tot"><td>Total dos fornecedores</td><td></td><td></td><td class="cor-s">'+fmtEur(e.forn.custo)+'</td>'
-    +'<td class="cor-c">'+fmtEur(e.forn.venda)+'</td><td class="cor-h">'+ouNum(e.forn.markup)+'</td></tr></tbody></table></div>';
+  if(e.itens.forn.length){
+    h+='<div class="ce-bloco ou-g-fo"><div class="ce-tit"><span class="ce-dot"></span>Fornecedores<span class="est">est.</span></div>'
+      +'<table><thead><tr><th>Orçamento</th><th>Data</th><th>Nº</th>'
+      +'<th class="cor-s">Custo SUD</th><th class="cor-c">Valor venda</th><th class="cor-h">Markup (est.)</th></tr></thead><tbody>';
+    e.itens.forn.slice().sort(ord).forEach(function(r){
+      h+='<tr class="ou-i"><td>'+_esc(r.nome)+'</td><td>'+ouDataTxt(r.data)+'</td><td>'+_esc(r.num)+'</td>'
+        +'<td class="cor-s">'+fmtEur(r.custo)+'</td><td class="cor-c">'+fmtEur(r.venda)+'</td><td class="cor-h">'+ouNum(r.markup)+'</td></tr>';
+    });
+    h+='<tr class="ou-tot"><td>Total dos fornecedores</td><td></td><td></td><td class="cor-s">'+fmtEur(e.forn.custo)+'</td>'
+      +'<td class="cor-c">'+fmtEur(e.forn.venda)+'</td><td class="cor-h">'+ouNum(e.forn.markup)+'</td></tr></tbody></table></div>';
+  }
   document.getElementById('ou-d-corpo').innerHTML=h;
 }
 function ouRender(){
