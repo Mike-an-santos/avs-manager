@@ -105,6 +105,11 @@ html,body{height:100%;background:var(--navy);color:var(--tp);font-family:var(--f
 /* mesma seta do «navnav-flat» junto às Definições, mas noutra cor — usada na
    navegação de quinzena a quinzena do Mapa de Serviços (2026-09-26, pedido do Mike) */
 .navnav-quinz{color:var(--blf);}
+/* B64 (2026-10-09, pedido do Mike): a MESMA seta, no Plano de semana — laranja
+   em vez de azul, de propósito, para não se confundir com a do Mapa de
+   técnicos (que fica noutra aba). Maqueta aprovada em
+   claude/maq-plano-semana-setas-quinzena.html. */
+.navnav-plano{color:var(--amf);}
 .dtd{font-size:13px;font-weight:700;color:var(--tp);line-height:1.2;}
 .dtt{font-size:11px;color:var(--copper);font-family:var(--mono);letter-spacing:.06em;}
 .uchip-sm{padding:3px 8px 3px 3px;gap:6px;}
@@ -3043,6 +3048,12 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div class="st">Plano de semana</div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <!-- B64 (2026-10-09, pedido do Mike): duas setas, iguais às do Mapa de
+             técnicos (mapaQuinzenaNav) mas laranja — avançam/recuam 14 dias a
+             partir do «De» e repõem a semana ISO inteira (psQuinzenaNav). Ver
+             claude/maq-plano-semana-setas-quinzena.html, a maqueta aprovada. -->
+        <button class="navnav navnav-flat navnav-plano" title="Recuar quinzena" onclick="psQuinzenaNav(-1)" aria-label="Recuar quinzena"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+        <button class="navnav navnav-flat navnav-plano" title="Avançar quinzena" onclick="psQuinzenaNav(1)" aria-label="Avançar quinzena"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
         <div style="display:flex;align-items:center;gap:8px;background:var(--navy3);border:2px solid var(--bl);border-radius:8px;padding:5px 14px;"><label style="font-size:11px;color:var(--ts);font-weight:600;">De</label><input type="date" id="ps-de" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span style="color:var(--td);">—</span><label style="font-size:11px;color:var(--ts);font-weight:600;">Até</label><input type="date" id="ps-ate" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span id="ps-sem" title="Semana ISO 8601 (segunda a domingo)" style="font-size:12px;font-weight:700;color:var(--gnf);white-space:nowrap;margin-left:4px;"></span></div>
         <button class="btn-ic" title="Guardar" onclick="psGuardar(this)">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -9050,6 +9061,23 @@ function psSemanaAplicar(inp){
   }
   psSemanaEtiqueta();
   psLoad();
+}
+/* B64 (2026-10-09, pedido do Mike): duas setas à esquerda do «De—Até», iguais
+   às do Mapa de técnicos (mapaQuinzenaNav) mas laranja. Avançam/recuam 14
+   dias (duas semanas ISO) a partir do «De» actual — nunca por blocos fixos
+   do calendário (1–15/16–30), que é como o Mapa de técnicos entende
+   «quinzena»: aqui não faria sentido, o Plano é sempre uma semana ISO
+   inteira (regra B45) e 14 dias é o que garante continuar a ser uma. Chama
+   psSemanaAplicar() directamente — a MESMA função que o «De» já usa ao
+   mudar à mão — para repor a semana e recarregar, sem duplicar a conta. */
+function psQuinzenaNav(dir){
+  var de=document.getElementById('ps-de');
+  if(!de) return;
+  var base=de.value||localDate(new Date());
+  var d=parseLocalDate(base);
+  d.setDate(d.getDate()+dir*14);
+  de.value=localDate(d);
+  psSemanaAplicar(de);
 }
 function psSemanaEtiqueta(){
   var el=document.getElementById('ps-sem'), de=document.getElementById('ps-de');
