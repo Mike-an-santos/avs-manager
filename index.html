@@ -170,6 +170,22 @@ html,body{height:100%;background:var(--navy);color:var(--tp);font-family:var(--f
 .bt-ot{background:var(--navy4);color:var(--ts);}
 .card{background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;}
 .csm{background:var(--navy3);border:2px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;}
+/* B65 (2026-10-09, pedido do Mike): preçário do fornecedor (faRender) — "painéis mais
+   pequenos, sem contornos". Cada artigo deixa a caixa com borda 2px à volta do campo;
+   fica só texto, com uma linha fina a separar as filas e o foco a mostrar-se com um traço
+   por baixo do campo, não uma moldura. A fila fica mais baixa, por isso cabem mais artigos
+   sem scroll. Maqueta aprovada em claude/maq-preco-fornecedor-sem-contornos.html. */
+.fa-hd{display:grid;grid-template-columns:1fr 110px 28px;gap:10px;padding:0 4px 7px;font-size:9.5px;font-weight:600;color:var(--td);text-transform:uppercase;letter-spacing:.06em;font-family:var(--mono);border-bottom:1px solid var(--border);}
+.fa-hd .c{text-align:right;}
+.fa-row{display:grid;grid-template-columns:1fr 110px 28px;gap:10px;align-items:center;padding:3px 4px;border-bottom:1px solid rgba(42,61,84,.45);}
+.fa-row:last-child{border-bottom:none;}
+.fa-row:hover{background:rgba(255,255,255,.025);border-radius:5px;}
+.fa-ipt,.fa-ipn{background:none;border:none;border-bottom:1px solid transparent;font-size:12.5px;font-family:var(--font);padding:5px 2px;width:100%;outline:none;transition:border-color .15s;box-sizing:border-box;}
+.fa-ipt{color:var(--tp);}
+.fa-ipn{color:var(--cl);font-family:var(--mono);font-weight:700;text-align:right;}
+.fa-ipt:focus,.fa-ipn:focus{border-bottom-color:var(--bl);}
+.fa-rm{background:none;border:none;color:var(--td);cursor:pointer;font-size:13px;font-weight:700;padding:0 4px;text-align:center;opacity:.6;transition:.15s;}
+.fa-row:hover .fa-rm{opacity:1;color:var(--rdf);}
 .ct{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;font-family:var(--mono);display:flex;align-items:center;gap:8px;}
 .ctl{flex:1;height:1px;background:var(--border);}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -1618,21 +1634,53 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 #tb-ou tfoot td,#ou-full .ou-tot td{font-weight:700;border-top:2px solid var(--border);}
 #ou-full .ou-g-eq{--g:#9b7fe8;}
 #ou-full .ou-g-fo{--g:#4a90c8;}
-#ou-full .ce-bloco.ou-g-eq,#ou-full .ce-bloco.ou-g-fo{border-left:3px solid var(--g);}
-#ou-full .ou-g-eq .ce-tit{color:#b8a3f0;}
-#ou-full .ou-g-fo .ce-tit{color:#5ba3d9;}
+/* B66 (2026-10-09, pedido do Mike: «a informação aparece muito confusa e
+   repetida... comprimir melhor os campos e dar um pouco de mais cor»):
+   o bloco deixa de ser uma caixa fechada (fundo + borda à volta + padding
+   grande) — fica só uma barra fina colorida à esquerda (a mesma cor do
+   ponto do título), com as filas mais juntas por dentro. Maqueta com três
+   estados (Actual/Proposta/Mais compacta+cor) aprovada em
+   claude/maq-outros-detalhe-v2.html. */
+#ou-full .ce-bloco.ou-g-eq,#ou-full .ce-bloco.ou-g-fo{
+  background:none;border:none;border-left:3px solid var(--g);border-radius:0;
+  padding:4px 0 4px 12px;margin-bottom:20px;
+}
+#ou-full .ou-g-eq .ce-tit,#ou-full .ou-g-fo .ce-tit{
+  text-transform:none;font-family:var(--font);font-size:12.5px;font-weight:600;
+  letter-spacing:0;color:var(--tp);margin-bottom:6px;
+}
 #ou-full .ou-g-eq .ce-dot{background:#9b7fe8;}
 #ou-full .ou-g-fo .ce-dot{background:#4a90c8;}
 #ou-full a.ou-ed{color:inherit;text-decoration:underline dotted;text-underline-offset:3px;cursor:pointer;}
 #ou-full a.ou-ed:hover{color:#9b7fe8;}
 #ou-full .ou-g-eq tbody tr.ou-i:hover td{background:rgba(155,127,232,.05);}
-#ou-full tr.ou-l td{font-size:11.5px;color:var(--td);padding-top:3px;padding-bottom:3px;background:rgba(155,127,232,.06);}
-#ou-full tr.ou-l td:first-child{padding-left:34px;}
-#ou-full tr.ou-l b{font-weight:600;color:#b8a3f0;}
-#ou-full .ou-rec{color:var(--td);font-family:var(--mono);font-size:10px;}
-#ou-full .est{font-family:var(--mono);font-size:8.5px;font-weight:700;border:1px solid var(--amf);color:var(--amf);border-radius:3px;padding:1px 5px;margin-left:6px;letter-spacing:.05em;}
-#ou-full .est.real{border-color:var(--gnf);color:var(--gnf);}
-.est.real{color:var(--gnf);}
+#ou-full .ou-g-fo tbody tr.ou-i:hover td{background:rgba(74,144,200,.05);}
+/* cabeçalho e filas da tabela, mais compactos, sem fundo nem maiúsculas —
+   só dentro dos blocos do detalhe (#ou-full .ce-bloco); a lista de
+   estatutos (#tb-ou) não muda. */
+#ou-full .ce-bloco table{font-size:12.5px;}
+#ou-full .ce-bloco table th{background:none;text-transform:none;font-family:var(--font);
+  font-size:9.5px;font-weight:600;color:var(--td);letter-spacing:.01em;
+  border-bottom:1px solid var(--border);padding:3px 8px 6px;}
+#ou-full .ce-bloco table th.cor-s{border-bottom-color:rgba(224,122,106,.5);}
+#ou-full .ce-bloco table th.cor-c{border-bottom-color:rgba(212,149,110,.5);}
+#ou-full .ce-bloco table th.cor-h{border-bottom-color:rgba(82,196,122,.5);}
+#ou-full .ce-bloco table td{padding:5px 8px;border-bottom:1px solid rgba(42,61,84,.4);}
+#ou-full .ce-bloco table tr:last-child td{border-bottom:none;}
+/* linhas por técnico: só recuo e cinzento — sem mancha de cor por baixo. */
+#ou-full tr.ou-l td{font-size:10.5px;color:var(--td);padding:1px 8px;background:none;}
+#ou-full tr.ou-l td:first-child{padding-left:20px;}
+#ou-full tr.ou-l b{font-weight:600;color:var(--ts);}
+#ou-full .ou-rec{color:var(--td);font-family:var(--mono);font-size:9.5px;}
+/* total: lavagem de cor suave (a cor do bloco) em vez de traço grosso. */
+#ou-full .ce-bloco .ou-tot td{font-weight:700;border-top:none;border-bottom:none;
+  padding-top:8px;background:linear-gradient(90deg,rgba(155,127,232,.08),transparent 60%);}
+#ou-full .ce-bloco.ou-g-fo .ou-tot td{background:linear-gradient(90deg,rgba(74,144,200,.08),transparent 60%);}
+/* selo «real»/«est.»: fundo leve da sua cor, sem moldura. */
+#ou-full .est{font-family:var(--mono);font-size:9px;font-weight:700;border:none;
+  color:var(--amf);background:rgba(212,144,42,.15);border-radius:8px;padding:1px 6px;
+  margin-left:6px;letter-spacing:.03em;}
+#ou-full .est.real{color:var(--gnf);background:rgba(82,196,122,.15);}
 
 /* ===== CUSTO POR EVENTO — gráfico mensal ao passar o rato (2026-09-23) ===
    Pedido do Mike: a lista de Cachets/Horas extra/Custo SUD não precisa de
@@ -10946,7 +10994,7 @@ function faAdd(){
   faGravar();faRender();
   // Leva o cursor para a linha nova: sem isto, com a lista longa, a linha nascia
   // fora do ecra e parecia que o botao nao tinha feito nada.
-  var ult=document.querySelector('#fa-tbody tr:last-child input');
+  var ult=document.querySelector('#fa-rows .fa-row:last-child input');
   if(ult){try{ult.scrollIntoView({block:'center'});}catch(e){}ult.focus();}
 }
 function faRemover(id){
@@ -10965,8 +11013,6 @@ function faRender(){
   if(!el||!faForn)return;
   // escape para valores dentro de atributos (o _esc nao trata das aspas)
   var av=function(s){return (s==null?'':''+s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');};
-  var st='padding:7px 10px;background:var(--navy3);border:2px solid var(--bl);border-radius:5px;color:var(--tp);font-size:12px;outline:none;font-family:var(--font);width:100%;box-sizing:border-box;';
-  var stN='padding:7px 10px;background:var(--navy3);border:2px solid var(--bl);border-radius:5px;color:var(--cl);font-family:var(--mono);font-size:13px;font-weight:700;outline:none;text-align:right;width:100%;box-sizing:border-box;';
   // Modo diretor = so consulta. O CSS do dir-css esconde os botoes; os campos ficam
   // bloqueados aqui, porque este ecra grava sozinho e nao tem botao Guardar a servir de trinco.
   var so_ver=(typeof ehDiretor==='function'&&ehDiretor());
@@ -10984,18 +11030,18 @@ function faRender(){
     el.innerHTML=cabecalho+'<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sem artigos</div><div class="empty-sub">Clica no + para acrescentar o primeiro artigo deste fornecedor.</div></div>';
     return;
   }
+  // B65: filas em grid (sem tabela, sem caixa a toda a volta de cada campo) —
+  // ver o CSS .fa-hd/.fa-row/.fa-ipt/.fa-ipn/.fa-rm.
   var linhas=faForn.precos.map(function(p){
-    return '<tr>'
-      +'<td><input value="'+av(p.desc)+'" placeholder="Descrição do artigo" oninput="faUp('+p.id+',\'desc\',this.value)" style="'+st+'"'+ro+'></td>'
-      +'<td><input type="number" min="0" step="0.01" value="'+(p.preco||0)+'" oninput="faUp('+p.id+',\'preco\',parseFloat(this.value)||0)" style="'+stN+'"'+ro+'></td>'
-      +'<td style="text-align:center;">'+(so_ver?'':'<button onclick="faRemover('+p.id+')" title="Remover artigo" style="background:none;border:none;color:var(--rdf);cursor:pointer;font-size:15px;font-weight:700;padding:0 4px;">✕</button>')+'</td>'
-      +'</tr>';
+    return '<div class="fa-row">'
+      +'<input class="fa-ipt" value="'+av(p.desc)+'" placeholder="Descrição do artigo" oninput="faUp('+p.id+',\'desc\',this.value)"'+ro+'>'
+      +'<input class="fa-ipn" type="number" min="0" step="0.01" value="'+(p.preco||0)+'" oninput="faUp('+p.id+',\'preco\',parseFloat(this.value)||0)"'+ro+'>'
+      +(so_ver?'<span></span>':'<button class="fa-rm" onclick="faRemover('+p.id+')" title="Remover artigo">✕</button>')
+      +'</div>';
   }).join('');
   el.innerHTML=cabecalho
-    +'<div class="card" style="padding:0;overflow-x:auto;">'
-    +'<table style="min-width:420px;"><thead><tr>'
-    +'<th style="color:var(--gnf);">Descrição</th><th style="width:150px;text-align:center;color:var(--gnf);">€</th><th style="width:46px;"></th>'
-    +'</tr></thead><tbody id="fa-tbody">'+linhas+'</tbody></table></div>';
+    +'<div class="fa-hd"><div>Descrição</div><div class="c">€</div><div></div></div>'
+    +'<div id="fa-rows">'+linhas+'</div>';
 }
 
 // ============================================================
@@ -16015,6 +16061,15 @@ function ouVoltarLista(){
   window.scrollTo(0,0);
 }
 function ouNum(v){ return '<span'+(v<0?' class="neg"':'')+'>'+fmtEur(v)+'</span>'; }
+/* B66 (2026-10-09, pedido do Mike): dentro do detalhe de UM grupo, o nome de
+   cada serviço («Grupo · Título») repetia o grupo em todas as filas — já se
+   lê no título da página e no breadcrumb. Aqui mostra-se só a parte que
+   distingue um serviço do outro. Na lista geral (antes de entrar num grupo)
+   nada muda — ouLinhas() continua a compor "Grupo · Título" para lá. */
+function ouNomeCurto(nome,est){
+  var pre=(est||'')+' · ';
+  return (nome||'').indexOf(pre)===0 ? nome.slice(pre.length) : (nome||'');
+}
 /* O markup de um serviço sem valor de venda não existe: «—». */
 function ouMk(r){
   if(r.tipo==='eq' && r.semVenda) return '<span class="ou-sem" title="Sem valor de venda">—</span>';
@@ -16100,7 +16155,7 @@ function ouRenderDetalhe(e){
       /* B54: o nome do serviço abre a ficha (já guardada) onde se muda o Grupo
          (B57: é o que diz o bloco) e o valor de venda — resolve aqui, no sítio
          onde se vê o engano. */
-      h+='<tr class="ou-i"><td>'+(r.porGuardar?_esc(r.nome):'<a class="ou-ed" href="javascript:void(0)" title="Abrir o serviço para mudar o grupo ou o valor de venda" onclick="ouEditarServico('+r.id+')">'+_esc(r.nome)+'</a>')
+      h+='<tr class="ou-i"><td>'+(r.porGuardar?_esc(ouNomeCurto(r.nome,e.nome)):'<a class="ou-ed" href="javascript:void(0)" title="Abrir o serviço para mudar o grupo ou o valor de venda" onclick="ouEditarServico('+r.id+')">'+_esc(ouNomeCurto(r.nome,e.nome))+'</a>')
         +(r.porGuardar?' <span class="est" title="Ainda está no painel «Novo serviço»; guarda-o para ficar no histórico">por guardar</span>':'')
         +'</td><td>'+ouDataTxt(r.data)+'</td><td>'+r.nTecs+'</td>'
         /* B60: «se é custo sud não é venda e se é venda não é custo sud» — com
