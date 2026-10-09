@@ -186,6 +186,15 @@ html,body{height:100%;background:var(--navy);color:var(--tp);font-family:var(--f
 .fa-ipt:focus,.fa-ipn:focus{border-bottom-color:var(--bl);}
 .fa-rm{background:none;border:none;color:var(--td);cursor:pointer;font-size:13px;font-weight:700;padding:0 4px;text-align:center;opacity:.6;transition:.15s;}
 .fa-row:hover .fa-rm{opacity:1;color:var(--rdf);}
+/* B67 (2026-10-09, pedido do Mike: «os painéis dos preçários dos fornecedores
+   terão de ter um terço do tamanho... muito espaço entre o nome dos artigos e
+   o valor... esse painel deverá estar centrado»): a B65 tirou os contornos mas
+   deixou o conjunto esticar à largura toda da página — com a descrição em 1fr,
+   um nome curto ("Astaras") deixava um vazio enorme antes do preço. Agora o
+   cabeçalho e a lista ficam dentro de .fa-wrap, com a largura travada a um
+   terço da página e centrada; as colunas de cada fila não mudam.
+   Maqueta aprovada em claude/maq-preco-fornecedor-compacto.html ("Avança."). */
+.fa-wrap{max-width:440px;margin:0 auto;}
 .ct{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;font-family:var(--mono);display:flex;align-items:center;gap:8px;}
 .ctl{flex:1;height:1px;background:var(--border);}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -11027,7 +11036,7 @@ function faRender(){
       +'<button class="btn-ic" title="Novo artigo" onclick="faAdd()" style="width:30px;height:30px;padding:0;font-size:16px;font-weight:700;line-height:1;">+</button>'
     +'</div>';
   if(!n){
-    el.innerHTML=cabecalho+'<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sem artigos</div><div class="empty-sub">Clica no + para acrescentar o primeiro artigo deste fornecedor.</div></div>';
+    el.innerHTML='<div class="fa-wrap">'+cabecalho+'<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">Sem artigos</div><div class="empty-sub">Clica no + para acrescentar o primeiro artigo deste fornecedor.</div></div></div>';
     return;
   }
   // B65: filas em grid (sem tabela, sem caixa a toda a volta de cada campo) —
@@ -11039,9 +11048,11 @@ function faRender(){
       +(so_ver?'<span></span>':'<button class="fa-rm" onclick="faRemover('+p.id+')" title="Remover artigo">✕</button>')
       +'</div>';
   }).join('');
-  el.innerHTML=cabecalho
+  // B67: cabecalho + lista dentro de .fa-wrap (largura travada e centrada) —
+  // ver o CSS .fa-wrap, logo a seguir a .fa-rm.
+  el.innerHTML='<div class="fa-wrap">'+cabecalho
     +'<div class="fa-hd"><div>Descrição</div><div class="c">€</div><div></div></div>'
-    +'<div id="fa-rows">'+linhas+'</div>';
+    +'<div id="fa-rows">'+linhas+'</div></div>';
 }
 
 // ============================================================
