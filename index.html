@@ -3448,11 +3448,9 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
            à parte — o Grupo é que decide (ver osEstatuto). O «Ex: Pool,
            Restaurante…» do Grupo, aqui em cima, é precisamente esse exemplo;
            o aviso por baixo do Grupo confirma logo em que bloco do Outros o
-           serviço vai cair. O valor de venda continua à parte (nada a ver com
-           isto). -->
-      <div class="os-novo-id os-novo-id2">
-        <div class="fi"><label>Valor de venda (s/ IVA)</label><input id="os-novo-venda" type="number" step="0.01" min="0" placeholder="0,00" oninput="osNovoCampo('venda',parseFloat(this.value)||0)"></div>
-      </div>
+           serviço vai cair. B68 (2026-10-27): o Valor de venda escrito à mão
+           saiu de vez daqui — ver o bloco do markup, mais abaixo, onde a
+           venda automática aparece só de leitura quando o interruptor liga. -->
       <div class="cv-linha">
         <div class="cv-tx">
           <div class="cv-tt">Custo SUD ⇄ Venda</div>
@@ -3465,7 +3463,9 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
         </div>
       </div>
       <div class="fi" id="os-cv-mk-bloco" style="margin-top:10px;display:none;">
-        <label>Markup (estimativa)<span class="est">est.</span></label>
+        <label>Valor de venda (automática)</label>
+        <input id="os-cv-venda" readonly>
+        <label style="margin-top:10px;display:block;">Markup (estimativa)<span class="est">est.</span></label>
         <input id="os-cv-markup" readonly>
         <div class="cv-mk-nota">Pelos escalões de markup em vigor no ano do serviço — a mesma
           conta dos fornecedores nos orçamentos. Não entra no valor de venda nem em documento
@@ -15903,17 +15903,20 @@ function ouLinhas(st){
        MIGRA a classificação já feita na ficha do serviço (em Outros serviços).
        O interruptor «Custo SUD ⇄ Venda» (`sv.vendaOn`) decide tudo aqui: cada
        serviço conta inteiro para UM dos dois lados, nunca os dois. Desligado
-       (custo SUD, o de sempre): custo = o cachet todo, venda = 0 AQUI — nunca
-       o Valor de venda escrito à mão na ficha, que é um número de outro sítio
-       (a ficha), não deste caixote. Ligado (venda): venda = o Valor de venda,
-       custo = 0, e o markup é só a ESTIMATIVA pelos escalões (osMarkupEstimado,
-       com o selo `est.`) — nunca «venda−custo», que deixaria de fazer sentido
-       com o custo a 0. Sem venda contada, não há markup: cai no mesmo «sem
-       valor de venda» que já existia (semVenda). */
+       (custo SUD, o de sempre): custo = o cachet todo. Ligado (venda): custo
+       = 0, e o markup é só a ESTIMATIVA pelos escalões (osMarkupEstimado, com
+       o selo `est.`) — nunca «venda−custo», que deixaria de fazer sentido com
+       o custo a 0.
+       B68 (2026-10-27): já não se repete aqui o "vendaOn?...:0" para a venda
+       nem para o markup — `osVenda(sv)` já devolve 0 sozinha quando o
+       interruptor está desligado (nunca lê um Valor de venda à mão: esse
+       campo nem existe), e `osMarkupEstimado` já devolve {val:0} quando a
+       venda é 0. Repetir o "if" aqui seria só código morto a duplicar a
+       MESMA regra. Sem venda contada, não há markup: cai no mesmo «sem valor
+       de venda» que já existia (semVenda). */
     var vendaOn=!!sv.vendaOn;
     var custo=vendaOn?0:custoBruto;
-    var vendaAqui=vendaOn?venda:0;
-    var markup=vendaOn?((typeof osMarkupEstimado==='function')?osMarkupEstimado(sv).val:0):0;
+    var markup=(typeof osMarkupEstimado==='function')?osMarkupEstimado(sv).val:0;
     /* B49: as linhas por técnico do serviço (data, técnico, serviço, recibo,
        cachet) — a mesma fonte de `custoBruto` (osValorServico soma estes
        mesmos `valor`), só mostrada em vez de resumida. */
@@ -15922,8 +15925,8 @@ function ouLinhas(st){
     }).sort(function(a,b){return a.data<b.data?-1:a.data>b.data?1:0;});
     out.push({tipo:'eq', id:sv.id, estatuto:osEstatuto(sv), data:d,
       nome:[sv.grupo,sv.titulo].filter(Boolean).join(' · ')||'(sem título)',
-      nTecs:Object.keys(tecs).length, tecLinhas:tl, custo:custo, venda:vendaAqui, markup:markup,
-      semVenda:!vendaAqui, semCusto:vendaOn, vendaOn:vendaOn, markupEst:vendaOn,
+      nTecs:Object.keys(tecs).length, tecLinhas:tl, custo:custo, venda:venda, markup:markup,
+      semVenda:!venda, semCusto:vendaOn, vendaOn:vendaOn, markupEst:vendaOn,
       porGuardar:_edicao.indexOf(sv)>=0});
   });
   (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
@@ -17767,10 +17770,10 @@ function osEstatuto(sv){
   }
   return g;
 }
-function osVenda(sv){return +(sv&&sv.venda)||0;}
+function osVenda(sv){return (sv&&sv.vendaOn)?osValorServico(sv):0;}
 // Servico novo, em branco, com uma linha ja pronta a preencher.
 function osNovoServico(silencioso){
-  var sv={id:nid++,grupo:'',titulo:'',obs:'',estatuto:'Normal',venda:0,linhas:[{id:nid++,data:localDate(new Date()),servico:'',tecId:null,tecNome:'',recibo:'',valor:0}]};
+  var sv={id:nid++,grupo:'',titulo:'',obs:'',estatuto:'Normal',vendaOn:false,linhas:[{id:nid++,data:localDate(new Date()),servico:'',tecId:null,tecNome:'',recibo:'',valor:0}]};
   OUTROS_SERVICOS.push(sv);
   if(!silencioso){osRenderTabela();osRenderFiltros();osGuardarAuto();}
   return sv;
@@ -17825,7 +17828,7 @@ function osUpLinha(sid,lid,campo,val){
   var sv=osAcharServico(sid);if(!sv)return;
   var l=osAcharLinha(sv,lid);if(!l)return;
   l[campo]=val;
-  if(campo==='valor')osRenderTotal();   // so o cachet mexe no total
+  if(campo==='valor'){osRenderTotal();osNovoPintarVenda();}   // o cachet tambem mexe na venda/markup quando a venda esta ligada
   osGuardarAuto();
 }
 // Escreve o total do servico que esta no painel. Actualiza-se sozinho a cada
@@ -18166,7 +18169,7 @@ function osRenderTabela(){
 function osServicoVazio(sv){
   if(!sv)return true;
   if((sv.grupo||'').trim()||(sv.titulo||'').trim())return false;
-  if(osEstatuto(sv)!=='Normal'||osVenda(sv))return false;   // B46: estatuto ou venda também são «escrever»
+  if(sv.vendaOn)return false;   // B68: ligar o interruptor da venda também é «escrever», mesmo sem cachet nenhum ainda
   return !((sv.linhas)||[]).some(function(l){return l.tecNome||(l.servico||'').trim()||(l.recibo||'').trim()||(+l.valor||0);});
 }
 function osGuardar(){
@@ -18223,8 +18226,6 @@ function osNovoPintar(){
   if(t)t.value=(sv&&sv.titulo)||'';
   var hint=document.getElementById('os-novo-est-hint');
   if(hint)hint.textContent=osEstHintTexto(sv);
-  var vv=document.getElementById('os-novo-venda');
-  if(vv)vv.value=osVenda(sv)?osVenda(sv):'';
   var tt=document.getElementById('os-novo-tt');
   if(tt)tt.textContent=(sv&&!osServicoVazio(sv))?'Serviço por guardar':'Novo serviço';
   osNovoPintarVenda();
@@ -18247,19 +18248,13 @@ function osMarkupEstimado(sv){
   return {pct:pct,val:v*pct/100};
 }
 // Interruptor "Custo SUD <-> Venda", ao servico inteiro (nunca por linha de
-// tecnico — confirmado pelo Mike). Desligar nao apaga o Valor de venda ja
-// escrito; so deixa de mostrar o markup estimado. Ligar, com o Valor de venda
-// ainda vazio, sugere o total de custo dos tecnicos — mas o campo continua
-// editavel a mao, como sempre (o Mike: "mesmo o valor da venda pode ser
-// preenchido manualmente").
+// tecnico — confirmado pelo Mike). B68 (2026-10-27, correccao pedida pelo
+// Mike): ja nao ha Valor de venda escrito a mao nenhum. Ligado, a venda E
+// SEMPRE o total dos cachets dos tecnicos (osValorServico), recalculada a
+// cada cachet; desligado, a venda e zero. Nada para sugerir, nada para escrever.
 function osVendaToggle(){
   var sv=OUTROS_SERVICOS[0];if(!sv)return;
-  var ligar=!sv.vendaOn;
-  osNovoCampo('vendaOn',ligar);
-  if(ligar&&!osVenda(sv)){
-    var sugestao=osValorServico(sv);
-    if(sugestao)osNovoCampo('venda',sugestao);
-  }
+  osNovoCampo('vendaOn',!sv.vendaOn);
   osNovoPintar();
 }
 function osNovoPintarVenda(){
@@ -18269,13 +18264,15 @@ function osNovoPintarVenda(){
   var sub=document.getElementById('os-cv-sub');
   var bloco=document.getElementById('os-cv-mk-bloco');
   var mk=document.getElementById('os-cv-markup');
+  var vv=document.getElementById('os-cv-venda');
   var on=!!(sv&&sv.vendaOn);
   if(btn)btn.classList.toggle('on',on);
   if(sw)sw.classList.toggle('on',on);
   if(sub)sub.textContent=on
-    ?'Marcado como venda — o valor de venda continua a escrever-se à mão.'
+    ?'Marcado como venda — o valor de venda é sempre o total dos cachets dos técnicos.'
     :'Por omissão: só custo SUD, como sempre.';
   if(bloco)bloco.style.display=on?'block':'none';
+  if(on&&vv)vv.value=fmtEur(osVenda(sv));
   if(on&&mk){
     var m=osMarkupEstimado(sv);
     mk.value=m.val?fmtEur(m.val)+' ('+m.pct+'%)':'—';
@@ -18297,7 +18294,6 @@ function osNovoCampo(campo,val){
     var hint=document.getElementById('os-novo-est-hint');
     if(hint)hint.textContent=osEstHintTexto(sv);
   }
-  if(campo==='venda')osNovoPintarVenda();
 }
 function osNovoAddLinha(){
   var sv=OUTROS_SERVICOS[0];if(!sv)return;
@@ -18403,7 +18399,11 @@ function osHistAbrir(i){
     // baixo confirma qual, sem ires ao Outros confirmar.
     h+='<div class="os-det-l"><span class="k">Grupo</span><span class="v"><input id="os-det-grupo" list="os-grupos-dl" value="'+psEsc(sv.grupo||'')+'" onchange="osHistCampo(\'grupo\',this.value)" style="background:var(--navy3);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:4px 8px;font-size:12px;"></span></div>';
     h+='<div class="os-det-l"><span class="k"></span><span class="v" id="os-det-est-hint" style="font-weight:400;color:var(--td);font-size:11px;">'+psEsc(osEstHintTexto(sv))+'</span></div>';
-    h+='<div class="os-det-l"><span class="k">Valor de venda (s/ IVA)</span><span class="v"><input id="os-det-venda" type="number" step="0.01" min="0" placeholder="0,00" value="'+(osVenda(sv)||'')+'" onchange="osHistCampo(\'venda\',parseFloat(this.value)||0)" style="background:var(--navy3);color:var(--tp);border:1px solid var(--bl);border-radius:5px;padding:4px 8px;font-size:12px;width:110px;text-align:right;"></span></div>';
+    if(sv.vendaOn){
+      var mkHist=osMarkupEstimado(sv);
+      h+='<div class="os-det-l"><span class="k">Valor de venda (automática)</span><span class="v">'+fmtEur(osVenda(sv))+'</span></div>';
+      h+='<div class="os-det-l"><span class="k">Markup (estimativa)<span class="est">est.</span></span><span class="v">'+(mkHist.val?fmtEur(mkHist.val)+' ('+mkHist.pct+'%)':'—')+'</span></div>';
+    }
     h+='<table class="os-det-tb" style="margin-top:16px;"><thead><tr><th>Data</th><th>Técnico</th><th>Recibo</th><th>Serviço</th><th>€</th></tr></thead><tbody>';
     if(!linhas.length){
       h+='<tr><td colspan="5" style="color:var(--td);font-style:italic;">Sem barras.</td></tr>';
@@ -18424,7 +18424,7 @@ function osHistAbrir(i){
 }
 function osHistCampo(campo,val){
   var sv=osHistAberto();if(!sv)return;
-  if(campo!=='grupo'&&campo!=='venda')return;
+  if(campo!=='grupo')return;
   // B62: um serviço já formalizado também não pode ficar sem Grupo — o
   // mesmo bloqueio de osGuardar(), aqui para quando se edita depois de
   // guardado (B53). Repõe o valor que lá estava, não grava a limpeza.
@@ -18433,7 +18433,7 @@ function osHistCampo(campo,val){
     var _gi=document.getElementById('os-det-grupo'); if(_gi)_gi.value=sv.grupo||'';
     return;
   }
-  sv[campo]=(campo==='grupo')?(val||''):(+val||0);
+  sv.grupo=val||'';
   osGuardarAuto();
   if(typeof osRenderHist==='function'){try{osRenderHist();}catch(e){}}
   // B57: o aviso por baixo do Grupo mostra sempre o bloco do Outros em que o
