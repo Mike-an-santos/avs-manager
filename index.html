@@ -11207,6 +11207,21 @@ function orcFornecedoresEnvolvidos(o){
 }
 function orcFornecedor(o){
   // A fonte da verdade e o nome registado na sub-aba Fornecedores (DB_FORN).
+  /* B70 (2026-10-27, pedido do Mike): ate aqui o fornecedor de um orcamento so
+     "existia" de duas formas indirectas — pelo artigo de uma linha (desc a bater
+     certo com o preçario de uma ficha) ou por uma marca "Fornecedor: X" nas
+     notas, deixada pela importacao de Excel. Um orcamento criado de raiz na
+     app, sem nenhuma linha ainda escolhida, nao tinha fornecedor nenhum — nem
+     para escolher a mao antes de haver itens, nem para aparecer na lista.
+     Primeiro criterio agora: o.fornId, escolhido no cabecalho do editor
+     (orcSelectFornCabecalho) — existe desde o primeiro instante do orcamento,
+     mesmo sem uma unica linha, e o nome vem sempre de fornNomePorId (REGRA H:
+     nunca escrito a mao). As notas continuam a servir de compatibilidade para
+     orcamentos antigos/importados que nunca tiveram este campo. */
+  if(o&&o.fornId!=null&&o.fornId!==''){
+    var nomeCab=fornNomePorId(o.fornId);
+    if(nomeCab)return nomeCab;
+  }
   // As notas do orcamento guardam o texto que veio do cabecalho do Excel, que
   // pode trazer acentos a menos, maiusculas ou um "Lda." — serve para ENCONTRAR
   // a ficha, nunca para dar o nome. Sem ficha correspondente, fica o texto cru.
@@ -11373,7 +11388,7 @@ function oc_rOrcList(){
 }
 
 function oc_novoOrc(){
-  const o={id:nid++,num:orcNum(),data:localDate(new Date()),cliente:'',evId:null,responsavel:'',espaco:'',dataEvento:'',evento:'',notas:'',estado:'Em aberto',estatuto:'Normal',markup:0,custo:0,linhas:[],total:0};
+  const o={id:nid++,num:orcNum(),data:localDate(new Date()),cliente:'',evId:null,responsavel:'',espaco:'',dataEvento:'',evento:'',notas:'',estado:'Em aberto',estatuto:'Normal',markup:0,custo:0,linhas:[],total:0,fornId:null};
   DB_ORC.push(o);orcSel=o;
   abrirEditor(o.id);
 }
@@ -11625,11 +11640,15 @@ function renderEditor(){
       <div class="oe-zt">Quem e quando</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px 18px;">
         <div><label class="oe-lbl">Fornecedor</label>
-          <!-- Calculado, nunca escrito à mão — o mesmo fornEnv que já aparece
-               em baixo, em "Gestão interna" (orcFornecedoresEnvolvidos). Vem
-               também aqui ao cimo, a pedido do Mike (2026-09-28): antes só se
-               via depois de descer o ecrã todo. -->
-          <div class="oe-f" style="color:${fornEnv.length?'var(--gnf)':'var(--td)'};overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${fornEnv.length?_esc(fornEnv.join(' · ')):''}">${fornEnv.length?_esc(fornEnv.join(' · ')):'—'}</div>
+          <!-- B70 (2026-10-27, pedido do Mike): até aqui este campo era só
+               CALCULADO — o mesmo fornEnv que aparece em baixo, em "Gestão
+               interna" (orcFornecedoresEnvolvidos) — e só existia depois de
+               haver uma linha cuja descrição batesse certo com o preçário de
+               uma ficha. Passa a ser um seletor como o de cada linha: o Mike
+               escolhe o fornecedor do orçamento logo à partida, sem precisar
+               de introduzir nenhum item primeiro, e o nome continua a vir
+               sempre da ficha (REGRA H) — nunca escrito à mão. -->
+          ${orcSelectFornCabecalho()}
         </div>
         <div><label class="oe-lbl">Evento</label>
           <div id="oe-evento" class="oe-f" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;" onclick="orcEvPicker()" title="Associar a um evento do calendário">
@@ -11827,6 +11846,55 @@ function orcDefinirForn(i,val){
   else{var n=parseInt(val,10);orcSel.linhas[i].fornId=isNaN(n)?val:n;}
   orcSel.linhas[i]._fornManual=true;      // escolhido a mao: o automatico nao mexe
   renderLinhas();updateTotals();orcGravar();
+}
+/* O seletor de fornecedor do ORCAMENTO (B70, 2026-10-27, pedido do Mike).
+   Mesmas opcoes do seletor de cada linha (orcSelectForn) — fichas de DB_FORN +
+   SUD + "por atribuir" — e o mesmo principio da REGRA H: o nome vem sempre da
+   ficha, nunca escrito a mao. Existe para se poder escolher o fornecedor logo
+   a partida, sem nenhuma linha ainda introduzida.
+   O nome da funcao que trata o onchange (orcDefinirFornCabecalho) comeca de
+   proposito por "orcDefinirForn" — o CSS do modo diretor ja bloqueia
+   select[onchange*="orcDefinirForn"], e esta substring apanha os dois
+   seletores (o de cada linha e o do cabecalho) sem precisar de um segundo
+   bloqueio escrito a mao. */
+function orcSelectFornCabecalho(){
+  var val=(orcSel&&orcSel.fornId!=null&&orcSel.fornId!=='')?String(orcSel.fornId):'';
+  var fichas=(typeof DB_FORN!=='undefined'?DB_FORN:[]).slice()
+    .sort(function(a,b){return (a.nome||'').localeCompare(b.nome||'');});
+  var h='<select id="oe-forn-cab" class="oe-f oe-forn'+(val?'':' oe-forn-vazio')+'" title="Fornecedor deste orçamento — escolhe-se aqui, mesmo antes de haver linhas"'
+      +' onchange="orcDefinirFornCabecalho(this.value)">';
+  h+='<option value=""'+(val?'':' selected')+'>— por atribuir —</option>';
+  h+='<option value="'+FORN_SUD+'"'+(val===FORN_SUD?' selected':'')+'>SUD</option>';
+  fichas.forEach(function(f){
+    h+='<option value="'+_escA(String(f.id))+'"'+(val===String(f.id)?' selected':'')+'>'+_esc(f.nome||'—')+'</option>';
+  });
+  if(val&&val!==FORN_SUD&&!fichas.some(function(f){return String(f.id)===val;})){
+    h+='<option value="'+_escA(val)+'" selected>(ficha apagada)</option>';
+  }
+  return h+'</select>';
+}
+/* Escolher o fornecedor do orcamento preenche tambem, de propósito, as linhas
+   que ainda nao tem um — desde que ninguem as tenha tocado a mao (_fornManual).
+   E a mesma ideia do addLinha (que nasce ja atribuida ao fornecedor do
+   cabecalho): uma vez escolhido, o Mike pode escrever um valor avulso numa
+   linha (desc e preco livres, sem vir do preçário de ninguem) sem ter de
+   repetir a escolha do fornecedor linha a linha. Uma linha onde o Mike tenha
+   escolhido "— por atribuir —" a proposito (_fornManual=true) fica como esta —
+   nao se lhe pisa a decisao. */
+function orcDefinirFornCabecalho(val){
+  if(!orcSel)return;
+  if(!val){delete orcSel.fornId;}
+  else if(val===FORN_SUD){orcSel.fornId=FORN_SUD;}
+  else{var n=parseInt(val,10);orcSel.fornId=isNaN(n)?val:n;}
+  (orcSel.linhas||[]).forEach(function(l){
+    if(l&&!l._fornManual&&(l.fornId===undefined||l.fornId===null||l.fornId==='')&&orcSel.fornId!=null&&orcSel.fornId!==''){
+      l.fornId=orcSel.fornId;
+    }
+  });
+  if(typeof renderLinhas==='function')renderLinhas();
+  updateTotals();
+  if(typeof oc_rOrcList==='function')oc_rOrcList();
+  orcGravar();
 }
 function renderLinhas(){
   var el=document.getElementById('oe-tbody');if(!el)return;
@@ -12152,7 +12220,15 @@ function updateAnalise(){
 }
 
 function addLinha(){
-  orcSel.linhas.push({desc:'',qty:1,preco:0,isCusto:false});
+  var l={desc:'',qty:1,preco:0,isCusto:false};
+  /* B70 (2026-10-27, pedido do Mike): se o orcamento ja tem um fornecedor
+     escolhido no cabecalho (orcSelectFornCabecalho), a linha nova nasce logo
+     atribuida a ele — nao se obriga a repetir a escolha so porque o artigo
+     nao veio do preçario dele. O Mike continua a poder trocar por linha, como
+     sempre (orcSelectForn/orcDefinirForn, que marca _fornManual e deixa essa
+     linha de seguir o cabecalho). */
+  if(orcSel&&orcSel.fornId!=null&&orcSel.fornId!=='')l.fornId=orcSel.fornId;
+  orcSel.linhas.push(l);
   renderLinhas();orcGravar();
 }
 
@@ -14996,12 +15072,21 @@ function vvAbrirOrcamento(id){
       var cor=daCasa?'var(--blf)':'var(--amf)';
       var chip=daCasa?'Venda directa · sem markup':'Leva markup · '+c.mk+'%';
       var mkLinha=daCasa?0:Math.round(val*c.mk)/100;
+      /* B69 (2026-10-27, pedido do Mike): esta tabela distinguia "venda directa
+         da SUD" de "leva markup, de outro fornecedor" — mas nunca dizia QUAL.
+         Uma linha facturável com fornecedor identificado (ex.: a Audiomatrix)
+         ficava sem nome nenhum à vista aqui, mesmo já tendo fornId correcto —
+         só a tabela de Custo SUD, mais abaixo, mostrava o nome do fornecedor.
+         Mesma fonte (fornNomePorId), mesma coluna que a tabela de Custo SUD já
+         usa — nunca uma segunda maneira de ir buscar o nome. */
+      var nf=(typeof fornNomePorId==='function')?fornNomePorId(l.fornId):null;
       return '<tr><td><span class="ce-dot" style="background:'+cor+';margin-right:8px;"></span>'+_esc(l.desc||'—')+'</td>'
         +'<td><span class="ce-chip w-auto" style="color:'+cor+';">'+chip+'</span></td>'
+        +'<td style="color:var(--ts);">'+_esc(nf||'—')+'</td>'
         +'<td class="ar cor-c" style="font-family:var(--mono);font-weight:700;">'+fmtEur(val)+'</td>'
         +'<td class="ar" style="font-family:var(--mono);color:'+(daCasa?'var(--td)':'var(--amf)')+';">'+(daCasa?'—':fmtEur(mkLinha))+'</td></tr>';
     }).join('');
-    linhasWrap.innerHTML='<table><thead><tr><th>Descrição</th><th>Tratamento</th><th class="ar cor-c">Valor</th><th class="ar" style="color:var(--amf);">Markup</th></tr></thead><tbody>'+linhasHtml+'</tbody></table>';
+    linhasWrap.innerHTML='<table><thead><tr><th>Descrição</th><th>Tratamento</th><th>Fornecedor</th><th class="ar cor-c">Valor</th><th class="ar" style="color:var(--amf);">Markup</th></tr></thead><tbody>'+linhasHtml+'</tbody></table>';
   }
 
   var entries=(o.custoEntries&&o.custoEntries.length)?o.custoEntries:((typeof orcCustoEntries==='function')?orcCustoEntries(o):[]);
