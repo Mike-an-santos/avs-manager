@@ -9674,22 +9674,39 @@ function psRenderHist(){
   /* A SEMANA NO TÍTULO DO HISTÓRICO (2026-09-22, pedido do Mike).
      REGRA O — uma tabela derivada nunca se guarda: o número da semana NÃO é um
      campo novo no objecto do histórico, é calculado aqui, a partir do `h.de`
-     que já lá estava. Guardá-lo à parte seria uma segunda fonte da mesma
-     verdade, e desalinhava-se sozinho se o `semanaISO()` alguma vez mudasse.
-     Usa-se sempre o «De»: na prática o Mike faz o plano de segunda a sexta, e
-     essas cinco datas vivem todas na MESMA semana ISO (semana = segunda a
-     domingo) — não há aqui o caso de fronteira de virada de ano que a leitura
-     semanal dos Mapas teve de tratar (REGRA U), porque não se está a somar
-     nada por ano, só a rotular um período que o Mike já escolhe a semana
-     inteira. Um plano gravado com um período fora do costume (por exemplo, a
-     medir só quarta a sexta) continua a mostrar a semana do dia «De» — é a
-     leitura mais correcta mesmo nesse caso, porque quarta a sexta ainda cai
-     toda na mesma semana ISO. */
-  var psSemanaLabel=function(de){
+     (e, desde a B71, também do `h.ate`) que já lá estavam. Guardá-lo à parte
+     seria uma segunda fonte da mesma verdade, e desalinhava-se sozinho se o
+     `semanaISO()` alguma vez mudasse. Na prática o Mike faz o plano de
+     segunda a sexta, e essas cinco datas vivem todas na MESMA semana ISO
+     (semana = segunda a domingo) — e desde a B45 todo o plano NOVO é sempre
+     obrigatoriamente uma semana ISO inteira (editar «De» ou «Até» já o
+     força a isso), por isso esta função só vê um período maior do que uma
+     semana em planos gravados ANTES da B45.
+
+     B71 (2026-11-09, pedido do Mike): um plano desses mais antigos, com um
+     período maior do que uma semana (por exemplo, um mês inteiro), mostrava
+     só "Semana 23" — a semana do dia «De» — o que lia mal, como se o plano
+     fosse só essa semana. Passa a mostrar o INTERVALO de semanas que o
+     período realmente cobre: "Semanas 23–26" quando «De» e «Até» caem no
+     mesmo ano ISO, ou "Semana 52/2026 – Semana 1/2027" quando atravessam a
+     virada do ano (aqui sim há o caso de fronteira que a leitura semanal
+     dos Mapas teve de tratar, REGRA U — por isso o ano aparece em cada
+     lado, sem ambiguidade). Quando as duas datas caem na mesma semana ISO
+     (o caso normal, de B45 em diante, e também um período curto dentro da
+     mesma semana, como quarta a sexta), continua a mostrar só "Semana N",
+     como sempre mostrou. */
+  var psSemanaLabel=function(de,ate){
     if(!de) return '';
     try{
-      var s=semanaISO(de);
-      if(s&&s.semana) return '<span style="color:var(--gnf);">Semana '+s.semana+'</span> · ';
+      var s1=semanaISO(de);
+      if(!s1||!s1.semana) return '';
+      var s2=ate?semanaISO(ate):s1;
+      if(!s2||!s2.semana) s2=s1;
+      var txt;
+      if(s2.ano===s1.ano&&s2.semana===s1.semana) txt='Semana '+s1.semana;
+      else if(s2.ano===s1.ano) txt='Semanas '+s1.semana+'–'+s2.semana;
+      else txt='Semana '+s1.semana+'/'+s1.ano+' – Semana '+s2.semana+'/'+s2.ano;
+      return '<span style="color:var(--gnf);">'+txt+'</span> · ';
     }catch(e){}
     return '';
   };
@@ -9706,7 +9723,7 @@ function psRenderHist(){
   el.innerHTML=lista.map(function(h){
     var head='<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;" onclick="psHistToggle('+h.id+')">'
       +'<div style="flex:1;">'
-        +'<div style="font-size:13px;font-weight:700;color:var(--tp);">'+psSemanaLabel(h.de)+'Plano '+fmtPT(h.de)+' — '+fmtPT(h.ate)+'</div>'
+        +'<div style="font-size:13px;font-weight:700;color:var(--tp);">'+psSemanaLabel(h.de,h.ate)+'Plano '+fmtPT(h.de)+' — '+fmtPT(h.ate)+'</div>'
         +'<div style="font-size:10px;color:var(--td);font-family:var(--mono);margin-top:3px;">Guardado '+h.criado+' · '+h.rows.length+' alínea(s)</div>'
       +'</div>'
       +'<span style="font-size:11px;color:var(--ts);font-family:var(--mono);">'+(h.aberto?'&#9650;':'&#9660;')+'</span>'
