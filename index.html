@@ -2317,6 +2317,65 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .iva-panel>div:last-of-type>.btn-cu{min-width:104px;justify-content:center;}
 
 /* @painel-config fim */
+
+/* ===== DASHBOARD (B72, 2026-11-18) — sem contornos, blocos fundidos com o fundo
+   (fusão 10 = branco a 1%). Tudo com âmbito #page-dashboard: nenhuma outra aba
+   muda um pixel. As cores de cada cartão continuam as de sempre. ===== */
+#page-dashboard .dsh-topo{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+#page-dashboard .dsh-notas{display:flex;align-items:center;gap:7px;padding:8px 14px;border:none;border-radius:10px;background:rgba(212,144,42,.12);color:var(--amf);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
+#page-dashboard .dsh-notas:hover{background:rgba(212,144,42,.2);}
+#page-dashboard .dsh-per{display:inline-flex;background:rgba(255,255,255,.035);border-radius:10px;padding:4px;gap:2px;}
+#page-dashboard .dsh-per button{background:none;border:none;color:var(--ts);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 11px;border-radius:7px;cursor:pointer;}
+#page-dashboard .dsh-per button:hover{color:var(--tp);}
+#page-dashboard .dsh-per button.on{background:rgba(91,163,217,.18);color:var(--tp);}
+#page-dashboard .dsh-cartoes{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px;}
+@media(max-width:1100px){#page-dashboard .dsh-cartoes{grid-template-columns:repeat(2,minmax(0,1fr));}}
+#page-dashboard .mtc{border:none;border-radius:16px;padding:20px 22px 16px;background:linear-gradient(160deg,var(--wash),transparent 55%),rgba(255,255,255,.010);}
+#page-dashboard .mtc::after{display:none;}
+#page-dashboard .mtc-mv{font-size:40px;letter-spacing:-.02em;}
+#page-dashboard .mtc-u{font-size:13px;color:var(--ts);font-weight:600;letter-spacing:0;}
+#page-dashboard .mtc-dl{padding:2px 8px;border-radius:10px;}
+#page-dashboard .mtc-dl.sobe{background:rgba(82,196,122,.12);}
+#page-dashboard .mtc-dl.desce{background:rgba(217,96,96,.12);}
+#page-dashboard .mtc-med-t{height:8px;border-radius:4px;background:rgba(255,255,255,.06);}
+#page-dashboard .card{border:none;border-radius:16px;padding:22px 24px;background:rgba(255,255,255,.010);}
+#page-dashboard .ct{display:flex;align-items:center;}
+#page-dashboard .dsh-mais{margin-left:auto;background:none;border:none;color:var(--ts);cursor:pointer;font-size:18px;line-height:1;padding:0 2px;font-family:var(--font);}
+#page-dashboard .dsh-mais:hover{color:var(--amf);}
+#page-dashboard .dsh-vazio{font-size:13px;color:var(--td);padding:8px 0;}
+#page-dashboard .dsh-px{display:flex;gap:12px;padding:10px;margin:0 -10px;border-radius:10px;align-items:center;}
+#page-dashboard .dsh-px:hover{background:rgba(255,255,255,.035);}
+#page-dashboard .dsh-pd{text-align:center;min-width:56px;flex:none;}
+#page-dashboard .dsh-pn{font-size:22px;font-weight:700;color:var(--cl);font-family:var(--mono);line-height:1;}
+#page-dashboard .dsh-pm{font-size:10px;color:var(--ts);text-transform:uppercase;font-weight:700;margin-top:2px;}
+#page-dashboard .dsh-hoje{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--navy);background:var(--amf);border-radius:6px;padding:3px 6px;display:inline-block;}
+#page-dashboard .dsh-amanha{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--amf);background:rgba(212,144,42,.15);border-radius:6px;padding:3px 5px;display:inline-block;}
+#page-dashboard .dsh-sd{font-size:10px;color:var(--td);font-family:var(--mono);margin-top:3px;text-transform:uppercase;}
+#page-dashboard .dsh-pt{font-size:14px;font-weight:700;color:var(--tp);}
+#page-dashboard .dsh-ps{font-size:12px;color:var(--ts);margin-top:2px;}
+#page-dashboard .dsh-ps b{color:var(--cl);font-weight:600;}
+#page-dashboard .dsh-dec{font-size:10.5px;font-weight:700;font-family:var(--mono);color:var(--gnf);background:rgba(82,196,122,.12);border-radius:10px;padding:1px 8px;margin-left:6px;white-space:nowrap;}
+#page-dashboard .dsh-prov{font-size:10.5px;font-weight:700;font-family:var(--mono);color:var(--amf);background:rgba(212,144,42,.12);border-radius:10px;padding:1px 8px;margin-left:6px;white-space:nowrap;}
+#page-dashboard .dsh-sec{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ts);margin:4px 0 6px;}
+#page-dashboard .dsh-sec.ag{margin-top:16px;}
+#page-dashboard .dsh-n{font-size:10px;color:var(--navy);background:var(--amf);border-radius:9px;padding:0 7px;letter-spacing:0;}
+#page-dashboard .dsh-grp{font-size:10.5px;color:var(--td);font-family:var(--mono);margin:8px 0 2px;}
+#page-dashboard .dsh-al{display:flex;align-items:center;gap:11px;padding:9px 10px;margin:0 -10px;border-radius:10px;cursor:pointer;}
+#page-dashboard .dsh-al:hover{background:rgba(255,255,255,.035);}
+#page-dashboard .dsh-al.urg{background:rgba(217,96,96,.10);}
+#page-dashboard .dsh-al.urg:hover{background:rgba(217,96,96,.16);}
+#page-dashboard .dsh-ap{width:8px;height:8px;border-radius:50%;flex:none;}
+#page-dashboard .dsh-ac{flex:1;min-width:0;}
+#page-dashboard .dsh-at{font-size:13px;font-weight:600;color:var(--tp);}
+#page-dashboard .dsh-as{font-size:11px;color:var(--td);margin-top:2px;font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#page-dashboard .dsh-tag{font-size:9.5px;font-weight:700;font-family:var(--mono);border-radius:9px;padding:1px 7px;margin-left:6px;vertical-align:1px;}
+#page-dashboard .dsh-tag.urg{color:#fff;background:var(--rdf);}
+#page-dashboard .dsh-tag.sino{color:var(--cl);background:rgba(212,149,110,.15);}
+#page-dashboard .dsh-ir{flex:none;font-size:11px;font-weight:700;font-family:var(--mono);color:var(--blf);background:rgba(91,163,217,.12);border-radius:12px;padding:3px 10px;white-space:nowrap;}
+.mci-urg{display:flex;align-items:center;gap:8px;margin:2px 0 4px;font-size:12px;color:var(--tp);cursor:pointer;}
+.mci-urg input{accent-color:var(--rdf);width:15px;height:15px;margin:0;}
+.mci-urg b{color:var(--rdf);}
+.mci-urg span{color:var(--td);font-size:11px;}
 </style>
 </head>
 <body>
@@ -2432,24 +2491,18 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 
     <!-- DASHBOARD -->
     <div class="page on" id="page-dashboard">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-        <div class="st">Dashboard</div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          
-          <button onclick="gp('notas')" title="Notas" style="display:flex;align-items:center;gap:7px;padding:6px 13px;background:var(--navy3);border:2px solid var(--amf);border-radius:6px;color:var(--amf);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><polyline points="15 3 15 9 21 9"/></svg>Notas</button>
-          <select id="dash-period" onchange="rDash()" style="padding:6px 12px;background:var(--navy3);border:2px solid var(--bl);border-radius:6px;color:var(--tp);font-size:12px;font-weight:600;outline:none;font-family:var(--font);">
-            <option value="mes">Mês actual</option>
-            <option value="sem1">1.º semestre</option>
-            <option value="sem2">2.º semestre</option>
-            <option value="ano">Ano todo</option>
-          </select>
+      <!-- B72 (2026-11-18): sem o título «Dashboard» (a aba já o diz); período em
+           botões, com a «Semana» ISO; «Lembretes» passou a «Alertas». -->
+      <div class="dsh-topo">
+        <button class="dsh-notas" onclick="gp('notas')" title="Bloco de notas"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15.5 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3z"/><polyline points="15 3 15 9 21 9"/></svg>Bloco de notas</button>
+        <div class="dsh-per" id="dash-per">
+          <button data-p="semana" onclick="dashPeriodo('semana')">Semana</button><button data-p="mes" onclick="dashPeriodo('mes')">Mês</button><button data-p="sem1" onclick="dashPeriodo('sem1')">1.º sem</button><button data-p="sem2" onclick="dashPeriodo('sem2')">2.º sem</button><button data-p="ano" onclick="dashPeriodo('ano')">Ano</button>
         </div>
       </div>
-      <div id="dash-notif"></div>
-      <div class="metrics" id="dash-m"></div>
+      <div class="metrics dsh-cartoes" id="dash-m"></div>
       <div class="g2">
-        <div class="card"><div class="ct">Próximos eventos <div class="ctl"></div></div><div id="dash-ev"></div></div>
-        <div class="card"><div class="ct">Lembretes <div class="ctl"></div><button onclick="dashNovoLembrete()" title="Novo lembrete" style="background:none;border:none;color:var(--ts);cursor:pointer;font-size:18px;line-height:1;padding:0 2px;font-family:var(--font);transition:.15s;" onmouseover="this.style.color='var(--amf)';" onmouseout="this.style.color='var(--ts)';">+</button></div><div id="dash-lem"></div></div>
+        <div class="card"><div class="ct">Próximos eventos</div><div id="dash-ev"></div></div>
+        <div class="card"><div class="ct">Alertas<button class="dsh-mais" onclick="dashNovoLembrete()" title="Nova reunião, nota ou lembrete">+</button></div><div id="dash-lem"></div></div>
       </div>
     </div>
 
@@ -3358,6 +3411,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
     <div class="fi"><label>Título *</label><input id="mci-ti" placeholder="Nome"></div>
     <div class="fr2" id="mci-datahora"><div class="fi"><label>Data</label><input type="date" id="mci-d"></div><div class="fi"><label>Hora</label><select id="mci-h" class="tsel"><option value="">—</option></select></div></div>
     <div class="fi"><label>Descrição</label><textarea id="mci-de" placeholder="Detalhes…"></textarea></div>
+    <label class="mci-urg" id="mci-urg-wrap"><input type="checkbox" id="mci-urg"> <b>Urgente</b> <span>— aparece em vermelho, no topo dos Alertas do Dashboard</span></label>
     <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
     <div style="font-size:10px;color:var(--ts);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono);font-weight:600;margin-bottom:10px;">Notificação</div>
     <div class="fr2">
@@ -4607,8 +4661,9 @@ function logout(){_modoDiretor=false;if(_renovTimer){clearInterval(_renovTimer);
 function startNotifCheck(){clearInterval(window._notifInt);window._notifInt=setInterval(checkNotifs,30000);checkNotifs();}
 function checkNotifs(){
   const now=new Date();
-  const nowStr=now.toISOString().slice(0,16); // YYYY-MM-DDTHH:MM
   const hojeStr=localDate(now); // dia local — p/ notificações só com dia (sem hora)
+  /* B72: a hora LOCAL. Era toISOString() (UTC) — no verão o aviso chegava uma hora tarde. */
+  const nowStr=hojeStr+'T'+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   let mudou=false;
   manI.forEach(m=>{
     if(!m.notifData||m._notifFired)return;
@@ -4622,7 +4677,8 @@ function checkNotifs(){
   /* Isto corre de 30 em 30 segundos e redesenhava o Dashboard SEMPRE — cerca de
      2900 desenhos por dia para mostrar o mesmo. So se redesenha quando alguma
      notificacao mudou mesmo de estado. (2026-09-11) */
-  if(mudou)rDash();
+  /* B72: e também quando o dia muda, com a app aberta de um dia para o outro. */
+  if(mudou||(_dashDia&&hojeStr!==_dashDia))rDash();
 }
 
 function buildTimeOptions(selId,val){
@@ -4847,7 +4903,14 @@ function dashConta(lista, oQue, de, ate){
 }
 
 /* O período anterior equivalente, para o "subiu ou desceu". */
-function dashAnterior(per,y,m){
+function dashAnterior(per,y,m,hoje){
+  /* B72: a «Semana» compara com a semana ISO anterior (REGRA U) — que perto da
+     virada do ano pode ser a 53 do ano anterior. */
+  if(per==='semana'){
+    var _j=dashJanela('semana',hoje||new Date()), _a=new Date(_j.de); _a.setDate(_a.getDate()-7);
+    var _s=semanaISO(localDate(_a)), _iv=semanaParaIntervalo(_s.ano,_s.semana);
+    return {de:parseLocalDate(_iv.de), ate:parseLocalDate(_iv.ate), nome:'semana '+_s.semana+(_s.ano!==_j.ano?' de '+_s.ano:'')};
+  }
   if(per==='mes'){ var a=new Date(y,m-1,1); return {de:new Date(a.getFullYear(),a.getMonth(),1),
     ate:new Date(a.getFullYear(),a.getMonth()+1,0), nome:MES[a.getMonth()].toLowerCase()+(a.getFullYear()!==y?' '+a.getFullYear():'')}; }
   if(per==='sem1') return {de:new Date(y-1,6,1), ate:new Date(y-1,11,31), nome:'2.º sem. '+(y-1)};
@@ -4937,129 +5000,225 @@ function dashDelta(agora, antes){
   if(!d) return {cls:'igual', txt:'— igual'};
   return d>0 ? {cls:'sobe', txt:'▲ +'+d} : {cls:'desce', txt:'▼ −'+Math.abs(d)};
 }
-function dashCartoes(per,y,m,hoje,nEv,nDia,prox){
+function dashCartoes(per,y,m,hoje,nEv,nDia){
+  /* B75 (2026-11-23): os quatro cartões seguem o período. Eventos e Diárias
+     (B72); Custo médio por diária e Venda directa SUD substituem «Esta semana»
+     e as diárias do ano, que repetiam os dois primeiros (pedido do Mike). */
   var el=document.getElementById('dash-m'); if(!el) return;
-  var janela={ mes:[new Date(y,m,1), new Date(y,m+1,0)],
-               sem1:[new Date(y,0,1), new Date(y,5,30)],
-               sem2:[new Date(y,6,1), new Date(y,11,31)],
-               ano:[new Date(y,0,1),  new Date(y,11,31)] }[per];
-  var ant=dashAnterior(per,y,m);
+  var ant=dashAnterior(per,y,m,hoje);
   var evAnt=dashConta(evs,'ev',ant.de,ant.ate), diAnt=dashConta(evs,'di',ant.de,ant.ate);
+  var js=dashJanela('semana',hoje), jan=dashJanela(per,hoje);
 
-  /* 12 meses até ao mês corrente — a forma do ano, sem eixos nem números */
-  var mesesEv=[], mesesDi=[];
+  /* A forma recente, sem eixos: 12 semanas ISO na «Semana», 12 meses nos outros. */
+  var serieEv=[], serieDi=[], serieCm=[], serieVd=[];
   for(var k=11;k>=0;k--){
-    var d1=new Date(y,m-k,1), d2=new Date(y,m-k+1,0);
-    mesesEv.push(dashConta(evs,'ev',d1,d2));
-    mesesDi.push(dashConta(evs,'di',d1,d2));
+    var d1, d2;
+    if(per==='semana'){ d1=new Date(js.de); d1.setDate(d1.getDate()-7*k); d2=new Date(d1); d2.setDate(d2.getDate()+6); }
+    else { d1=new Date(y,m-k,1); d2=new Date(y,m-k+1,0); }
+    serieEv.push(dashConta(evs,'ev',d1,d2));
+    serieDi.push(dashConta(evs,'di',d1,d2));
+    serieCm.push(dashCustoMedio(d1,d2).media);
+    serieVd.push(dashVendaDirecta(d1,d2));
   }
-  /* o cartão dos próximos 7 dias olha para a FRENTE: as próximas 8 semanas.
-     comparar uma janela futura com uma passada não queria dizer nada. */
-  var semanas=[];
-  for(var w=0;w<8;w++){
-    var s1=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()+w*7);
-    var s2=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()+w*7+6);
-    semanas.push(dashConta(evs,'di',s1,s2));
-  }
-  var d7a=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate());
-  var d7b=new Date(hoje.getFullYear(),hoje.getMonth(),hoje.getDate()+6);
-  var n7=dashConta(evs,'ev',d7a,d7b);
-  var fmtD=function(d){return d.getDate()+' '+MES[d.getMonth()].slice(0,3).toLowerCase();};
+  var cm=dashCustoMedio(jan.de,jan.ate), cmAnt=dashCustoMedio(ant.de,ant.ate);
+  var vd=dashVendaDirecta(jan.de,jan.ate), vdAnt=dashVendaDirecta(ant.de,ant.ate);
 
-  var tec=(DB&&Array.isArray(DB.tec))?DB.tec:[];
-  var comCachet=tec.filter(function(t){return t.cachet!==null&&t.cachet!==undefined&&t.cachet!=='';}).length;
-
-  var pl={mes:'este mês',sem1:'1.º semestre',sem2:'2.º semestre',ano:'este ano'}[per];
+  var pl={semana:'Semana '+js.semana,mes:'este mês',sem1:'1.º semestre',sem2:'2.º semestre',ano:'este ano'}[per];
   el.innerHTML=
     dashCartao({marca:'#bd7448',numero:'#d4956e',rgb:'189,116,72',icone:'cal',
       etiqueta:'Eventos<br>'+pl, valor:nEv, delta:dashDelta(nEv,evAnt),
-      sub:ant.nome+': '+evAnt, spark:dashSpark(mesesEv,'#bd7448','#d4956e')})
+      sub:ant.nome+': '+evAnt, spark:dashSpark(serieEv,'#bd7448','#d4956e')})
    +dashCartao({marca:'#4a90c8',numero:'#5ba3d9',rgb:'74,144,200',icone:'rel',
       etiqueta:'Diárias de evento<br>'+pl, valor:nDia, delta:dashDelta(nDia,diAnt),
-      sub:ant.nome+': '+diAnt, spark:dashSpark(mesesDi,'#4a90c8','#5ba3d9')})
-   +dashCartao({marca:'#c78420',numero:'#d4902a',rgb:'199,132,32',icone:'sino',
-      etiqueta:'Próximos<br>7 dias', valor:n7,
-      sub:fmtD(d7a)+' a '+fmtD(d7b), spark:dashSpark(semanas,'#c78420','#d4902a')})
-   +dashCartao({marca:'#3fae66',numero:'#52c47a',rgb:'63,174,102',icone:'gente',
-      etiqueta:'Equipa<br>técnica', valor:tec.length,
-      sub:'freelancers · '+comCachet+' com cachet próprio',
-      medidor: tec.length?Math.round(comCachet/tec.length*100):0});
+      sub:ant.nome+': '+diAnt, spark:dashSpark(serieDi,'#4a90c8','#5ba3d9')})
+   +dashCartao({marca:'#c78420',numero:'#d4902a',rgb:'199,132,32',icone:'alvo',
+      etiqueta:'Custo médio por diária<br>'+pl, valor:cm.diarias?dashEur(cm.media):'—',
+      delta:(cm.diarias&&cmAnt.diarias)?dashDeltaEur(cm.media,cmAnt.media,true):null,
+      sub:ant.nome+': '+(cmAnt.diarias?dashEur(cmAnt.media):'—'), spark:dashSpark(serieCm,'#c78420','#d4902a')})
+   +dashCartao({marca:'#3fae66',numero:'#52c47a',rgb:'63,174,102',icone:'euro',
+      etiqueta:'Venda directa SUD<br>'+pl, valor:dashEur(vd), delta:dashDeltaEur(vd,vdAnt,false),
+      sub:ant.nome+': '+dashEur(vdAnt), spark:dashSpark(serieVd,'#3fae66','#52c47a')});
 }
 
+/* ===== DASHBOARD — B72 (2026-11-18) =====
+   O período era um <select>; passou a botões, e ganhou a «Semana» (semana ISO
+   de hoje — REGRA U). A escolha vive só em memória. `_dashDia` lembra o dia do
+   último desenho, para o Dashboard mudar de dia sozinho (checkNotifs). */
+var DASH_PER='semana';
+var _dashDia='';
+function dashPeriodo(p){ DASH_PER=p; rDash(); }
+/* A janela de um período, em datas. A «Semana» usa as MESMAS funções dos Mapas
+   e do Plano de semana (semanaISO/semanaParaIntervalo) — nunca uma conta nova. */
+function dashJanela(per,hoje){
+  var y=hoje.getFullYear(), m=hoje.getMonth();
+  if(per==='semana'){
+    var s=semanaISO(localDate(hoje)),iv=semanaParaIntervalo(s.ano,s.semana);
+    return {de:parseLocalDate(iv.de), ate:parseLocalDate(iv.ate), semana:s.semana, ano:s.ano};
+  }
+  if(per==='sem1') return {de:new Date(y,0,1), ate:new Date(y,5,30)};
+  if(per==='sem2') return {de:new Date(y,6,1), ate:new Date(y,11,31)};
+  if(per==='ano')  return {de:new Date(y,0,1), ate:new Date(y,11,31)};
+  return {de:new Date(y,m,1), ate:new Date(y,m+1,0)};
+}
+/* ===== B75 (2026-11-23, pedido do Mike) — os cartões 3 e 4, só leitura =====
+   O custo médio por diária vem da CONTA ÚNICA (avsCompute, REGRA Y) com o
+   período dos botões; a venda directa SUD (REGRA R) soma os orçamentos que
+   entram no «ano» dos Mapas (orcEntraNoAno: regra F e estatuto), pela data do
+   EVENTO (orcDataEvento). Nada se guarda: recalcula-se a cada desenho (REGRA O). */
+function dashCustoMedio(de,ate){
+  var a=localDate(de), b=localDate(ate);
+  var r=avsCompute(parseInt(a.slice(0,4),10),{de:a,ate:b});
+  return {media:r.media, diarias:r.diarias};
+}
+function dashVendaDirecta(de,ate){
+  var a=localDate(de), b=localDate(ate), t=0;
+  (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
+    if(!orcEntraNoAno(o)) return;
+    var d=orcDataEvento(o); if(!d||d<a||d>b) return;
+    t+=orcVendaDirecta(o);
+  });
+  return t;
+}
+/* Euros redondos, com o ponto dos milhares (o pt-PT do browser não agrupa os
+   números de quatro algarismos). */
+function dashEur(v){
+  var n=Math.round(+v||0), t=String(Math.abs(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  return (n<0?'−':'')+'€'+t;
+}
+/* A comparação em euros. Num custo, descer é bom: a seta diz o sentido e a cor
+   diz se é bom (verde) ou mau (vermelho) — decisão do Mike, 2026-11-23. */
+function dashDeltaEur(agora,antes,custo){
+  var d=Math.round(+agora||0)-Math.round(+antes||0);
+  if(!d) return {cls:'igual', txt:'— igual'};
+  var sobe=d>0, bom=custo?!sobe:sobe;
+  return {cls:bom?'sobe':'desce', txt:(sobe?'▲ ':'▼ ')+dashEur(Math.abs(d))};
+}
 function rDash(){
-  const per=document.getElementById('dash-period').value;
+  const per=DASH_PER;
   const h=new Date();const y=h.getFullYear();const m=h.getMonth();
-  /* Este filtro estava escrito a mao e somava TODAS as diarias do evento ao mes
-     em que ele comecava. Passa pela regra unica, como os cartoes. */
-  const _jan={mes:[new Date(y,m,1),new Date(y,m+1,0)],
-              sem1:[new Date(y,0,1),new Date(y,5,30)],
-              sem2:[new Date(y,6,1),new Date(y,11,31)],
-              ano:[new Date(y,0,1),new Date(y,11,31)]}[per]||[new Date(y,0,1),new Date(y,11,31)];
-  const c=dashConta(evs,'ev',_jan[0],_jan[1]);
-  const diarias=dashConta(evs,'di',_jan[0],_jan[1]);
-  const prox=evs.filter(e=>e.dataISO&&parseLocalDate(e.dataISO)>=h&&!e.cancelado).sort((a,b)=>parseLocalDate(a.dataISO)-parseLocalDate(b.dataISO)).slice(0,5);
-  dashCartoes(per,y,m,h,c,diarias,prox);
-  /* Um congresso de tres dias aparecia aqui igualzinho a uma gala de um dia: mesma
-     linha, mesma data, nada a dizer que ocupa a equipa tres vezes mais. E um evento
-     de Fevereiro do ano que vem mostrava "14 Fev", sem ano. Esta lista e o que se
-     olha de manha — tem de dizer as duas coisas. (2026-09-03) */
-  const _anoAgora=h.getFullYear();
-  document.getElementById('dash-ev').innerHTML=prox.length?prox.map(function(e){
-    var d=parseLocalDate(e.dataISO)||new Date();
-    var nD=(typeof evDias==='function')?evDias(e).length:1;
-    var outroAno=d.getFullYear()!==_anoAgora;
-    return '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">'
-      +'<div style="text-align:center;min-width:44px;">'
-        +'<div style="font-size:20px;font-weight:700;color:var(--cl);font-family:var(--mono);line-height:1;">'+d.getDate()+'</div>'
-        +'<div style="font-size:10px;color:var(--ts);text-transform:uppercase;font-weight:700;">'+MES[d.getMonth()].slice(0,3)+'</div>'
-        +(outroAno?'<div style="font-size:9px;color:var(--td);font-family:var(--mono);margin-top:1px;">'+d.getFullYear()+'</div>':'')
-      +'</div>'
-      +'<div style="flex:1;">'
-        +'<div style="font-size:14px;font-weight:700;color:var(--tp);">'+e.cliente+'</div>'
-        +'<div style="font-size:12px;color:var(--ts);margin-top:2px;">'+e.piso+' &middot; '+e.tipo
-          +(nD>1?' &middot; <span style="color:var(--cl);font-weight:600;">'+nD+' diárias</span>':'')
-        +'</div>'
-      +'</div>'
-    +'</div>';
-  }).join(''):'<div style="font-size:13px;color:var(--td);padding:8px 0;">Sem eventos próximos.</div>';
-  /* As cores dos tipos viviam aqui numa segunda copia, igual a do NCFG. Iguais
-     hoje — e a discordar no dia em que alguem mudasse uma. O NCFG e quem manda:
-     e ele que pinta o menu, as etiquetas e o calendario. (2026-09-11) */
-  const _hojeLem=new Date();_hojeLem.setHours(0,0,0,0);
-  const lems=[...manI].filter(m=>['mt','nt','lb'].includes(m.tipo)).filter(m=>{
-    if(!m.data)return true; // sem data, mostra sempre
-    var p=m.data.split('-').map(Number);
-    if(p.length<3)return true;
-    var dLem=new Date(p[0],p[1]-1,p[2]);dLem.setHours(0,0,0,0);
-    var limite=new Date(dLem);limite.setDate(limite.getDate()+1); // some 1 dia depois
-    return _hojeLem<=limite;
-  }).sort((a,b)=>a.data.localeCompare(b.data)).slice(0,6);
-  document.getElementById('dash-lem').innerHTML=lems.length?lems.map(m=>{
-    const notifAtiva=m._notifFired||false;
-    const notifProg=m.notifData&&!m._notifFired;
-    const notifBadge=notifAtiva?`<span style="font-size:10px;font-weight:700;color:var(--copper);font-family:var(--mono);background:rgba(184,115,85,.2);padding:2px 7px;border-radius:10px;margin-left:6px;">● NOTIF</span>`:(notifProg?`<span style="font-size:10px;color:var(--td);font-family:var(--mono);margin-left:6px;">🔔 ${m.notifData}${m.notifHora?' '+m.notifHora:''}</span>`:'');
-    return `<div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="abrirLembrete(${m.id},true)" oncontextmenu="oCtxLem(event,${m.id});return false;"><div style="width:8px;height:8px;border-radius:50%;background:${(NCFG[m.tipo]||{}).c||'var(--td)'};margin-top:4px;flex-shrink:0;"></div><div style="flex:1;"><div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;"><span style="font-size:13px;color:var(--tp);font-weight:${notifAtiva?'700':'600'};">${m.titulo}</span>${notifBadge}</div><div style="font-size:11px;color:var(--ts);margin-top:2px;font-family:var(--mono);">${m.data}${m.hora?' · '+m.hora:''}</div></div></div>`;
-  }).join(''):'<div style="font-size:13px;color:var(--td);padding:8px 0;">Sem lembretes. Adiciona notas no calendário.</div>';
-  var _hn=new Date();_hn.setHours(0,0,0,0);
-  var _notifs=manI.filter(function(m){
-    if(!m.notifData)return false;
-    var np=m.notifData.split('-').map(Number);if(np.length<3)return false;
-    var dN=new Date(np[0],np[1]-1,np[2]);dN.setHours(0,0,0,0);if(dN>_hn)return false;
-    if(m.data){var dp=m.data.split('-').map(Number);if(dp.length>=3){var dE=new Date(dp[0],dp[1]-1,dp[2]);dE.setHours(0,0,0,0);if(dE<_hn)return false;}}
-    return true;
-  }).sort(function(a,b){return (a.data||'').localeCompare(b.data||'');});
-  var _dn=document.getElementById('dash-notif');
-  if(_dn)_dn.innerHTML=_notifs.length?('<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;">'+_notifs.map(function(m){
-    var cf=NCFG[m.tipo]||{c:'#888',l:'Lembrete'};var cor=cf.c;var lbl=(cf.l||'').replace(/^Nov[oa] /,'');
-    var dtx=m.data?m.data.split('-').reverse().join('/'):'';
-    var glowVar='--glow-color:'+cor+';';
-    return '<div class="dash-notif-glow" style="display:inline-flex;align-items:center;gap:8px;padding:4px 9px;border-radius:6px;border:1px solid '+cor+';background:'+cor+'1f;'+glowVar+'">'
-      +'<span style="width:7px;height:7px;border-radius:50%;background:'+cor+';flex-shrink:0;"></span>'
-      +'<span style="font-size:11px;font-weight:700;color:var(--tp);white-space:nowrap;">'+(m.titulo||'(sem t\u00edtulo)')+'</span>'
-      +'<span style="font-size:9px;font-weight:700;color:'+cor+';font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;">'+lbl+'</span>'
-      +(dtx?'<span style="font-size:10px;color:var(--td);font-family:var(--mono);white-space:nowrap;">'+dtx+'</span>':'')
-    +'</div>';
-  }).join('')+'</div>'):'';
+  _dashDia=localDate(h);
+  document.querySelectorAll('#dash-per button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-p')===per);});
+  /* As contas passam pela regra única (dashConta → evDoPeriodo/diariasDoPeriodo). */
+  const _jan=dashJanela(per,h);
+  const c=dashConta(evs,'ev',_jan.de,_jan.ate);
+  const diarias=dashConta(evs,'di',_jan.de,_jan.ate);
+  dashCartoes(per,y,m,h,c,diarias);
+  dashProximos(h);
+  dashAlertas(h);
+}
+/* Próximos eventos (B72): o primeiro dia de cada evento que ainda está por vir
+   — hoje incluído. Um evento que já começou e ainda não acabou entra pelo dia de
+   hoje, marcado «a decorrer · dia k de n». Antes comparava o dataISO com a HORA
+   actual, e o evento de hoje e o que estava a decorrer ficavam de fora. */
+function dashProximosDados(lista,hoje){
+  var h=localDate(hoje), out=[];
+  (lista||[]).forEach(function(e){
+    if(!e||e.cancelado) return;
+    var dias=evDias(e).filter(function(d){return /^\d{4}-\d{2}-\d{2}$/.test(d||'');}).slice().sort();
+    var i=dias.findIndex(function(d){return d>=h;});
+    if(i<0) return;
+    out.push({e:e, dia:dias[i], k:i+1, n:dias.length, decorrer:i>0&&dias[0]<h});
+  });
+  out.sort(function(a,b){return a.dia<b.dia?-1:a.dia>b.dia?1:0;});
+  return out.slice(0,5);
+}
+function dashProximos(hoje){
+  var el=document.getElementById('dash-ev'); if(!el) return;
+  var lst=dashProximosDados(evs,hoje), h=localDate(hoje);
+  var am=new Date(hoje); am.setDate(am.getDate()+1); var amanha=localDate(am);
+  var DS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  el.innerHTML=lst.length?lst.map(function(p){
+    var e=p.e, d=parseLocalDate(p.dia);
+    var esq=(p.dia===h)?'<span class="dsh-hoje">HOJE</span><div class="dsh-sd">'+DS[d.getDay()]+' '+d.getDate()+'</div>'
+      :(p.dia===amanha)?'<span class="dsh-amanha">AMANHÃ</span><div class="dsh-sd">'+DS[d.getDay()]+' '+d.getDate()+'</div>'
+      :'<div class="dsh-pn">'+d.getDate()+'</div><div class="dsh-pm">'+MES[d.getMonth()].slice(0,3)+' · '+DS[d.getDay()]+'</div>'
+        +(d.getFullYear()!==hoje.getFullYear()?'<div class="dsh-sd">'+d.getFullYear()+'</div>':'');
+    var tags=(p.decorrer?'<span class="dsh-dec">a decorrer · dia '+p.k+' de '+p.n+'</span>':'')
+      +(e.provavel?'<span class="dsh-prov">provável</span>':'');
+    return '<div class="dsh-px"><div class="dsh-pd">'+esq+'</div><div style="flex:1;min-width:0;">'
+      +'<div class="dsh-pt">'+psEsc(diaNome(e,p.dia))+tags+'</div>'
+      +'<div class="dsh-ps">'+psEsc(e.piso)+' &middot; '+psEsc(e.tipo)+(p.n>1?' &middot; <b>'+p.n+' diárias</b>':'')+'</div>'
+    +'</div></div>';
+  }).join(''):'<div class="dsh-vazio">Sem eventos próximos.</div>';
+}
+/* ALERTAS (B72) — era «Lembretes». Lê as reuniões, notas e lembretes do
+   calendário (manI, com as cores do NCFG) e os orçamentos; nunca escreve. */
+function dashLemVisivel(m,hoje){
+  if(!m||['mt','nt','lb'].indexOf(m.tipo)<0) return false;
+  if(!m.data) return true;                         // sem data, mostra sempre
+  var d=parseLocalDate(m.data); if(!d) return true;
+  var lim=new Date(d); lim.setDate(lim.getDate()+1); // some 1 dia depois
+  var h=new Date(hoje); h.setHours(0,0,0,0);
+  return h<=lim;
+}
+/* Um aviso chegou quando a sua data — e a sua hora, se tiver — já passou, na
+   hora LOCAL. As antigas pastilhas do topo só olhavam para o dia. */
+function dashAvisoChegou(m,agora){
+  if(!m||!m.notifData) return false;
+  var hojeStr=localDate(agora);
+  if(m.notifHora) return (m.notifData+'T'+m.notifHora)<=(hojeStr+'T'+String(agora.getHours()).padStart(2,'0')+':'+String(agora.getMinutes()).padStart(2,'0'));
+  return m.notifData<=hojeStr;
+}
+function dashAlertasDados(itens,orcs,agora){
+  var hoje=new Date(agora); hoje.setHours(0,0,0,0);
+  var vis=(itens||[]).filter(function(m){return dashLemVisivel(m,hoje);});
+  var ord=function(a,b){var x=(a.data||'9999')+' '+(a.hora||''), y=(b.data||'9999')+' '+(b.hora||''); return x<y?-1:x>y?1:0;};
+  /* A tratar: os urgentes primeiro, depois os avisos que chegaram. Cada coisa
+     aparece UMA vez: o que está em A tratar não se repete na Agenda. */
+  var tratar=vis.filter(function(m){return m.urgente||dashAvisoChegou(m,agora);}).sort(function(a,b){
+    var u=(b.urgente?1:0)-(a.urgente?1:0); return u||ord(a,b);
+  });
+  var resto=vis.filter(function(m){return tratar.indexOf(m)<0;}).sort(ord);
+  var s=semanaISO(localDate(hoje)), dom=semanaParaIntervalo(s.ano,s.semana).ate;
+  return {
+    tratar:tratar,
+    orcs:(orcs||[]).filter(function(o){return o&&o.estado==='Em aberto';}),
+    semana:resto.filter(function(m){return m.data&&m.data<=dom;}),
+    tarde:resto.filter(function(m){return m.data&&m.data>dom;}),
+    semData:resto.filter(function(m){return !m.data;})
+  };
+}
+function dashAlertas(agora){
+  var el=document.getElementById('dash-lem'); if(!el) return;
+  var A=dashAlertasDados(manI,(typeof DB_ORC!=='undefined'?DB_ORC:[]),agora);
+  var hj=localDate(agora), am=new Date(agora); am.setDate(am.getDate()+1); var amanha=localDate(am);
+  var DS=['dom','seg','ter','qua','qui','sex','sáb'];
+  var quando=function(m){
+    if(!m.data) return '';
+    var d=parseLocalDate(m.data); if(!d) return m.data;
+    var t=(m.data===hj)?'hoje':(m.data===amanha)?'amanhã':DS[d.getDay()]+' '+d.getDate()+' '+MES[d.getMonth()].slice(0,3).toLowerCase();
+    return t+(m.hora?' '+m.hora:'');
+  };
+  var linha=function(m){
+    var cf=NCFG[m.tipo]||{}; var cor=cf.c||'var(--td)';
+    var lbl=(cf.l||'').replace(/^Nov[oa] /,''); lbl=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+    var tags=(m.urgente?'<span class="dsh-tag urg">URGENTE</span>':'')+(dashAvisoChegou(m,agora)?'<span class="dsh-tag sino">aviso</span>':'');
+    var q=quando(m);
+    return '<div class="dsh-al'+(m.urgente?' urg':'')+'" onclick="abrirLembrete('+m.id+',true)" oncontextmenu="oCtxLem(event,'+m.id+');return false;">'
+      +'<span class="dsh-ap" style="background:'+(m.urgente?'var(--rdf)':cor)+';"></span>'
+      +'<div class="dsh-ac"><div class="dsh-at">'+psEsc(m.titulo||'(sem título)')+tags+'</div>'
+      +'<div class="dsh-as"><span style="color:'+cor+';">'+lbl+'</span>'+(q?' · '+q:'')+'</div></div></div>';
+  };
+  var n=A.orcs.length;
+  var orcLinha=n?('<div class="dsh-al" onclick="dashAlertaAbrirOrc()"><span class="dsh-ap" style="background:var(--copper);"></span>'
+    +'<div class="dsh-ac"><div class="dsh-at">'+n+(n===1?' orçamento em aberto':' orçamentos em aberto')+'</div>'
+    +'<div class="dsh-as">'+A.orcs.slice(0,4).map(function(o){return psEsc((o.num||'')+(o.evento?' '+o.evento:''));}).join(' · ')+(n>4?' · …':'')+'</div></div>'
+    +'<span class="dsh-ir">Orçamentos →</span></div>'):'';
+  var nT=A.tratar.length+(n?1:0), out='';
+  /* B73: sem o subtítulo «A tratar» — o que é urgente já se distingue sozinho, no topo. */
+  if(nT) out+=A.tratar.map(linha).join('')+orcLinha;
+  if(A.semana.length+A.tarde.length+A.semData.length){
+    out+='<div class="dsh-sec'+(nT?' ag':'')+'">Agenda</div>';
+    if(A.semana.length) out+='<div class="dsh-grp">Esta semana</div>'+A.semana.map(linha).join('');
+    if(A.tarde.length) out+='<div class="dsh-grp">Mais tarde</div>'+A.tarde.map(linha).join('');
+    if(A.semData.length) out+='<div class="dsh-grp">Sem data</div>'+A.semData.map(linha).join('');
+  }
+  el.innerHTML=out||'<div class="dsh-vazio">Sem alertas. Adiciona reuniões, notas e lembretes no calendário, ou com o +.</div>';
+}
+/* A linha dos orçamentos em aberto leva à lista dos Orçamentos. */
+function dashAlertaAbrirOrc(){
+  gp('orcamentos',document.querySelector('.nb[onclick*="gp(\'orcamentos\'"]'));
+  try{ocGtNav('orc',document.querySelector('#sn-orcamentos .snb[onclick*="ocGtNav(\'orc\'"]'));}catch(e){}
 }
 
 /* CALENDÁRIO */
@@ -5250,7 +5409,7 @@ function ctxLemEliminar(){var id=ctxLemAlvo;cCtxLem();ctxLemAlvo=null;if(!id)ret
 function ctxLemRemoverNotif(){var id=ctxLemAlvo;cCtxLem();ctxLemAlvo=null;if(!id)return;var m=manI.find(function(x){return x.id===id;});if(!m)return;m.notifData='';m.notifHora='';m._notifFired=false;syncAll();if(typeof showToast==='function')showToast('Notifica\u00e7\u00e3o removida','ok');}
 function cCtx(){document.getElementById('ctx').classList.remove('open');}
 const NCFG={ev:{l:'Novo evento',c:'#52c47a',cls:'ev'},mt:{l:'Nova reunião',c:'#5ba3d9',cls:'mt'},nt:{l:'Nota',c:'#d4568f',cls:'nt'},lb:{l:'Lembrete',c:'#d4b020',cls:'lb'}};
-function oNI(t){cCtx();_editLemId=null;cxT=t;document.getElementById('mci-t').textContent=NCFG[t].l;var dh=document.getElementById('mci-datahora');if(dh)dh.style.display='';if(cxD)document.getElementById('mci-d').value=localDate(cxD);document.getElementById('mci-ti').value='';buildTimeOptions('mci-h','');document.getElementById('mci-de').value='';document.getElementById('mci-ndata').value='';buildTimeOptions('mci-nhora','');var dl=document.getElementById('mci-del');if(dl)dl.style.display='none';var sv=document.getElementById('mci-save');if(sv)sv.textContent='Adicionar';om('m-ci');setTimeout(()=>document.getElementById('mci-ti').focus(),100);}
+function oNI(t){cCtx();_editLemId=null;cxT=t;document.getElementById('mci-t').textContent=NCFG[t].l;var dh=document.getElementById('mci-datahora');if(dh)dh.style.display='';if(cxD)document.getElementById('mci-d').value=localDate(cxD);document.getElementById('mci-ti').value='';buildTimeOptions('mci-h','');document.getElementById('mci-de').value='';document.getElementById('mci-ndata').value='';buildTimeOptions('mci-nhora','');var dl=document.getElementById('mci-del');if(dl)dl.style.display='none';var sv=document.getElementById('mci-save');if(sv)sv.textContent='Adicionar';var _u=document.getElementById('mci-urg');if(_u)_u.checked=false;var _uw=document.getElementById('mci-urg-wrap');if(_uw)_uw.style.display=(t==='ev')?'none':'';om('m-ci');setTimeout(()=>document.getElementById('mci-ti').focus(),100);}
 function dashNovoLembrete(){cxD=null;oNI('lb');document.getElementById('mci-d').value='';document.getElementById('mci-h').value='';var dh=document.getElementById('mci-datahora');if(dh)dh.style.display='none';document.getElementById('mci-nhora').value='';}
 
 // Abrir detalhe de lembrete/nota do calendário
@@ -5269,6 +5428,7 @@ function abrirLembrete(id,fromDash){
   document.getElementById('mci-d').value=m.data||'';
   buildTimeOptions('mci-h',m.hora||'');
   document.getElementById('mci-de').value=m.desc||'';
+  var _u=document.getElementById('mci-urg');if(_u)_u.checked=!!m.urgente;var _uw=document.getElementById('mci-urg-wrap');if(_uw)_uw.style.display='';
   document.getElementById('mci-ndata').value=m.notifData||'';
   buildTimeOptions('mci-nhora',m.notifHora||'');
   document.getElementById('mci-del').style.display=fromDash?'none':'';
@@ -5292,7 +5452,7 @@ function sCI(){
   const data=document.getElementById('mci-d').value;
   const hora=document.getElementById('mci-h').value;
   const tipo=NCFG[cxT].cls;
-  const newItem={id:nid++,titulo:ti,data,hora,desc:document.getElementById('mci-de').value,tipo,notifData:document.getElementById('mci-ndata').value,notifHora:document.getElementById('mci-nhora').value};
+  const newItem={id:nid++,titulo:ti,data,hora,desc:document.getElementById('mci-de').value,tipo,notifData:document.getElementById('mci-ndata').value,notifHora:document.getElementById('mci-nhora').value,urgente:(function(){var _u=document.getElementById('mci-urg');return !!(_u&&_u.checked);})()};
   if(tipo==='ev'&&data){
     // Evento: cria ficha + linha mapa, NÃO adiciona a manI (evita duplicado no calendário)
     const desc=document.getElementById('mci-de').value.trim();
@@ -5317,7 +5477,7 @@ function sCI(){
     // Reunião, lembrete, nota: adiciona ou actualiza em manI
     if(_editLemId){
       var ex=manI.find(function(x){return x.id===_editLemId;});
-      if(ex){ex.titulo=ti;ex.data=data;ex.hora=hora;ex.desc=document.getElementById('mci-de').value;ex.tipo=tipo;ex.notifData=document.getElementById('mci-ndata').value;ex.notifHora=document.getElementById('mci-nhora').value;ex._notifFired=false;}
+      if(ex){ex.titulo=ti;ex.data=data;ex.hora=hora;ex.desc=document.getElementById('mci-de').value;ex.tipo=tipo;ex.notifData=document.getElementById('mci-ndata').value;ex.notifHora=document.getElementById('mci-nhora').value;ex._notifFired=false;var _u=document.getElementById('mci-urg');ex.urgente=!!(_u&&_u.checked);}
       _editLemId=null;
     } else {
       manI.push(newItem);
@@ -7445,6 +7605,8 @@ function gp(id,el){
   if(id==='novodoc'){ndInit();}
   if(id==='notas'){notasRender();}
   if(id==='settings'){autosaveUI();}
+  /* B72: entrar no Dashboard redesenha-o — um alerta resolvido noutra aba não fica no ecrã. */
+  if(id==='dashboard'){try{rDash();}catch(e){}}
   /* A pastilha dos BEOs depende de onde se esta: no Plano de semana cala-se,
      porque o aviso ja aparece dentro da pagina. */
   try{if(typeof beoAvisoRender==='function')beoAvisoRender();}catch(e){}
@@ -13679,14 +13841,37 @@ function religarEventos(){
    inicio; so as duas contagens que sairam neste dia e chamavam. */
 /* Arrumado a 2026-09-14: contava os eventos de um ano inteiro; a app usa a versao que conta entre duas datas. */
 /* Arrumado a 2026-09-14: idem, para as diarias. */
-function avsCompute(ano){
+/* ===== A DATA DO EVENTO DE UM ORÇAMENTO, NUM SÍTIO SÓ (B74, 2026-11-23) =====
+   Pedido do Mike: o custo e a venda de um orçamento pertencem ao dia do
+   trabalho que os gerou, não ao dia em que o orçamento foi escrito. Ordem:
+     1. o evento associado ao orçamento (o seu 1.º dia — regra B);
+     2. a «data do evento» escrita no próprio orçamento;
+     3. só em último caso, a data do orçamento.
+   Usada pelo avsCompute (REGRA Y) e, na B75, pela venda directa do Dashboard. */
+function orcDataEvento(o){
+  if(!o)return '';
+  if(o.evId!==null&&o.evId!==undefined&&o.evId!==''&&typeof evs!=='undefined'){
+    var e=evs.find(function(x){return x.id===o.evId;});
+    if(e){var p=evPrimeiroDia(e); if(p)return p;}
+  }
+  if(o.dataEvento)return o.dataEvento;
+  return o.data||'';
+}
+function avsCompute(ano,janela){
   var hoje=localDate(new Date());
+  /* B75 (2026-11-23): período opcional {de,ate} ('AAAA-MM-DD') para o cartão
+     «Custo médio por diária» do Dashboard seguir os botões (Semana, Mês…).
+     Sem ele, a janela é o ano inteiro — os mesmos limites de sempre, por isso
+     os seis sítios que já chamavam avsCompute(ano) não mudam um cêntimo.
+     Um evento conta no período do seu 1.º dia (regra B); as diárias e o custo
+     dos técnicos só as que caem dentro do período. */
+  var _de=(janela&&janela.de)||(ano+'-01-01'), _ate=(janela&&janela.ate)||(ano+'-12-31');
   // N = TODOS os eventos realizados até hoje no ano (não cancelados, com data única).
   var lista=[];
   (typeof evs!=='undefined'?evs:[]).forEach(function(ev){
     var d=ev.dataISO;
     if(!d) return;                               // ignora eventos multi-dia sem data única
-    if(parseInt(d.split('-')[0])!==ano) return;  // só o ano
+    if(d<_de||d>_ate) return;                     // só o período (por omissão, o ano)
     if(d>hoje) return;                            // só já decorridos
     if(ev.cancelado) return;                      // ignora cancelados
     /* EVENTO vs DIARIA (regra do Mike, 2026-09-03): um evento de 3 dias e UM
@@ -13698,7 +13883,7 @@ function avsCompute(ano){
     /* So as diarias DESTE ano: um evento a cavalo de 31/12 nao pode trazer para
      este ano as diarias que acontecem no seguinte. (Regra de 2026-09-11.) */
   var diasEv=(typeof diariasDoPeriodo==='function')
-    ? evDias(ev).filter(function(x){return x>=(ano+'-01-01')&&x<=(ano+'-12-31');})
+    ? evDias(ev).filter(function(x){return x>=_de&&x<=_ate;})
     : ((typeof evDias==='function')?evDias(ev):[d]);
     var servs=(typeof DB_SERVICOS!=='undefined')?DB_SERVICOS.filter(function(x){
       if(x.evId!==null&&x.evId!==undefined&&x.evId!=='')return x.evId===ev.id;
@@ -13730,7 +13915,12 @@ function avsCompute(ano){
        uma substituição. orcEstatuto(o), nunca o.estatuto em bruto: um
        orçamento sem o campo lê como 'Normal' e continua a contar. */
     if(orcEstatuto(o)!=='Normal') return;
-    if(!o.data||parseInt(o.data.split('-')[0])!==ano) return;
+    /* REGRA Y (B74, 2026-11-23, pedido do Mike): o Custo SUD entra pela data
+       do EVENTO, e só se o evento já aconteceu (regra V). Antes contava pela
+       data do orçamento e somava também os orçamentos de eventos futuros —
+       dividindo esse custo só pelas diárias já realizadas (medido: 900 € em
+       vez de 400 €). Cancelados: ver nota da regra X em pendentes-por-aba. */
+    var _dEv=orcDataEvento(o); if(!_dEv||_dEv<_de||_dEv>_ate||_dEv>hoje) return;
     /* pela regra S: o equipamento da casa marcado como custo nao e custo. Sem
        isto, o «custo por evento» — o numero mais importante da ferramenta —
        contava dinheiro que nao saiu de casa. */
@@ -13753,7 +13943,7 @@ function avsCompute(ano){
   (typeof DB_ORC!=='undefined'?DB_ORC:[]).forEach(function(o){
     if(!orcEntraNosMapas(o)) return;
     if(orcEstatuto(o)!=='Normal') return;   // passo 4 — ver nota acima
-    if(!o.data||parseInt(o.data.split('-')[0])!==ano) return;
+    var _dEv=orcDataEvento(o); if(!_dEv||_dEv<_de||_dEv>_ate||_dEv>hoje) return;   // REGRA Y — o mesmo crivo de cima
     if(o.evId===null||o.evId===undefined) return;      // sem ligação: fica no bolo comum
     porEvento[o.evId]=(porEvento[o.evId]||0)+orcCustoSUDReal(o);
   });
