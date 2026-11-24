@@ -2649,6 +2649,59 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 #m-osnovo .os-ti,#m-osnovo .os-tv,#m-osnovo .os-date-ti,#m-osnovo .os-novo-tb input{border:none!important;background:rgba(255,255,255,.045)!important;border-radius:8px!important;}
 #m-osnovo .slot-rm{border:none;border-radius:6px;background:rgba(255,255,255,.04);}
 #m-osnovo .os-novo-sep .l{background:rgba(255,255,255,.05);}
+/* ===== B78 (2026-11-24, pedido do Mike) — Plano de semana na linguagem nova =====
+   Só desenho, mais o estado «plano feito / por preencher» na barra fechada (aprovado).
+   Âmbito: #page-plano. Nenhuma outra aba muda. */
+#page-plano .ps-tit{display:flex;align-items:baseline;gap:12px;}
+#page-plano .ps-tit h2{font-size:22px;font-weight:700;color:var(--tp);margin:0;letter-spacing:-.01em;}
+#page-plano .ps-tit span{font-family:var(--mono);font-size:11.5px;color:var(--ts);}
+#page-plano .ps-tit span b{color:var(--cl);font-weight:700;}
+#page-plano .navnav-plano{width:34px;height:34px;border-radius:10px;background:rgba(212,144,42,.13);}
+#page-plano .ps-datas{border:none!important;border-radius:10px!important;background:rgba(255,255,255,.035)!important;padding:7px 14px!important;}
+#page-plano #ps-sem{color:var(--navy)!important;background:var(--gnf);border-radius:9px;padding:1px 9px;font-family:var(--mono);font-size:11px!important;}
+#page-plano #ps-sem:empty{display:none;}
+#page-plano .ps-pdf{border:none;border-radius:10px;padding:8px 14px;background:rgba(255,255,255,.035);color:var(--ts);font:700 12px var(--font);cursor:pointer;}
+#page-plano .ps-pdf:hover{color:var(--tp);background:rgba(255,255,255,.07);}
+#page-plano .ps-guardar{border:none;border-radius:10px;padding:8px 16px;background:var(--cl);color:var(--navy);font:700 12px var(--font);cursor:pointer;}
+#page-plano .ps-guardar:hover{filter:brightness(1.08);}
+#page-plano #ps-title>div{display:none;}
+#page-plano #ps-tbody{border-radius:16px;background:rgba(255,255,255,.012);padding:6px 14px;}
+#page-plano .psb{background:none;border:none;border-radius:10px;margin:0 -10px;padding:10px;gap:14px;}
+#page-plano .psb:hover{background:rgba(255,255,255,.035);}
+#page-plano .psb.man{border-left:none;}
+#page-plano .psb-gr{opacity:0;}
+#page-plano .psb:hover .psb-gr{opacity:.85;}
+#page-plano .psb-exp{width:26px;height:26px;border:none;border-radius:8px;background:rgba(255,255,255,.05);color:var(--ts);font-size:14px;}
+#page-plano .psb-exp.on{background:rgba(212,149,110,.18);color:var(--cl);}
+#page-plano .psb-dt2{min-width:48px;text-align:center;background:none;padding:0;}
+#page-plano .psb-dt2 b{display:block;font:700 18px var(--mono);color:var(--cl);line-height:1;}
+#page-plano .psb-dt2 i{font-style:normal;font-family:var(--font);font-size:9.5px;color:var(--ts);text-transform:uppercase;font-weight:700;}
+#page-plano .psb-nm{font-weight:700;}
+#page-plano .psb-dti,#page-plano .psb-nmi{border:none;border-radius:8px;background:rgba(255,255,255,.05);padding:6px 9px;}
+#page-plano .psb-est{flex:none;font:700 9.5px var(--mono);border-radius:9px;padding:2px 8px;white-space:nowrap;}
+#page-plano .psb-est.ok{color:var(--gnf);background:rgba(82,196,122,.12);}
+#page-plano .psb-est.pf{color:var(--amf);background:rgba(212,144,42,.13);}
+#page-plano .psb-x{opacity:0;color:var(--td);}
+#page-plano .psb:hover .psb-x,#page-plano .psb-ab .psb-x{opacity:.8;}
+#page-plano .psb-x:hover{color:var(--rdf);}
+#page-plano .psb-ab{border:none;border-left:none;border-radius:14px;background:rgba(255,255,255,.025);margin:2px -6px 8px;padding:10px 10px 14px;}
+#page-plano .psb-ab.man{border-left:none;}
+/* a regra antiga «#ps-tbody > div > div:first-child{opacity:.45}» (era para um ícone que já não existe) apagava o cabeçalho da barra aberta */
+#page-plano #ps-tbody > .psb-ab > .psb-top{opacity:1;}
+#page-plano .psb-corpo{padding-left:76px;}
+#page-plano .psb-lbl{color:var(--ts);font-weight:700;letter-spacing:.1em;}
+#page-plano .psb-ab input:not(.psb-nmi),#page-plano .psb-ab select,#page-plano .psb-ab textarea{border:none;border-radius:9px;background:rgba(255,255,255,.05);}
+#page-plano .psb-ab textarea{color:var(--tp);}
+#page-plano .psb.psb-arr{border:1px dashed rgba(255,255,255,.15);}
+#page-plano .ps-add{border:none;border-radius:10px;padding:8px 13px;background:rgba(255,255,255,.035);color:var(--ts);font:700 12px var(--font);cursor:pointer;}
+#page-plano .ps-add:hover{color:var(--tp);background:rgba(255,255,255,.07);}
+#page-plano #ps-hist-wrap>div:first-child>div{display:none;}
+#page-plano #ps-hist{border-radius:16px;background:rgba(255,255,255,.012);padding:6px 14px;}
+#page-plano .ps-h{border-radius:10px;margin:0 -10px;}
+#page-plano .ps-h>div:first-child{padding:12px 10px!important;border-radius:10px;}
+#page-plano .ps-h>div:first-child:hover{background:rgba(255,255,255,.035);}
+#page-plano .ps-h-corpo{padding:0 10px 10px 24px;}
+#page-plano .ps-h-corpo>div{border-top-color:rgba(255,255,255,.04)!important;}
 </style>
 </head>
 <body>
@@ -3426,7 +3479,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 
     <div class="page" id="page-plano">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div class="st">Plano de semana</div>
+      <div class="ps-tit"><h2>Plano de semana</h2><span id="ps-conta"></span></div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
         <!-- B64 (2026-10-09, pedido do Mike; corrigido no mesmo dia — B64-fix):
              duas setas, laranja — avançam/recuam 7 dias (uma semana ISO) a
@@ -3436,13 +3489,9 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
              claude/maq-plano-semana-setas-quinzena.html (maqueta original). -->
         <button class="navnav navnav-flat navnav-plano" title="Recuar uma semana" onclick="psSemanaNav(-1)" aria-label="Recuar uma semana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
         <button class="navnav navnav-flat navnav-plano" title="Avançar uma semana" onclick="psSemanaNav(1)" aria-label="Avançar uma semana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-        <div style="display:flex;align-items:center;gap:8px;background:var(--navy3);border:2px solid var(--bl);border-radius:8px;padding:5px 14px;"><label style="font-size:11px;color:var(--ts);font-weight:600;">De</label><input type="date" id="ps-de" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span style="color:var(--td);">—</span><label style="font-size:11px;color:var(--ts);font-weight:600;">Até</label><input type="date" id="ps-ate" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span id="ps-sem" title="Semana ISO 8601 (segunda a domingo)" style="font-size:12px;font-weight:700;color:var(--gnf);white-space:nowrap;margin-left:4px;"></span></div>
-        <button class="btn-ic" title="Guardar" onclick="psGuardar(this)">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        </button>
-        <button class="btn-ic" title="Gerar PDF" onclick="psGerarPDF()">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        </button>
+        <div class="ps-datas" style="display:flex;align-items:center;gap:8px;background:var(--navy3);border:2px solid var(--bl);border-radius:8px;padding:5px 14px;"><label style="font-size:11px;color:var(--ts);font-weight:600;">De</label><input type="date" id="ps-de" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span style="color:var(--td);">—</span><label style="font-size:11px;color:var(--ts);font-weight:600;">Até</label><input type="date" id="ps-ate" onchange="psSemanaAjustar(this)" style="background:none;border:none;outline:none;color:var(--tp);font-size:12px;font-family:var(--mono);font-weight:700;"><span id="ps-sem" title="Semana ISO 8601 (segunda a domingo)" style="font-size:12px;font-weight:700;color:var(--gnf);white-space:nowrap;margin-left:4px;"></span></div>
+        <button class="ps-pdf" title="Gerar PDF" onclick="psGerarPDF()">PDF</button>
+        <button class="ps-guardar" title="Guardar o plano no histórico" onclick="psGuardar(this)">Guardar plano</button>
       </div>
     </div>
     <!-- Events table -->
@@ -3451,7 +3500,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
       <div style="font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;font-family:var(--mono);display:flex;align-items:center;gap:8px;" id="ps-title">Eventos <div style="flex:1;height:1px;background:var(--border);"></div></div>
       <div id="ps-tbody"></div>
       <div style="margin-top:8px;">
-        <button onclick="psAddManual()" style="background:none;border:none;color:var(--td);cursor:pointer;font-size:22px;line-height:1;padding:2px 6px;transition:.15s;font-family:var(--font);" onmouseover="this.style.color='var(--copper)';" onmouseout="this.style.color='var(--td)';">+</button>
+        <button class="ps-add" onclick="psAddManual()" title="Acrescentar uma alínea (montagem, transporte, recolha…)">+ Alínea</button>
       </div>
     </div>
     <div id="ps-empty" style="text-align:center;padding:48px;color:var(--td);">
@@ -9998,6 +10047,9 @@ function psRender(deV, ateV){
   var _c = psContagem(PS_ROWS);
   var _nDia = _c.diarias, _nEvs = _c.eventos;
   var countLabel = _nDia ? psContagemTexto(_c) : 'Tabela vazia — adiciona linhas manualmente';
+  /* B78: a contagem também no título da página (a mesma conta, psContagem). */
+  var _pc = document.getElementById('ps-conta');
+  if(_pc) _pc.innerHTML = _nDia ? ('<b>'+_nDia+'</b> '+(_nDia===1?'diária':'diárias')+' · <b>'+_nEvs+'</b> '+(_nEvs===1?'evento':'eventos')) : '';
   if(title) title.innerHTML = 'Plano ' + fmtPT(deV) + ' — ' + fmtPT(ateV) + ' <div style="flex:1;height:1px;background:var(--border);"></div><span style="font-size:10px;color:var(--td);">'+countLabel+'</span>';
   
   var lbl = 'font-size:9px;color:var(--cl);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono);';
@@ -10059,7 +10111,12 @@ function psRender(deV, ateV){
     // Alineas manuais precisam de escolher a data; eventos do calendario mostram-na.
     var dataFechada = manual
       ? '<input type="date" class="psb-dti" value="'+psEsc(row.data)+'" onchange="psSetData('+i+',this.value)">'
-      : '<span class="psb-dt">'+fmtDay(row.data)+'</span>';
+      : (function(){ /* B78: o dia em grande e o dia da semana por baixo, como nas Fichas */
+          var _p=String(row.data||'').split('-').map(Number);
+          if(_p.length<3||isNaN(_p[0])||_p[0]<2000) return '<span class="psb-dt">'+fmtDay(row.data)+'</span>';
+          var _d=new Date(_p[0],_p[1]-1,_p[2]);
+          return '<span class="psb-dt psb-dt2" title="'+fmtDay(row.data)+'"><b>'+String(_p[2]).padStart(2,'0')+'</b><i>'+['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][_d.getDay()]+'</i></span>';
+        })();
 
     // Nas alineas manuais o nome e o campo de procura que as liga ao calendario.
     var nome = manual
@@ -10077,7 +10134,12 @@ function psRender(deV, ateV){
     var remover = '<button class="psb-x" data-psidx="'+i+'" title="Remover"'
       + ' onclick="psRemove(parseInt(this.dataset.psidx))">✕</button>';
 
-    var cabeca = botaoExp + dataFechada + nome + ligado + remover;
+    /* B78 (aprovado pelo Mike): na barra fechada vê-se se o plano da diária já está
+       feito — entrada, saída e técnicos preenchidos — sem a abrir. */
+    var _feito = !!(row.entrada && row.saida && String(row.tecStr||'').trim());
+    var estado = '<span class="psb-est '+(_feito?'ok':'pf')+'">'+(_feito?'plano feito':'por preencher')+'</span>';
+
+    var cabeca = botaoExp + dataFechada + nome + estado + ligado + remover;
 
     if(!aberta){
       /* Barra fechada = barra que se pode arrastar. O `draggable` fica so aqui:
@@ -10309,9 +10371,9 @@ function psRenderHist(){
           +(r.obs?'<div style="font-size:11px;color:var(--ts);line-height:1.6;white-space:pre-wrap;">'+psEsc(r.obs)+'</div>':'')
         +'</div>';
       }).join('');
-      body='<div style="background:var(--navy3);">'+inner+'</div>';
+      body='<div class="ps-h-corpo">'+inner+'</div>';
     }
-    return '<div style="background:var(--navy2);border:1px solid var(--border);border-left:4px solid var(--cl);border-radius:9px;margin-bottom:8px;overflow:hidden;">'+head+body+'</div>';
+    return '<div class="ps-h">'+head+body+'</div>';
   }).join('');
 }
 
