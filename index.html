@@ -2376,6 +2376,152 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 .mci-urg input{accent-color:var(--rdf);width:15px;height:15px;margin:0;}
 .mci-urg b{color:var(--rdf);}
 .mci-urg span{color:var(--td);font-size:11px;}
+/* ===== B76 (2026-11-24, pedido do Mike) — o Calendário na linguagem do Dashboard =====
+   Sem contornos pesados, fusão 10 (branco a 1%), botões em pílula. Âmbito: #page-calendario,
+   e os três painéis que esta aba abre (#m-ci, #fo, #ctx) mais os três novos (#cal-dia,
+   #cal-exp, #cal-sel). Nenhuma outra aba muda. */
+#page-calendario .ctop{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;}
+#page-calendario .ctop-tit{display:flex;align-items:baseline;gap:12px;margin-right:auto;}
+#page-calendario .ctop-tit h2{font-size:22px;font-weight:700;color:var(--tp);margin:0;letter-spacing:-.01em;}
+#page-calendario .ctop-tit span{font-family:var(--mono);font-size:11.5px;color:var(--ts);}
+#page-calendario .ctop-tit span b{color:var(--cl);font-weight:700;}
+#page-calendario .cnav{display:inline-flex;align-items:center;background:rgba(255,255,255,.035);border-radius:10px;padding:4px;gap:2px;}
+#page-calendario .cnav>button{background:none;border:none;color:var(--ts);font-family:var(--font);font-size:13px;font-weight:700;padding:5px 10px;border-radius:7px;cursor:pointer;}
+#page-calendario .cnav>button:hover{color:var(--tp);background:rgba(255,255,255,.04);}
+#page-calendario .cnav #cal-title-field{background:none;border:none;min-width:112px;height:auto;padding:5px 10px;border-radius:7px;justify-content:center;}
+#page-calendario .cnav #cal-title-field:hover{background:rgba(255,255,255,.04);}
+#page-calendario .cnav .cal-title{color:var(--tp);font-size:12px;font-weight:700;}
+#page-calendario .cper{display:inline-flex;background:rgba(255,255,255,.035);border-radius:10px;padding:4px;gap:2px;}
+#page-calendario .cper button{background:none;border:none;color:var(--ts);font-family:var(--font);font-size:12px;font-weight:600;padding:5px 12px;border-radius:7px;cursor:pointer;}
+#page-calendario .cper button:hover{color:var(--tp);}
+#page-calendario .cper button.on{background:rgba(91,163,217,.18);color:var(--tp);}
+#page-calendario #cal-hoje{padding:8px 13px;border:none;border-radius:10px;background:rgba(255,255,255,.035);color:var(--ts);font-size:12px;font-weight:700;font-family:var(--font);cursor:pointer;}
+#page-calendario #cal-hoje:hover{color:var(--tp);}
+#page-calendario #cal-hoje.fora{display:none;}
+#page-calendario .cnovo{display:flex;align-items:center;gap:7px;padding:8px 14px;border:none;border-radius:10px;background:rgba(82,196,122,.13);color:var(--gnf);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
+#page-calendario .cnovo:hover{background:rgba(82,196,122,.2);}
+/* Mês */
+#page-calendario .cgrid{gap:6px;}
+#page-calendario .cdow{padding:4px 0 6px;letter-spacing:.12em;font-size:10px;}
+#page-calendario .cdow.fds{color:var(--td);}
+#page-calendario .cc{border:none;border-radius:12px;background:rgba(255,255,255,.014);box-shadow:inset 0 0 0 1px rgba(255,255,255,.075);padding:8px 8px 6px;transition:background .15s,box-shadow .15s;position:relative;overflow:hidden;}
+#page-calendario .cc:not(.ot){height:112px;min-height:112px;}
+#page-calendario .cc:hover{background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);}
+#page-calendario .cc.fds{background:rgba(255,255,255,.006);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);}
+#page-calendario .cc.ot{background:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);min-height:112px;}
+#page-calendario .cc.ot .dn{color:rgba(255,255,255,.12);}
+#page-calendario .cc .dh{padding:0;margin-bottom:6px;}
+#page-calendario .cc .dn{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ts);cursor:pointer;display:inline-block;border-radius:6px;padding:1px 4px;margin-left:-4px;}
+#page-calendario .cc:not(.ot) .dn:hover{background:rgba(91,163,217,.15);color:var(--tp);}
+#page-calendario .cc.fds .dn{color:var(--td);}
+#page-calendario .cc.td2{background:linear-gradient(160deg,rgba(212,144,42,.13),transparent 70%),rgba(255,255,255,.014);box-shadow:inset 0 0 0 1px rgba(212,144,42,.45);}
+#page-calendario .cc.td2 .dn{color:var(--navy);background:var(--amf);margin-left:0;padding:1px 6px;}
+#page-calendario .dps{display:flex;flex-direction:column;gap:3px;}
+#page-calendario .cexp,#cal-exp .cexp{position:absolute;right:6px;bottom:6px;height:20px;min-width:20px;padding:0 7px;border:none;border-radius:7px;background:rgba(91,163,217,.16);color:var(--blf);font:700 10.5px var(--mono);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;}
+#page-calendario .cexp:hover,#cal-exp .cexp:hover{background:rgba(91,163,217,.28);}
+/* As pastilhas (no mês, no painel do dia e no dia expandido) */
+.cal-pil .ep,#page-calendario .ep{border:none;border-left:none;border-radius:6px;font-size:10.5px;font-weight:600;padding:3px 7px;line-height:1.35;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;cursor:pointer;}
+.cal-pil .ep i,#page-calendario .ep i{flex:none;width:6px;height:6px;border-radius:50%;}
+.cal-pil .ep .t,#page-calendario .ep .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+.cal-pil .ep .h,#page-calendario .ep .h{font-family:var(--mono);font-size:9.5px;opacity:.8;flex:none;}
+.cal-pil .ep .k,#page-calendario .ep .k{margin-left:auto;flex:none;font-family:var(--mono);font-size:8.5px;font-weight:700;opacity:.75;}
+.cal-pil .ep .beo,#page-calendario .ep .beo{font-family:var(--mono);font-size:8.5px;font-weight:700;color:var(--navy);background:var(--gnf);border-radius:4px;padding:0 4px;flex:none;}
+.cal-pil .ep.epev,#page-calendario .ep.epev{background:rgba(82,196,122,.13);color:#8fe3b0;}
+.cal-pil .ep.epev i,#page-calendario .ep.epev i{background:var(--gnf);}
+.cal-pil .ep.epp,#page-calendario .ep.epp{background:rgba(212,144,42,.13);color:#f0c27a;}
+.cal-pil .ep.epp i,#page-calendario .ep.epp i{background:var(--amf);}
+.cal-pil .ep.epx,#page-calendario .ep.epx{background:rgba(255,255,255,.03);color:var(--td);text-decoration:line-through;}
+.cal-pil .ep.epx i,#page-calendario .ep.epx i{background:var(--td);}
+.cal-pil .ep.epmt,#page-calendario .ep.epmt{background:rgba(91,163,217,.13);color:#9ccaf0;}
+.cal-pil .ep.epmt i,#page-calendario .ep.epmt i{background:#5ba3d9;}
+.cal-pil .ep.epnt,#page-calendario .ep.epnt{background:rgba(212,86,143,.13);color:#ee9cc3;}
+.cal-pil .ep.epnt i,#page-calendario .ep.epnt i{background:#d4568f;}
+.cal-pil .ep.eplb,#page-calendario .ep.eplb{background:rgba(212,176,32,.13);color:#ecd56e;}
+.cal-pil .ep.eplb i,#page-calendario .ep.eplb i{background:#d4b020;}
+/* a BEO já se vê na etiqueta: sem o contorno brilhante das pastilhas antigas */
+.cal-pil .ep.epbeo,#page-calendario .ep.epbeo{border:none;box-shadow:none;}
+.cal-pil .ep.urg,#page-calendario .ep.urg{background:rgba(217,96,96,.20);color:#ffb3b3;}
+.cal-pil .ep.urg i,#page-calendario .ep.urg i{background:var(--rdf);box-shadow:0 0 0 3px rgba(217,96,96,.25);}
+#page-calendario .cleg{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:11px;color:var(--ts);}
+#page-calendario .cleg span{display:flex;align-items:center;gap:6px;}
+#page-calendario .cleg i{width:8px;height:8px;border-radius:50%;}
+/* Ano */
+#page-calendario .year-grid{gap:14px;}
+#page-calendario .month-mini{border:none;border-radius:16px;background:rgba(255,255,255,.010);padding:14px 14px 10px;}
+#page-calendario .mm-title{display:flex;justify-content:space-between;margin-bottom:8px;}
+#page-calendario .mm-title b{font-family:var(--mono);font-size:10.5px;color:var(--cl);font-weight:700;}
+#page-calendario .mm-day{border:none;border-radius:6px;}
+#page-calendario .mm-day.has-ev{background:rgba(82,196,122,.16);color:#8fe3b0;font-weight:700;}
+#page-calendario .mm-day.td2{background:var(--amf);color:var(--navy);font-weight:700;}
+/* Fichas */
+#page-calendario .fsec{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ts);margin:6px 0 8px;}
+#page-calendario .fsec .n{font-size:10px;color:var(--navy);background:var(--amf);border-radius:9px;padding:0 7px;letter-spacing:0;}
+#page-calendario .fcard{border-radius:16px;background:rgba(255,255,255,.010);padding:8px 14px;margin-bottom:18px;}
+#page-calendario .frow{display:flex;align-items:center;gap:14px;padding:9px 10px;margin:0 -10px;border-radius:10px;}
+#page-calendario .frow:hover{background:rgba(255,255,255,.035);}
+#page-calendario .frow.cx{opacity:.55;}
+#page-calendario .frow.cx .fnm{text-decoration:line-through;}
+#page-calendario .fdt{min-width:52px;text-align:center;flex:none;}
+#page-calendario .fdt b{display:block;font-family:var(--mono);font-size:19px;color:var(--cl);line-height:1;}
+#page-calendario .fdt span{font-size:9.5px;color:var(--ts);text-transform:uppercase;font-weight:700;}
+#page-calendario .fdt.hoje b{color:var(--amf);}
+#page-calendario .fnm{flex:1;min-width:0;font-size:13.5px;font-weight:700;color:var(--tp);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#page-calendario .fnm small{font-weight:500;color:var(--ts);font-size:11.5px;margin-left:8px;}
+#page-calendario .ftag{font-size:9.5px;font-weight:700;font-family:var(--mono);border-radius:9px;padding:1px 7px;margin-left:6px;vertical-align:1px;}
+#page-calendario .ftag.beo{color:var(--navy);background:var(--gnf);}
+#page-calendario .ftag.ag{color:var(--blf);background:rgba(91,163,217,.14);}
+#page-calendario .frow .badge{width:auto;border:none;border-radius:12px;padding:3px 11px;letter-spacing:0;flex:none;}
+#page-calendario .frow .badge.b-gn{color:var(--gnf);background:rgba(82,196,122,.12);}
+#page-calendario .frow .badge.b-am{color:var(--amf);background:rgba(212,144,42,.13);}
+#page-calendario .frow .badge.b-rd{color:var(--rdf);background:rgba(217,96,96,.13);}
+#page-calendario .fchk{flex:none;accent-color:var(--blf);width:15px;height:15px;opacity:.35;margin:0;cursor:pointer;}
+#page-calendario .frow:hover .fchk,#page-calendario .fchk:checked{opacity:1;}
+#page-calendario .fvazio{font-size:13px;color:var(--td);padding:16px 0;}
+/* Painel do dia (o número do dia) */
+#cal-dia{position:fixed;z-index:450;width:300px;max-height:calc(100vh - 16px);overflow:auto;border-radius:16px;background:#13203a;box-shadow:0 14px 44px rgba(0,0,0,.6);padding:14px 14px 10px;display:none;}
+#cal-dia.open{display:block;}
+#cal-dia .dt{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:10px;}
+#cal-dia .dt b{font-size:14px;color:var(--tp);}
+#cal-dia .dt span{font-family:var(--mono);font-size:10.5px;color:var(--ts);white-space:nowrap;}
+#cal-dia .dps{display:flex;flex-direction:column;gap:4px;}
+#cal-dia .ep{font-size:12px;padding:6px 9px;border-radius:8px;}
+#cal-dia .vz{font-size:12px;color:var(--td);padding:4px 0;}
+#cal-dia .add{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;}
+#cal-dia .add button{border:none;border-radius:8px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font);background:rgba(255,255,255,.045);color:var(--ts);}
+#cal-dia .add button:hover{color:var(--tp);background:rgba(255,255,255,.08);}
+/* O dia expandido («+N»): flutua por cima dos vizinhos, sem mexer na grelha */
+#cal-exp{position:fixed;z-index:440;border-radius:14px;background:#14223d;box-shadow:0 0 0 1px rgba(91,163,217,.35),0 16px 44px rgba(0,0,0,.6);padding:8px 8px 34px;display:none;overflow:auto;}
+#cal-exp.open{display:block;}
+#cal-exp .dn{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--tp);margin-bottom:6px;}
+#cal-exp .dps{display:flex;flex-direction:column;gap:3px;}
+/* A barra de seleção das Fichas */
+#cal-sel{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:420;display:none;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:14px;background:#13203a;box-shadow:0 12px 40px rgba(0,0,0,.55);font-size:12.5px;color:var(--tp);white-space:nowrap;}
+#cal-sel.open{display:flex;}
+#cal-sel b{font-family:var(--mono);color:var(--blf);}
+#cal-sel button{border:none;border-radius:9px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);}
+#cal-sel .ag{background:rgba(91,163,217,.18);color:var(--blf);}
+#cal-sel .lp{background:none;color:var(--ts);}
+/* Menu do botão direito */
+#ctx.ctx-menu{border:none;border-radius:14px;background:#13203a;box-shadow:0 12px 40px rgba(0,0,0,.55);}
+#ctx .ctxi{border-radius:9px;}
+/* Painéis: novo item (m-ci) e ficha do evento (fo) */
+#m-ci .modal{border:none;border-radius:18px;background:#111c31;box-shadow:0 20px 60px rgba(0,0,0,.55);padding:22px 24px;}
+#m-ci .fi input,#m-ci .fi select,#m-ci .fi textarea{border:none;background:rgba(255,255,255,.045);border-radius:9px;box-shadow:inset 0 0 0 1px transparent;}
+#m-ci .fi input:focus,#m-ci .fi select:focus,#m-ci .fi textarea:focus{box-shadow:inset 0 0 0 1px rgba(212,149,110,.6);}
+#m-ci .mott{font-size:16px;}
+#m-ci .mott .btn{border:none;background:rgba(255,255,255,.04);border-radius:8px;}
+#m-ci .mf .btn{border:none;border-radius:9px;}
+#m-ci .mci-sep{border-top:1px solid rgba(255,255,255,.05);margin:12px 0;}
+#m-ci .fi label span{color:var(--td);font-weight:400;text-transform:none;letter-spacing:0;}
+#fo .fm{border:none;border-radius:20px;background:#111c31;box-shadow:0 20px 60px rgba(0,0,0,.55);}
+#fo .fmt{border-bottom:none;background:none;}
+#fo #fm-n{border-bottom:none!important;}
+#fo .ev-fv{border:none;background:rgba(255,255,255,.04);border-radius:9px;}
+#fo .ev-sec{border:none;background:none;}
+#fo .ev-sech-line{background:rgba(255,255,255,.05);}
+#fo .btn{border:none;background:rgba(255,255,255,.04);border-radius:8px;}
+#fo .psobs{border:none;background:rgba(255,255,255,.025);border-radius:12px;}
+#fo .psobs-l{border-top-color:rgba(255,255,255,.05);}
 </style>
 </head>
 <body>
@@ -2800,9 +2946,13 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
 
     <!-- CALENDÁRIO -->
     <div class="page" id="page-calendario">
-      <div class="cal-bar">
-        <div class="cal-nav-group">
-          <button class="cnb" onclick="calNav(-1)">&#8249;</button>
+      <!-- B76: o topo na linguagem do Dashboard (título + contagem; botões em pílula) -->
+      <div class="ctop" id="cal-topo">
+        <div class="ctop-tit"><h2 id="cal-titulo"></h2><span id="cal-conta"></span></div>
+        <button class="cnovo" onclick="calNovoEvento()">+ Novo evento</button>
+        <button id="cal-hoje" onclick="calHoje()" title="Voltar a hoje">Hoje</button>
+        <div class="cnav">
+          <button onclick="calNav(-1)" title="Anterior">&#8249;</button>
           <div class="cal-title-field" id="cal-title-field" onclick="toggleMonthPicker(event)">
             <span class="cal-title" id="cal-title"></span>
             <div class="month-picker" id="month-picker">
@@ -2814,24 +2964,19 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
               <div class="mp-grid" id="mp-grid"></div>
             </div>
           </div>
-          <button class="cnb" onclick="calNav(1)">&#8250;</button>
-          <button class="cnb" id="cal-hoje" onclick="calHoje()" title="Voltar ao mês de hoje">Hoje</button>
-          <select class="cal-view-sel" id="cal-view" onchange="switchCalView(this.value)">
-            <option value="mes">Mês</option>
-            <option value="ano">Ano</option>
-          </select>
+          <button onclick="calNav(1)" title="Seguinte">&#8250;</button>
         </div>
+        <div class="cper" id="cal-per"><button data-v="mes" onclick="switchCalView('mes')">Mês</button><button data-v="ano" onclick="switchCalView('ano')">Ano</button></div>
       </div>
       <div class="tab on" id="tab-cal-vis">
         <div id="cal-body"></div>
       </div>
       <div class="tab" id="tab-cal-fichas">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-          <div class="st">Fichas de evento</div>
-          <span style="font-size:12px;color:var(--td);font-family:var(--mono);font-weight:600;" id="fc"></span>
-        </div>
         <div id="fb"></div>
+        <div id="cal-sel"></div>
       </div>
+      <div id="cal-dia" class="cal-pil"></div>
+      <div id="cal-exp"></div>
     </div>
 
     <!-- RH -->
@@ -3395,6 +3540,7 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
     <div class="ctxi" onclick="oNI('ev')"><div class="ctxdt" style="background:#52c47a"></div>Novo evento</div>
     <div class="ctxi" onclick="oNI('mt')"><div class="ctxdt" style="background:#5ba3d9"></div>Reunião</div>
     <div class="ctxi" onclick="oNI('nt')"><div class="ctxdt" style="background:#d4568f"></div>Nota</div>
+    <div class="ctxi" onclick="oNI('lb')"><div class="ctxdt" style="background:#d4b020"></div>Lembrete</div>
   </div>
   <div class="ctxi" id="ctx-del" onclick="ctxEliminar()" style="display:none"><div class="ctxdt" style="background:#d96060"></div><span class="ctx-del-label">Eliminar registo</span></div>
 </div>
@@ -3409,10 +3555,10 @@ tbody tr:hover td{background:rgba(30,45,71,.3);}
   <div class="modal" style="width:400px;">
     <div class="mott"><span id="mci-t">Novo item</span><button class="btn btn-sm btn-gh" onclick="cm('m-ci')" style="padding:3px 8px;">✕</button></div>
     <div class="fi"><label>Título *</label><input id="mci-ti" placeholder="Nome"></div>
-    <div class="fr2" id="mci-datahora"><div class="fi"><label>Data</label><input type="date" id="mci-d"></div><div class="fi"><label>Hora</label><select id="mci-h" class="tsel"><option value="">—</option></select></div></div>
+    <div class="fr2" id="mci-datahora"><div class="fi"><label id="mci-d-lbl">Data</label><input type="date" id="mci-d"></div><div class="fi" id="mci-ate-wrap" style="display:none;"><label>Até <span>(vários dias)</span></label><input type="date" id="mci-ate"></div><div class="fi"><label>Hora</label><select id="mci-h" class="tsel"><option value="">—</option></select></div></div>
     <div class="fi"><label>Descrição</label><textarea id="mci-de" placeholder="Detalhes…"></textarea></div>
     <label class="mci-urg" id="mci-urg-wrap"><input type="checkbox" id="mci-urg"> <b>Urgente</b> <span>— aparece em vermelho, no topo dos Alertas do Dashboard</span></label>
-    <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
+    <div class="mci-sep" style="border-top:1px solid var(--border);margin:12px 0;"></div>
     <div style="font-size:10px;color:var(--ts);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono);font-weight:600;margin-bottom:10px;">Notificação</div>
     <div class="fr2">
       <div class="fi"><label>Data da notificação</label><input type="date" id="mci-ndata"></div>
@@ -5244,7 +5390,7 @@ function renderMonthPicker(){
 }
 function mpEscolher(m){
   cM=m;cY=mpPickerYear;cView='mes';
-  var sel=document.getElementById('cal-view');if(sel)sel.value='mes';
+  /* B76: o seletor Mês/Ano passou a botões; o calTopo acende o certo. */
   closeMonthPicker();
   renderCal();rFichas();
 }
@@ -5309,50 +5455,204 @@ function calHojeUI(){
      certa era a transicao nao apanhar a propriedade, e nao esconder a meio.) */
   b.classList.toggle('fora',noMes);
 }
+/* ===== B76 (2026-11-24, pedido do Mike) — o Calendário na linguagem do Dashboard =====
+   O topo diz o período e quantos eventos e diárias tem (a mesma conta de todas as
+   abas, regra B; cancelados fora, regra X). Os dias têm todos a mesma altura: até
+   3 itens cabem; com mais, mostram-se 2 e o «+N» no canto expande o dia por cima
+   dos vizinhos, sem mexer na grelha. O número do dia abre o painel desse dia. */
+function calTopo(){
+  var mes=(cView==='mes');
+  var de=mes?localDate(new Date(cY,cM,1)):cY+'-01-01', ate=mes?localDate(new Date(cY,cM+1,0)):cY+'-12-31';
+  var t=document.getElementById('cal-titulo'); if(t)t.textContent=mes?(MES[cM]+' '+cY):String(cY);
+  var c=document.getElementById('cal-conta');
+  if(c)c.innerHTML='<b>'+contarEventosEntre(evs,de,ate)+'</b> eventos · <b>'+contarDiariasEntre(evs,de,ate)+'</b> diárias';
+  document.querySelectorAll('#cal-per button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-v')===cView);});
+}
+/* Uma pastilha de evento e uma de reunião/nota/lembrete — as mesmas no mês, no
+   painel do dia e no dia expandido. O botão direito continua a dar «Eliminar registo». */
+function calPilEv(e,iso,diaMes){
+  var ds=evDias(e).slice().sort(), k=ds.indexOf(iso);
+  return '<div class="ep '+(e.cancelado?'epx':(e.provavel?'epp':'epev'))+((e.beo||e._origem==='beo')?' epbeo':'')+'"'
+    +' onclick="event.stopPropagation();calPopsFechar();aF('+e.id+',\''+iso+'\')"'
+    +' oncontextmenu="event.preventDefault();event.stopPropagation();ctxAlvo={t:\'ev\',id:'+e.id+'};oCtx(event,'+diaMes+');return false;"'
+    +(ds.length>1?' title="Evento agregado — '+ds.length+' diárias"':'')+'>'
+    +'<i></i><span class="t">'+psEsc(diaNome(e,iso))+'</span>'
+    +((e.beo||e._origem==='beo')?'<span class="beo">BEO</span>':'')
+    +(ds.length>1?'<span class="k">'+(k+1)+'/'+ds.length+'</span>':'')+'</div>';
+}
+function calPilLem(m,diaMes){
+  return '<div class="ep ep'+m.tipo+(m.urgente?' urg':'')+'"'
+    +' onclick="event.stopPropagation();calPopsFechar();abrirLembrete('+m.id+')"'
+    +' oncontextmenu="event.preventDefault();event.stopPropagation();ctxAlvo={t:\'lem\',id:'+m.id+'};oCtx(event,'+diaMes+');return false;">'
+    +'<i></i>'+(m.hora?'<span class="h">'+psEsc(m.hora)+'</span>':'')+'<span class="t">'+psEsc(m.titulo)+'</span></div>';
+}
+/* Tudo o que um dia tem, pela ordem em que se mostra: urgentes, eventos, o resto
+   (por hora). É a ordem do mês, do painel do dia e do dia expandido. */
+function calItensDoDia(iso){
+  var dd=parseLocalDate(iso), diaMes=dd?dd.getDate():1;
+  var de=evs.filter(function(e){return evDias(e).indexOf(iso)>=0;});
+  var dm=manI.filter(function(m){return m.data===iso;}).sort(function(a,b){return (a.hora||'').localeCompare(b.hora||'');});
+  return dm.filter(function(m){return m.urgente;}).map(function(m){return calPilLem(m,diaMes);})
+    .concat(de.map(function(e){return calPilEv(e,iso,diaMes);}))
+    .concat(dm.filter(function(m){return !m.urgente;}).map(function(m){return calPilLem(m,diaMes);}));
+}
 function renderCalMes(){
-  /* O titulo dizia so "Set". Navegar ate 2029 e voltar nao mudava uma letra: o
-     ano NAO aparecia em lado nenhum da vista de mes (na vista de Ano aparecia).
-     Numa aplicacao em que tudo — taxas, escaloes, relatorios — e por ano, nao
-     saber em que ano se esta e um erro a espera de acontecer. (2026-09-03) */
+  calPopsFechar();
   document.getElementById('cal-title').textContent=MES[cM].slice(0,3)+' '+cY;
-  const em=evs.filter(e=>evDias(e).some(iso=>{const d=parseLocalDate(iso);return d&&d.getFullYear()===cY&&d.getMonth()===cM;}));
-  const mm=manI.filter(m=>{if(!m.data)return false;const d=parseLocalDate(m.data);return d&&d.getFullYear()===cY&&d.getMonth()===cM;});
-  const first=new Date(cY,cM,1);let dow=first.getDay();dow=dow===0?6:dow-1;
-  const dim=new Date(cY,cM+1,0).getDate();const prev=new Date(cY,cM,0).getDate();const hj=new Date();
-  let g=DCAL.map(d=>`<div class="cdow">${d}</div>`).join('');
-  for(let i=0;i<dow;i++)g+=`<div class="cc ot"><div class="dh"><div class="dn">${prev-dow+1+i}</div></div></div>`;
-  for(let d=1;d<=dim;d++){
-    const it=d===hj.getDate()&&cM===hj.getMonth()&&cY===hj.getFullYear();
-    const de=em.filter(e=>evDias(e).some(iso=>{const pd=parseLocalDate(iso);return pd&&pd.getFullYear()===cY&&pd.getMonth()===cM&&pd.getDate()===d;}));
-    const dm2=mm.filter(m=>{if(!m.data)return false;const pd=parseLocalDate(m.data);return pd&&pd.getDate()===d;});
-    const isoDia=cY+'-'+String(cM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    const pills=[...de.map(e=>`<div class="ep ${e.cancelado?'epx':(e.provavel?'epp':'epev')}${(e.beo||e._origem==='beo')?' epbeo':''}" onclick="event.stopPropagation();aF(${e.id},'${isoDia}')" oncontextmenu="event.preventDefault();event.stopPropagation();ctxAlvo={t:'ev',id:${e.id}};oCtx(event,${d});return false;" title="${(e.dias&&e.dias.length>1)?'Evento agregado — '+e.dias.length+' diárias':''}">${(e.dias&&e.dias.length>1)?'🔗 ':''}${diaNome(e,isoDia)}</div>`),...dm2.map(m=>`<div class="ep ep${m.tipo}" onclick="event.stopPropagation();abrirLembrete(${m.id})" oncontextmenu="event.preventDefault();event.stopPropagation();ctxAlvo={t:'lem',id:${m.id}};oCtx(event,${d});return false;" style="cursor:pointer;">${m.hora?m.hora+' ':''}${m.titulo}</div>`)].join('');
-    g+=`<div class="cc${it?' td2':''}" ondblclick="ctxAlvo=null;oCtx(event,${d})" oncontextmenu="ctxAlvo=null;oCtx(event,${d})"><div class="dh"><div class="dn">${d}</div></div><div class="dps">${pills}</div></div>`;
+  var first=new Date(cY,cM,1),dow=first.getDay();dow=dow===0?6:dow-1;
+  var dim=new Date(cY,cM+1,0).getDate(),prev=new Date(cY,cM,0).getDate(),hj=new Date();
+  var g=DCAL.map(function(d,i){return '<div class="cdow'+(i>4?' fds':'')+'">'+d+'</div>';}).join('');
+  for(var i=0;i<dow;i++)g+='<div class="cc ot"><div class="dh"><div class="dn">'+(prev-dow+1+i)+'</div></div></div>';
+  for(var d=1;d<=dim;d++){
+    var it=d===hj.getDate()&&cM===hj.getMonth()&&cY===hj.getFullYear(), wd=(dow+d-1)%7;
+    var iso=cY+'-'+String(cM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var ps=calItensDoDia(iso), lim=(ps.length>3)?2:3;
+    g+='<div class="cc'+(it?' td2':'')+(wd>4?' fds':'')+'" data-iso="'+iso+'" ondblclick="ctxAlvo=null;oCtx(event,'+d+')" oncontextmenu="ctxAlvo=null;oCtx(event,'+d+')">'
+      +'<div class="dh"><div class="dn" title="Ver o dia" onclick="event.stopPropagation();calDiaAbrir(event,\''+iso+'\')">'+d+'</div></div>'
+      +'<div class="dps">'+ps.slice(0,lim).join('')+'</div>'
+      +(ps.length>3?'<button class="cexp" title="Ver tudo neste dia" onclick="event.stopPropagation();calExpandir(event,\''+iso+'\')">+'+(ps.length-2)+'</button>':'')
+      +'</div>';
   }
-  const rem=(dow+dim)%7;if(rem)for(let i=1;i<=7-rem;i++)g+=`<div class="cc ot"><div class="dh"><div class="dn">${i}</div></div></div>`;
-  document.getElementById('cal-body').innerHTML=`<div class="cgrid">${g}</div>`;
-  calHojeUI();
+  var rem=(dow+dim)%7;if(rem)for(var j=1;j<=7-rem;j++)g+='<div class="cc ot"><div class="dh"><div class="dn">'+j+'</div></div></div>';
+  document.getElementById('cal-body').innerHTML='<div class="cgrid">'+g+'</div>'
+    +'<div class="cleg"><span><i style="background:var(--gnf)"></i>Confirmado</span><span><i style="background:var(--amf)"></i>Provável</span><span><i style="background:var(--td)"></i>Cancelado</span><span><i style="background:#5ba3d9"></i>Reunião</span><span><i style="background:#d4568f"></i>Nota</span><span><i style="background:#d4b020"></i>Lembrete</span><span><i style="background:var(--rdf)"></i>Urgente</span><span style="font-family:var(--mono)">2/3 = diária de um evento agregado</span></div>';
+  calHojeUI(); calTopo();
 }
 function renderCalAno(){
+  calPopsFechar();
   document.getElementById('cal-title').textContent=String(cY);
-  const hj=new Date();let html='<div class="year-grid">';
-  for(let m=0;m<12;m++){
-    const first=new Date(cY,m,1);let dow=first.getDay();dow=dow===0?6:dow-1;
-    const dim=new Date(cY,m+1,0).getDate();const prev=new Date(cY,m,0).getDate();
-    const em=evs.filter(e=>evDias(e).some(iso=>{const d=parseLocalDate(iso);return d&&d.getFullYear()===cY&&d.getMonth()===m;}));
-    html+=`<div class="month-mini"><div class="mm-title">${MES[m]}</div><div class="mm-grid">`;
-    html+=DCAL.map(d=>`<div class="mm-dow">${d[0]}</div>`).join('');
-    for(let i=0;i<dow;i++)html+=`<div class="mm-day ot"></div>`;
-    for(let d=1;d<=dim;d++){
-      const it=d===hj.getDate()&&m===hj.getMonth()&&cY===hj.getFullYear();
-      const hasEv=em.some(e=>!e.cancelado&&evDias(e).some(iso=>{const pd=parseLocalDate(iso);return pd&&pd.getFullYear()===cY&&pd.getMonth()===m&&pd.getDate()===d;}));
-      html+=`<div class="mm-day${it?' td2':''}${hasEv?' has-ev':''}" onclick="cM=${m};cView='mes';document.getElementById('cal-view').value='mes';renderCal();rFichas();">${d}</div>`;
+  var hj=new Date(),html='<div class="year-grid">';
+  for(var m=0;m<12;m++){
+    var first=new Date(cY,m,1),dow=first.getDay();dow=dow===0?6:dow-1;var dim=new Date(cY,m+1,0).getDate();
+    var de=localDate(new Date(cY,m,1)),ate=localDate(new Date(cY,m+1,0));
+    html+='<div class="month-mini"><div class="mm-title">'+MES[m]+'<b>'+contarEventosEntre(evs,de,ate)+' ev · '+contarDiariasEntre(evs,de,ate)+' di</b></div><div class="mm-grid">'
+      +DCAL.map(function(x){return '<div class="mm-dow">'+x[0]+'</div>';}).join('');
+    for(var i=0;i<dow;i++)html+='<div class="mm-day ot"></div>';
+    for(var d=1;d<=dim;d++){
+      var iso=cY+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      var it=d===hj.getDate()&&m===hj.getMonth()&&cY===hj.getFullYear();
+      var has=evs.some(function(e){return !e.cancelado&&evDias(e).indexOf(iso)>=0;});
+      html+='<div class="mm-day'+(it?' td2':'')+(has?' has-ev':'')+'" onclick="cM='+m+';cView=\'mes\';renderCal();rFichas();">'+d+'</div>';
     }
-    const rem=(dow+dim)%7;if(rem)for(let i=1;i<=7-rem;i++)html+=`<div class="mm-day ot"></div>`;
+    var rem=(dow+dim)%7;if(rem)for(var j=1;j<=7-rem;j++)html+='<div class="mm-day ot"></div>';
     html+='</div></div>';
   }
-  html+='</div>';document.getElementById('cal-body').innerHTML=html;
-  calHojeUI();
+  document.getElementById('cal-body').innerHTML=html+'</div>';
+  calHojeUI(); calTopo();
+}
+/* ---- painel do dia e dia expandido: sempre dentro do ecrã ---- */
+function calPopsFechar(){
+  ['cal-dia','cal-exp'].forEach(function(id){var x=document.getElementById(id);if(x)x.classList.remove('open');});
+}
+/* Põe um painel flutuante dentro da janela: a largura e a altura nunca passam o
+   ecrã (o resto rola dentro do painel), e se não couber por baixo abre para cima. */
+function calPopPosicionar(el,ancora,larg,porCima){
+  var W=window.innerWidth,H=window.innerHeight,M=8;
+  larg=Math.min(larg,W-2*M); el.style.width=larg+'px'; el.style.maxHeight=(H-2*M)+'px';
+  var left=porCima?ancora.left-(larg-ancora.width)/2:ancora.left;
+  el.style.left=Math.max(M,Math.min(left,W-larg-M))+'px';
+  el.classList.add('open');
+  var h=el.offsetHeight, top=porCima?ancora.top-6:ancora.bottom+6;
+  if(top+h>H-M) top=porCima?(ancora.bottom+6-h):(ancora.top-6-h);
+  el.style.top=Math.max(M,Math.min(top,H-h-M))+'px';
+}
+function calDiaAbrir(ev,iso){
+  if(ev)ev.stopPropagation();
+  calPopsFechar(); if(typeof cCtx==='function')cCtx();
+  var p=document.getElementById('cal-dia'), d=parseLocalDate(iso); if(!p||!d)return;
+  var DS=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+  var nEv=evs.filter(function(e){return evDias(e).indexOf(iso)>=0;}).length, nOut=manI.filter(function(m){return m.data===iso;}).length;
+  var ps=calItensDoDia(iso);
+  p.innerHTML='<div class="dt"><b>'+DS[d.getDay()]+', '+d.getDate()+' de '+MES[d.getMonth()].toLowerCase()+'</b><span>'+nEv+' ev · '+nOut+' outros</span></div>'
+    +'<div class="dps cal-pil">'+(ps.length?ps.join(''):'<div class="vz">Nada marcado neste dia.</div>')+'</div>'
+    +'<div class="add"><button onclick="calDiaNovo(\''+iso+'\',\'ev\')">+ Evento</button><button onclick="calDiaNovo(\''+iso+'\',\'mt\')">+ Reunião</button><button onclick="calDiaNovo(\''+iso+'\',\'nt\')">+ Nota</button><button onclick="calDiaNovo(\''+iso+'\',\'lb\')">+ Lembrete</button></div>';
+  var r=(ev&&ev.target&&ev.target.getBoundingClientRect)?ev.target.getBoundingClientRect():{left:200,top:200,bottom:220,width:20};
+  calPopPosicionar(p,r,300,false);
+}
+function calDiaNovo(iso,t){ calPopsFechar(); cxD=parseLocalDate(iso); oNI(t); }
+function calExpandir(ev,iso){
+  if(ev)ev.stopPropagation();
+  calPopsFechar(); if(typeof cCtx==='function')cCtx();
+  var x=document.getElementById('cal-exp'), c=document.querySelector('#cal-body .cc[data-iso="'+iso+'"]'); if(!x||!c)return;
+  var d=parseLocalDate(iso);
+  x.innerHTML='<div class="dn">'+(d?d.getDate():'')+'</div><div class="dps cal-pil">'+calItensDoDia(iso).join('')+'</div>'
+    +'<button class="cexp" title="Recolher" onclick="event.stopPropagation();calPopsFechar()">−</button>';
+  var r=c.getBoundingClientRect();
+  calPopPosicionar(x,r,Math.round(r.width*1.35),true);
+}
+/* Fecha ao clicar fora, com Esc, ao rolar a página ou ao mudar o tamanho da janela —
+   um painel flutuante nunca fica a apontar para um sítio que já mudou. */
+document.addEventListener('click',function(e){
+  ['cal-dia','cal-exp'].forEach(function(id){var x=document.getElementById(id);if(x&&x.classList.contains('open')&&!x.contains(e.target))x.classList.remove('open');});
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')calPopsFechar();});
+window.addEventListener('resize',function(){calPopsFechar();});
+window.addEventListener('scroll',function(e){var t=e.target;if(t&&t.closest&&(t.closest('#cal-exp')||t.closest('#cal-dia')))return;calPopsFechar();},true);
+function calNovoEvento(){ calPopsFechar(); cxD=new Date(); oNI('ev'); }
+/* O painel novo item: num evento, «De … Até …» (sem hora); nos outros, Data e Hora. */
+function calPainelModo(t){
+  var ev=(t==='ev');
+  var w=document.getElementById('mci-ate-wrap'); if(w)w.style.display=ev?'':'none';
+  var a=document.getElementById('mci-ate'); if(a)a.value='';
+  var h=document.getElementById('mci-h'); if(h&&h.parentNode)h.parentNode.style.display=ev?'none':'';
+  var l=document.getElementById('mci-d-lbl'); if(l)l.textContent=ev?'De':'Data';
+}
+/* As diárias de «De» a «Até», inclusive (no máximo 60 — um engano no ano não cria centenas). */
+function calDiasEntre(de,ate){
+  var a=parseLocalDate(de), b=parseLocalDate(ate), out=[]; if(!a)return out; if(!b||b<a)return [de];
+  for(var d=new Date(a);d<=b&&out.length<60;d.setDate(d.getDate()+1))out.push(localDate(d));
+  return out;
+}
+/* ---- Fichas: uma linha por diária, no estilo dos Próximos eventos do Dashboard ---- */
+function rFichas(){
+  var pMes=(cView==='mes'), hoje=localDate(new Date());
+  var dentro=function(iso){var d=parseLocalDate(iso);if(!d)return false;return pMes?(d.getFullYear()===cY&&d.getMonth()===cM):(d.getFullYear()===cY);};
+  var rows=[];
+  evs.forEach(function(e){evDias(e).filter(dentro).forEach(function(iso){rows.push({e:e,iso:iso});});});
+  rows.sort(function(a,b){return a.iso.localeCompare(b.iso);});
+  var grupos={},ordem=[];
+  rows.forEach(function(r){var k=r.iso.slice(0,7);if(!grupos[k]){grupos[k]=[];ordem.push(k);}grupos[k].push(r);});
+  var DS=['dom','seg','ter','qua','qui','sex','sáb'],h='';
+  ordem.forEach(function(k){
+    var y=+k.slice(0,4),mo=+k.slice(5,7)-1;
+    h+='<div class="fsec">'+MES[mo]+' '+y+' <span class="n">'+grupos[k].length+'</span></div><div class="fcard">';
+    grupos[k].forEach(function(r,i){
+      var e=r.e,d=parseLocalDate(r.iso),ds=evDias(e).slice().sort();
+      h+='<div class="frow'+(e.cancelado?' cx':'')+'"><div class="fdt'+(r.iso===hoje?' hoje':'')+'"><b>'+String(d.getDate()).padStart(2,'0')+'</b><span>'+DS[d.getDay()]+'</span></div>'
+        +'<div class="fnm" onclick="aF('+e.id+',\''+r.iso+'\')">'+psEsc(diaNome(e,r.iso))
+        +((e.beo||e._origem==='beo')?'<span class="ftag beo">BEO</span>':'')
+        +(ds.length>1?'<span class="ftag ag">🔗 dia '+(ds.indexOf(r.iso)+1)+' de '+ds.length+'</span>':'')
+        +(e.piso&&e.piso!=='—'?'<small>'+psEsc(e.piso)+'</small>':'')+'</div>'
+        +estadoBadge(e,i,grupos[k].length)
+        +'<input type="checkbox" class="ficha-chk2 fchk" data-id="'+e.id+'" title="Seleccionar para agregar" onchange="calSelAtualizar()"></div>';
+    });
+    h+='</div>';
+  });
+  document.getElementById('fb').innerHTML=h||('<div class="fvazio">Sem eventos em '+(pMes?(MES[cM]+' '+cY):String(cY))+'.</div>');
+  calSelAtualizar(); calTopo();
+}
+/* Com uma ou mais diárias marcadas, a barra «Agregar» aparece em baixo; com uma só
+   diária de um evento agregado, o mesmo botão desagrega (fichasAgregarClick decide). */
+function calSelAtualizar(){
+  var b=document.getElementById('cal-sel'); if(!b)return;
+  var marc=document.querySelectorAll('#page-calendario .fchk:checked'), n=marc.length;
+  var naFicha=!!document.querySelector('#tab-cal-fichas.on');
+  if(!n||!naFicha){b.classList.remove('open');b.innerHTML='';return;}
+  var ids={}; marc.forEach(function(c){ids[c.getAttribute('data-id')]=1;});
+  var so=Object.keys(ids), e1=(so.length===1)?evs.find(function(x){return String(x.id)===so[0];}):null;
+  var verbo=(e1&&e1.dias&&e1.dias.length>1)?'Desagregar':'Agregar';
+  b.innerHTML='<span><b>'+n+'</b> '+(n===1?'diária seleccionada':'diárias seleccionadas')+'</span>'
+    +'<button class="ag" onclick="fichasAgregarClick()">🔗 '+verbo+'</button>'
+    +'<button class="lp" onclick="calSelLimpar()">Limpar</button>';
+  b.classList.add('open');
+}
+function calSelLimpar(){ document.querySelectorAll('#page-calendario .fchk').forEach(function(c){c.checked=false;}); calSelAtualizar(); }
+/* Itens de um tipo que já não existe (ex.: «n1», de um teste antigo) não aparecem em
+   ecrã nenhum e por isso não se podiam apagar. Saem ao carregar os dados. (B76) */
+function manILimparTiposOrfaos(){
+  var ok={ev:1,mt:1,nt:1,lb:1}, n=0;
+  for(var i=manI.length-1;i>=0;i--){ var m=manI[i]; if(!m||!ok[m.tipo]){ manI.splice(i,1); n++; } }
+  return n;
 }
 
 /* CTX */
@@ -5375,6 +5675,9 @@ async function apagarEvento(id){
     var i=evs.findIndex(function(x){return x.id===id;});
     if(i>=0)evs.splice(i,1);
     if(typeof mapaRows!=='undefined'){ for(var k=mapaRows.length-1;k>=0;k--){ if(mapaRows[k].evId===id)mapaRows.splice(k,1); } }
+    /* B76 (Mike): «um evento apagado deixa de existir sem qualquer rasto» — o
+       orçamento associado fica (é um documento à parte), mas perde a ligação. */
+    if(typeof DB_ORC!=='undefined')DB_ORC.forEach(function(o){if(o&&o.evId===id)o.evId=null;});
     syncAll();
     if(typeof showToast==='function')showToast('Evento apagado','ok');
     if(typeof SUPA_TOKEN!=='undefined'&&SUPA_TOKEN){ try{ await fetch(SUPA_URL+'/rest/v1/eventos?id=eq.'+id,{method:'DELETE',headers:Object.assign({},supaHeaders(),{'Prefer':'return=minimal'})}); }catch(e){} }
@@ -5409,7 +5712,7 @@ function ctxLemEliminar(){var id=ctxLemAlvo;cCtxLem();ctxLemAlvo=null;if(!id)ret
 function ctxLemRemoverNotif(){var id=ctxLemAlvo;cCtxLem();ctxLemAlvo=null;if(!id)return;var m=manI.find(function(x){return x.id===id;});if(!m)return;m.notifData='';m.notifHora='';m._notifFired=false;syncAll();if(typeof showToast==='function')showToast('Notifica\u00e7\u00e3o removida','ok');}
 function cCtx(){document.getElementById('ctx').classList.remove('open');}
 const NCFG={ev:{l:'Novo evento',c:'#52c47a',cls:'ev'},mt:{l:'Nova reunião',c:'#5ba3d9',cls:'mt'},nt:{l:'Nota',c:'#d4568f',cls:'nt'},lb:{l:'Lembrete',c:'#d4b020',cls:'lb'}};
-function oNI(t){cCtx();_editLemId=null;cxT=t;document.getElementById('mci-t').textContent=NCFG[t].l;var dh=document.getElementById('mci-datahora');if(dh)dh.style.display='';if(cxD)document.getElementById('mci-d').value=localDate(cxD);document.getElementById('mci-ti').value='';buildTimeOptions('mci-h','');document.getElementById('mci-de').value='';document.getElementById('mci-ndata').value='';buildTimeOptions('mci-nhora','');var dl=document.getElementById('mci-del');if(dl)dl.style.display='none';var sv=document.getElementById('mci-save');if(sv)sv.textContent='Adicionar';var _u=document.getElementById('mci-urg');if(_u)_u.checked=false;var _uw=document.getElementById('mci-urg-wrap');if(_uw)_uw.style.display=(t==='ev')?'none':'';om('m-ci');setTimeout(()=>document.getElementById('mci-ti').focus(),100);}
+function oNI(t){cCtx();_editLemId=null;cxT=t;document.getElementById('mci-t').textContent=NCFG[t].l;var dh=document.getElementById('mci-datahora');if(dh)dh.style.display='';if(cxD)document.getElementById('mci-d').value=localDate(cxD);document.getElementById('mci-ti').value='';buildTimeOptions('mci-h','');document.getElementById('mci-de').value='';document.getElementById('mci-ndata').value='';buildTimeOptions('mci-nhora','');var dl=document.getElementById('mci-del');if(dl)dl.style.display='none';var sv=document.getElementById('mci-save');if(sv)sv.textContent='Adicionar';var _u=document.getElementById('mci-urg');if(_u)_u.checked=false;var _uw=document.getElementById('mci-urg-wrap');if(_uw)_uw.style.display=(t==='ev')?'none':'';calPainelModo(t);om('m-ci');setTimeout(()=>document.getElementById('mci-ti').focus(),100);}
 function dashNovoLembrete(){cxD=null;oNI('lb');document.getElementById('mci-d').value='';document.getElementById('mci-h').value='';var dh=document.getElementById('mci-datahora');if(dh)dh.style.display='none';document.getElementById('mci-nhora').value='';}
 
 // Abrir detalhe de lembrete/nota do calendário
@@ -5424,6 +5727,7 @@ function abrirLembrete(id,fromDash){
     for(var k in NCFG){if(NCFG[k].cls===m.tipo){cxT=k;break;}}
   }
   document.getElementById('mci-t').textContent=(typeof NCFG!=='undefined'&&NCFG[cxT])?NCFG[cxT].l:'Lembrete';
+  calPainelModo(cxT);
   document.getElementById('mci-ti').value=m.titulo||'';
   document.getElementById('mci-d').value=m.data||'';
   buildTimeOptions('mci-h',m.hora||'');
@@ -5453,24 +5757,34 @@ function sCI(){
   const hora=document.getElementById('mci-h').value;
   const tipo=NCFG[cxT].cls;
   const newItem={id:nid++,titulo:ti,data,hora,desc:document.getElementById('mci-de').value,tipo,notifData:document.getElementById('mci-ndata').value,notifHora:document.getElementById('mci-nhora').value,urgente:(function(){var _u=document.getElementById('mci-urg');return !!(_u&&_u.checked);})()};
-  if(tipo==='ev'&&data){
+  if(tipo==='ev'){
+    /* B76: um evento sem data já não nasce como item fantasma em manI (sem data
+       não aparecia em lado nenhum). */
+    if(!data){ if(typeof showToast==='function')showToast('Escolhe a data do evento.','err'); return; }
+    /* B76 (pedido do Mike): «De … Até …» — várias diárias de uma vez nascem já como
+       um evento agregado, o mesmo que criar fichas soltas e agregá-las depois. */
+    const _ateEl=document.getElementById('mci-ate'), _ate=_ateEl?_ateEl.value:'';
+    const _dias=(_ate&&_ate>data)?calDiasEntre(data,_ate):[data];
     // Evento: cria ficha + linha mapa, NÃO adiciona a manI (evita duplicado no calendário)
     const desc=document.getElementById('mci-de').value.trim();
     const evId=nid++;
     evs.push({id:evId,cliente:ti,pax:'—',tipo:'Evento',piso:'—',notas:'',dataISO:data,dataDisplay:data,multi:false,cancelado:false,provavel:false,beo:null,beoby:null,contacto:null,empresa:'—',obs:desc,agenda:[],av:[],palco:[],plantas:[],anexos:[],_manual:true});
+    if(_dias.length>1){ const _ne=evs.find(x=>x.id===evId); if(_ne){ _ne.dias=_dias.slice(); _ne.multi=true; } }
     evs.sort((a,b)=>(a.dataISO||'9999').localeCompare(b.dataISO||'9999'));
-    mapaRows.push({id:nid++,tipo:'ev',data,evento:ti,evId:evId,beo:'',slots:[
-      {func:'Luz',nome:'',hIn:'09:00',hOut:'21:00'},
-      {func:'Audio',nome:'',hIn:'09:00',hOut:'21:00'},
-      {func:'Video',nome:'',hIn:'09:00',hOut:'21:00'}
-    ]});
+    _dias.forEach(function(_d){
+      mapaRows.push({id:nid++,tipo:'ev',data:_d,evento:ti,evId:evId,beo:'',slots:[
+        {func:'Luz',nome:'',hIn:'09:00',hOut:'21:00'},
+        {func:'Audio',nome:'',hIn:'09:00',hOut:'21:00'},
+        {func:'Video',nome:'',hIn:'09:00',hOut:'21:00'}
+      ]});
+    });
     mapaRows.sort((a,b)=>(a.data||'9999').localeCompare(b.data||'9999'));
     // Ajustar intervalo do mapa para incluir a nova data
     const fromEl=document.getElementById('ms-from');
     const toEl=document.getElementById('ms-to');
     if(fromEl&&toEl){
       if(!fromEl.value||data<fromEl.value)fromEl.value=data;
-      if(!toEl.value||data>toEl.value)toEl.value=data;
+      if(!toEl.value||_dias[_dias.length-1]>toEl.value)toEl.value=_dias[_dias.length-1];
     }
     renderMapa();rFichas();
   } else {
@@ -5487,40 +5801,7 @@ function sCI(){
   cm('m-ci');syncAll();startNotifCheck();
 }
 
-/* FICHAS */
-function rFichas(){
-  const pMes=(cView==='mes');
-  const dentroPeriodo=iso=>{const d=parseLocalDate(iso);if(!d)return false;return pMes?(d.getFullYear()===cY&&d.getMonth()===cM):(d.getFullYear()===cY);};
-  const es=[...evs].filter(e=>evDias(e).some(dentroPeriodo)).sort((a,b)=>(a.dataISO||'9999').localeCompare(b.dataISO||'9999'));
-  const pLabel=pMes?(MES[cM]+' '+cY):String(cY);
-  // uma linha por diária (mesmo quando várias diárias pertencem ao mesmo evento agregado)
-  let rows=[];
-  es.forEach(e=>{evDias(e).filter(dentroPeriodo).sort().forEach(iso=>rows.push({e,iso}));});
-  rows.sort((a,b)=>a.iso.localeCompare(b.iso));
-  document.getElementById('fc').textContent=es.length+' eventos · '+rows.length+' diárias de evento · '+pLabel;
-  let h='',mc='',to=false;
-  rows.forEach((r,i)=>{
-    const e=r.e;
-    const d=parseLocalDate(r.iso)||new Date();
-    const m=MES[d.getMonth()]+' '+d.getFullYear();
-    if(m!==mc){
-      if(to){h+='</div>';to=false;}
-      mc=m;
-      const cnt=rows.filter(x=>{const dx=parseLocalDate(x.iso)||new Date();return (MES[dx.getMonth()]+' '+dx.getFullYear())===m;}).length;
-      h+=`<div class="mh"><div class="mn">${m}</div><div class="mc2">${cnt}</div><div class="ml2"></div></div>`;
-      h+=`<div class="ft"><div class="fth"><div class="fthc">Data</div><div class="fthc">Cliente</div><div class="fthc"><button type="button" class="fic-agg-btn" title="Agregar ou desagregar diárias seleccionadas" onclick="fichasAgregarClick()">🔗</button>Estado</div></div>`;
-      to=true;
-    }
-    const df=d.toLocaleDateString('pt-PT',{day:'2-digit',month:'2-digit'});
-    const est=estadoBadge(e,i,rows.length);
-    const multiBox=(e.dias&&e.dias.length>1)?`<span class="fic-multi" title="Evento agregado — ${e.dias.length} diárias">🔗</span>`:'';
-    h+=`<div class="ftr${e.cancelado?' cx':''}"><div class="fc fcd">${df}</div><div class="fc fcn-wrap">${multiBox}<span class="fcn" onclick="aF(${e.id},'${r.iso}')">${diaNome(e,r.iso)}${(e.beo||e._origem==='beo')?' <span class="beo-tag">BEO</span>':''}</span></div><div class="fc fc-estado"><input type="checkbox" class="ficha-chk2" data-id="${e.id}">${est}</div></div>`;
-    const nx=rows[i+1];const nm=nx?(()=>{const dx=parseLocalDate(nx.iso)||new Date();return MES[dx.getMonth()]+' '+dx.getFullYear();})():null;
-    if(!nx||nm!==mc){h+='</div>';to=false;}
-  });
-  document.getElementById('fb').innerHTML=h||('<div style="font-size:13px;color:var(--td);padding:16px 0;">Sem eventos em '+pLabel+'.</div>');
-}
-
+/* FICHAS — rFichas vive junto das outras funções do Calendário (B76). */
 /* AGREGAR / DESAGREGAR DIÁRIAS DE EVENTO */
 function fichasAgregarClick(){
   var boxes=[...document.querySelectorAll('.ficha-chk2:checked')];
@@ -5605,6 +5886,10 @@ function fichasAgregarExecutar(sel,allDias){
   if(!surv.beo){var comBeo=sel.find(function(e){return e.beo;});if(comBeo){surv.beo=comBeo.beo;surv.beoby=comBeo.beoby;}}
   var outrosIds={};outros.forEach(function(e){outrosIds[e.id]=true;});
   if(typeof mapaRows!=='undefined')mapaRows.forEach(function(r){if(outrosIds[r.evId])r.evId=surv.id;});
+  /* B76 (Mike): «um orçamento é relativo a um evento; se o evento tem mais de um dia,
+     fica agregado a todas as diárias» — os orçamentos dos eventos que desaparecem
+     passam para o que fica, como as linhas do Mapa de técnicos. */
+  if(typeof DB_ORC!=='undefined')DB_ORC.forEach(function(o){if(o&&outrosIds[o.evId])o.evId=surv.id;});
   outros.forEach(function(e){var i=evs.findIndex(function(x){return x.id===e.id;});if(i>=0)evs.splice(i,1);});
   syncAll();
   if(typeof showToast==='function')showToast('Eventos agregados: '+allDias.length+' diárias.','ok');
@@ -8528,7 +8813,7 @@ function backupAplicar(d){
   }catch(e){console.error('invFundir:',e);}
   if(d.mapaRows)arr(mapaRows,d.mapaRows);
   if(d.mapaRemovidos)arr(mapaRemovidos,d.mapaRemovidos);
-  if(d.manI)arr(manI,d.manI);
+  if(d.manI){arr(manI,d.manI);manILimparTiposOrfaos();}
   if(d.OUTROS_SERVICOS)arr(OUTROS_SERVICOS,d.OUTROS_SERVICOS);
   if(d.OS_GRUPOS)arr(OS_GRUPOS,d.OS_GRUPOS);
   if(d.OS_HIST)arr(OS_HIST,d.OS_HIST);
